@@ -1,5 +1,9 @@
 # The Sequence Game
 
+Name ideas:
+
+* Diamondback Railroad
+
 ## Consists of:
 
 * A *board* consisting of a  *grid* of squares
