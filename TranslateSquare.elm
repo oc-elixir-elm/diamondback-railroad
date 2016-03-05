@@ -3,7 +3,7 @@ module TranslateSquare (Model, Action, init, update, view) where
 import Easing exposing (ease, easeOutElastic, float)
 import Effects exposing (Effects)
 import Html exposing (Html)
-import Svg exposing (svg, rect, g, text, text')
+import Svg exposing (svg, rect, polygon, g, text, text')
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 import Time exposing (Time, second)
@@ -98,16 +98,12 @@ view address model =
       [ g [ transform ("translate(100, 100) translate(" ++ toString xTranslation ++ ", 0)")
           , onClick (Signal.message address XTranslate)
           ]
-          [ rect
-              [ x "-50"
-              , y "-50"
-              , width "100"
-              , height "100"
-              , rx "15"
-              , ry "15"
-              , style "fill: #60B5CC;"
-              ]
-              []
-          , text' [ fill "white", textAnchor "middle" ] [ text "Click me!" ]
+          [
+             polygon
+               [ fill "#F0AD00",
+                 points "0,-50 50,0 0,50 -50,0"
+               ]
+               [],
+             text' [ fill "white", textAnchor "middle" ] [ text "*" ]
           ]
       ]
