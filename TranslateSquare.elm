@@ -1,4 +1,4 @@
-module TranslateSquare (Model, Action, init, update, view) where
+module TranslateSquare (Model, Action, init, update, updateRight, view) where
 
 import Color exposing (lightBrown)
 import Easing exposing (ease, easeOutElastic, float)
@@ -77,6 +77,11 @@ update msg model =
           )
 
 
+updateRight : Model -> (Model, Effects Action)
+updateRight model =
+  update XTranslate model
+
+
 -- VIEW
 
 toOffset : AnimationState -> Float
@@ -95,10 +100,11 @@ view address model =
     xTranslation =
       model.xTranslation + toOffset model.animationState
   in
+    {-}
     Html.fromElement (collage 200 200 [
       filled lightBrown (ngon 4 50)
     ])
-    {-
+    -}
     svg
       [ width "200", height "200", viewBox "0 0 300 300" ]
       [ g [ transform ("translate(100, 100) translate(" ++ toString xTranslation ++ ", 0)")
@@ -113,4 +119,3 @@ view address model =
              text' [ fill "white", textAnchor "middle" ] [ text "*" ]
           ]
       ]
-    -}

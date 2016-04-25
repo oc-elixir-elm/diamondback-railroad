@@ -3,8 +3,9 @@ module SequenceGame where
 import Effects exposing (Effects)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import TranslateSquare exposing (..)
-import Graphics.Input
+import Html.Events exposing (..)
+import TranslateSquare exposing (update, updateRight)
+
 --import Matrix exposing (..)
 --import Maybe exposing (..)
 
@@ -43,6 +44,7 @@ init =
 type Action
     = Left TranslateSquare.Action
     | Right TranslateSquare.Action
+    | MoveRight
 
 
 
@@ -65,21 +67,31 @@ update action model =
         , Effects.map Right fx
         )
 
+    MoveRight ->
+      let
+        (right, fx) = TranslateSquare.updateRight model.right
+      in
+        ( Model model.left right
+        , Effects.map Right fx
+        )
+
 
 -- VIEW
 
 
 (=>) = (,)
 
+       {-
 type Direction = MoveLeft | MoveUp |  MoveRight | MoveDown
 
 moves : Signal.Mailbox Direction
 moves = Signal.mailbox MoveLeft
+-}
 
 view : Signal.Address Action -> Model -> Html
 view address model =
   div [ style [ "display" => "flex" ] ]
     [ TranslateSquare.view (Signal.forwardTo address Left) model.left
     , TranslateSquare.view (Signal.forwardTo address Right) model.right
-    , Html.fromElement (Graphics.Input.button (Signal.message moves.address MoveRight) "Right")
+    , button [ onClick address MoveRight ] [ text "Right" ]
     ]
