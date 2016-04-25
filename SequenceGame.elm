@@ -3,7 +3,7 @@ module SequenceGame where
 import Effects exposing (Effects)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html.Events exposing (onClick)
 import TranslateSquare
 
 --import Matrix exposing (..)
