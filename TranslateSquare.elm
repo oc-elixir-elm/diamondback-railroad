@@ -1,4 +1,4 @@
-module TranslateSquare (Model, Action, init, update, updateRight, view) where
+module TranslateSquare (Model, Action, init, startTranslate, update, view) where
 
 import Color exposing (lightBrown)
 import Easing exposing (ease, easeOutElastic, float)
@@ -77,8 +77,8 @@ update msg model =
           )
 
 
-updateRight : Model -> (Model, Effects Action)
-updateRight model =
+startTranslate : Model -> (Model, Effects Action)
+startTranslate model =
   update XTranslate model
 
 

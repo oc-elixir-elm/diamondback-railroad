@@ -4,7 +4,7 @@ import Effects exposing (Effects)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import TranslateSquare exposing (update, updateRight)
+import TranslateSquare
 
 --import Matrix exposing (..)
 --import Maybe exposing (..)
@@ -69,7 +69,7 @@ update action model =
 
     MoveRight ->
       let
-        (right, fx) = TranslateSquare.updateRight model.right
+        (right, fx) = TranslateSquare.startTranslate model.right
       in
         ( Model model.left right
         , Effects.map Right fx
