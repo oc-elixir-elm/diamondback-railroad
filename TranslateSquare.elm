@@ -1,5 +1,6 @@
 module TranslateSquare (Model, Action, init, update, view) where
 
+import Color exposing (lightBrown)
 import Easing exposing (ease, easeOutElastic, float)
 import Effects exposing (Effects)
 import Html exposing (Html)
@@ -7,6 +8,7 @@ import Svg exposing (svg, rect, polygon, g, text, text')
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 import Time exposing (Time, second)
+import Graphics.Collage exposing (ngon, collage, filled, toForm)
 
 
 -- MODEL
@@ -93,6 +95,10 @@ view address model =
     xTranslation =
       model.xTranslation + toOffset model.animationState
   in
+    Html.fromElement (collage 200 200 [
+      filled lightBrown (ngon 4 50)
+    ])
+    {-
     svg
       [ width "200", height "200", viewBox "0 0 300 300" ]
       [ g [ transform ("translate(100, 100) translate(" ++ toString xTranslation ++ ", 0)")
@@ -107,3 +113,4 @@ view address model =
              text' [ fill "white", textAnchor "middle" ] [ text "*" ]
           ]
       ]
+    -}
