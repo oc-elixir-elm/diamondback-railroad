@@ -111,18 +111,15 @@ This also implies that the rectangle defining the always-present square can be
 rendered to be the border of the collage area.  Since the caller will keep
 the collages adjacent to each other, the inner edges will will show a border
 of twice the thickness of a single collage.  Of course the outside edges will
-only be "half-width".
+only be "half-width" which, while not affecting the game, would "look funny".
+This is solved by the border which provides an outside frame around the game.
 
-Hence, the TranslateSquare model state will include a representation
-of static location so that it can be rendered properly.  These states
-are:
+Hence, the TransactSquare will always have a "thick enough" border on all sides
+whether it is a perimeter square or a gold square.  Since the square is
+positioned in the window externally, the required state is minimal:
 
-* Left-top perimeter: perimiter background with additional border thickness
-  on the left and top edges.  The size of the collage space must be increased
-  by one border's width in both dimensions.
-* Right-top perimeter: Similar to above for right and top sides.
-* Right-bottom perimiter: Similar to above for right and bottom sides.
-* Left-bottom perimiter: Similar to above for left and bottom sides.
+* Perimeter: Since there is a frame around the perimeter, the border is
+  "thick enough" in all locations.
 * Grid: Since there is a perimeter, the border is uniform within all grid
   squares.  These squares are rendered in a different background color
   than the perimeter squares.
