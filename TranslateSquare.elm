@@ -94,6 +94,57 @@ toOffset animationState =
       ease easeOutElastic float 0 xTranslation duration elapsedTime
 
 
+{-
+The secret here is that the collage area is very slightly smaller
+than the graphics "form" piece that fits in it.  The reason is that
+the piece is not moved from one part of the collage's area to another.
+Rather the illusion of a piece moving happens by moving the form
+into the collage's view.  Hence, during transition, part of the form's
+visibility is clipped by it falling outside the collage's area.
+
+We still want the effect of two diamond forms sliding along each other's edge
+when they are going around a corner.  Hence, a diamond cannot be defined to
+exist within the collage; rather it must be slightly larger.  This means that,
+by itself, the corners of the diamond visually may be slightly clipped.
+
+This also implies that the rectangle defining the always-present square can be
+rendered to be the border of the collage area.  Since the caller will keep
+the collages adjacent to each other, the inner edges will will show a border
+of twice the thickness of a single collage.  Of course the outside edges will
+only be "half-width".
+
+Hence, the TranslateSquare model state will include a representation
+of static location so that it can be rendered properly.  These states
+are:
+
+* Left-top perimeter: perimiter background with additional border thickness
+  on the left and top edges.  The size of the collage space must be increased
+  by one border's width in both dimensions.
+* Right-top perimeter: Similar to above for right and top sides.
+* Right-bottom perimiter: Similar to above for right and bottom sides.
+* Left-bottom perimiter: Similar to above for left and bottom sides.
+* Grid: Since there is a perimeter, the border is uniform within all grid
+  squares.  These squares are rendered in a different background color
+  than the perimeter squares.
+
+All empty squares will be visually defined by the above states.
+
+Now, this can be entirely debugged in isolation from module SequenceGame
+as proposed in the documentation for the Elm Architecture.  See
+"Example 3: A dynamic list of counters" for how SequenceGame can hold
+the additional ID for TranslateSquare so that TranslateSquare doesn't have
+to know about its own position.
+
+In summary, we gain the following advantages:
+
+* Since TrnaslateSquares don't move, then Elm can leverage its magic
+  in quickly updating squares that have changed only.
+* The TranslationSquare, now that it doesn't move, can be tested in
+  isolation from the SequenceGame.
+* Hence, the names for the two classes simplify:
+  * "TranslationSquare" becomes simply "Square".
+  * "SequenceGame becomes simply "Board" or "Game".
+-}
 view : Signal.Address Action -> Model -> Html
 view address model =
   let

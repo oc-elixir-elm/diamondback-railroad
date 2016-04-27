@@ -6,8 +6,14 @@ Name ideas:
 
 ## Consists of:
 
-* A *board* consisting of a  *grid* of squares
-* *Pieces* numbered in *ascending* order.  Each piece occupies a square.
+* A *grid* consisting of a matrix of squares.
+* A *perimeter* of squares that runs around the grid.  The background color
+  of the perimiter is set differently from the grid to tell them apart.
+* The *board* consists of the combination of the grid and perimeter.
+* *Pieces* numbered in *ascending* order.  Each piece occupies a square on the
+board.  There are no pieces in the perimeter at the beginning of the game
+nor at the end; the perimeter is used for "temporary" piece transit during the
+game.
 
 There are less pieces than squares, so there are *empty* squares in the grid.
 
