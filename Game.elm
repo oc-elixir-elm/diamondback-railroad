@@ -1,10 +1,10 @@
-module SequenceGame where
+module Game where
 
 import Effects exposing (Effects)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import TranslateSquare
+import Square
 
 --import Matrix exposing (..)
 --import Maybe exposing (..)
@@ -12,8 +12,8 @@ import TranslateSquare
 -- MODEL
 
 type alias Model =
-    { left : TranslateSquare.Model
-    , right : TranslateSquare.Model
+    { left : Square.Model
+    , right : Square.Model
     }
 
 --type alias GameMap = Matrix Cell
@@ -28,8 +28,8 @@ type alias Model =
 init : (Model, Effects Action)
 init =
   let
-    (left, leftFx) = TranslateSquare.init
-    (right, rightFx) = TranslateSquare.init
+    (left, leftFx) = Square.init
+    (right, rightFx) = Square.init
   in
     ( Model left right
     , Effects.batch
@@ -42,9 +42,9 @@ init =
 -- UPDATE
 
 type Action
-    = Left TranslateSquare.Action
-    | Right TranslateSquare.Action
-    | MoveRight
+    = Left Square.Action
+    | Right Square.Action
+    | MoveBoth
 
 
 
@@ -53,7 +53,7 @@ update action model =
   case action of
     Left act ->
       let
-        (left, fx) = TranslateSquare.update act model.left
+        (left, fx) = Square.update act model.left
       in
         ( Model left model.right
         , Effects.map Left fx
@@ -61,18 +61,22 @@ update action model =
 
     Right act ->
       let
-        (right, fx) = TranslateSquare.update act model.right
+        (right, fx) = Square.update act model.right
       in
         ( Model model.left right
         , Effects.map Right fx
         )
 
-    MoveRight ->
+    MoveBoth ->
       let
-        (right, fx) = TranslateSquare.startTranslate model.right
+        (left, leftFx) = Square.startTranslate model.left
+        (right, rightFx) = Square.startTranslate model.right
       in
-        ( Model model.left right
-        , Effects.map Right fx
+        ( Model left right
+        , Effects.batch
+            [Effects.map Left leftFx
+            , Effects.map Right rightFx
+            ]
         )
 
 
@@ -91,7 +95,7 @@ moves = Signal.mailbox MoveLeft
 view : Signal.Address Action -> Model -> Html
 view address model =
   div [ style [ "display" => "flex" ] ]
-    [ TranslateSquare.view (Signal.forwardTo address Left) model.left
-    , TranslateSquare.view (Signal.forwardTo address Right) model.right
-    , button [ onClick address MoveRight ] [ text "Right" ]
+    [ Square.view (Signal.forwardTo address Left) model.left
+    , Square.view (Signal.forwardTo address Right) model.right
+    , button [ onClick address MoveBoth ] [ text "Right" ]
     ]

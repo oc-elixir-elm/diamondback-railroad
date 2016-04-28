@@ -1,5 +1,5 @@
 import Effects exposing (Never)
-import SequenceGame  exposing (init, update, view)
+import Game exposing (init, update, view)
 import StartApp
 import Task
 

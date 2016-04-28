@@ -1,13 +1,13 @@
-module TranslateSquare (Model, Action, init, startTranslate, update, view) where
+module Square (Model, Action, init, startTranslate, update, view) where
 
 import Color exposing (lightBrown)
-import Easing exposing (ease, easeOutElastic, float)
+import Easing exposing (ease, easeOutQuint, float)
 import Effects exposing (Effects)
 import Html exposing (Html)
 import Svg exposing (svg, rect, polygon, g, text, text')
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
-import Time exposing (Time, second)
+import Time exposing (Time, second, millisecond)
 import Graphics.Collage exposing (ngon, collage, filled, moveX, toForm)
 
 
@@ -31,7 +31,7 @@ init =
 
 
 xTranslation = 100
-duration = second
+duration = (500 * millisecond)
 
 
 
@@ -91,7 +91,7 @@ toOffset animationState =
       0
 
     Just {elapsedTime} ->
-      ease easeOutElastic float 0 xTranslation duration elapsedTime
+      ease easeOutQuint float 0 xTranslation duration elapsedTime
 
 
 {-
@@ -129,7 +129,7 @@ All empty squares will be visually defined by the above states.
 Now, this can be entirely debugged in isolation from module SequenceGame
 as proposed in the documentation for the Elm Architecture.  See
 "Example 3: A dynamic list of counters" for how SequenceGame can hold
-the additional ID for TranslateSquare so that TranslateSquare doesn't have
+the additional ID for Square so that Square doesn't have
 to know about its own position.
 
 In summary, we gain the following advantages:
@@ -147,10 +147,16 @@ view address model =
   let
     xTranslation =
       model.xTranslation + toOffset model.animationState
+    lPiece =
+      ngon 4 50
+        |> filled lightBrown
+        |> moveX -100
+        |> moveX xTranslation
+    piece =
+      ngon 4 50
+        |> filled lightBrown
+        |> moveX xTranslation
   in
-    ngon 4 50
-      |> filled lightBrown
-      |> moveX xTranslation
-      |> List.repeat 1
+    [ lPiece, piece ]
       |> collage 100 100
       |> Html.fromElement
