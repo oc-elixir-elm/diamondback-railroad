@@ -148,28 +148,9 @@ view address model =
     xTranslation =
       model.xTranslation + toOffset model.animationState
   in
-    {--}
     ngon 4 50
       |> filled lightBrown
       |> moveX xTranslation
       |> List.repeat 1
-      |> collage 200 200
+      |> collage 100 100
       |> Html.fromElement
-    --}
-
-    {--
-    svg
-      [ width "200", height "200", viewBox "0 0 300 300" ]
-      [ g [ transform ("translate(100, 100) translate(" ++ toString xTranslation ++ ", 0)")
-          , onClick (Signal.message address XTranslate)
-          ]
-          [
-             polygon
-               [ fill "#F0AD00",
-                 points "0,-50 50,0 0,50 -50,0"
-               ]
-               [],
-             text' [ fill "white", textAnchor "middle" ] [ text "*" ]
-          ]
-      ]
-    --}
