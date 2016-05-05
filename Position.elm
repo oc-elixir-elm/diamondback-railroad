@@ -5,60 +5,44 @@ import Graphics.Element exposing (..)
 import Color exposing (..)
 import Html exposing (..)
 
-type Role = Grid | Perimeter
-
 type alias PixelsAcross = Int
+type alias BorderColor = Color
+type alias FillColor = Color
 
 type alias Model =
-  { role : Role
-  , pixelsAcross : PixelsAcross
+  { borderColor : BorderColor
+  , fillColor : FillColor
+  , pixels : PixelsAcross
   }
 
-pixelsAcross = 50
-
-init : Model
-init =
-  { role = Grid
-  , pixelsAcross = pixelsAcross
+init : PixelsAcross -> BorderColor -> FillColor -> Model
+init pixelsSize borderColor fillColor =
+  { pixels = pixelsSize
+  , borderColor = borderColor
+  , fillColor = fillColor
   }
 
 
-type Action = UpdateGrid | UpdatePerimeter
-
+type Action = Nothing
 
 update : Action -> Model -> Model
-update action  model =
-  case action of
-    UpdateGrid ->
-      { model | role = Grid }
+update action model =
+  model
 
-    UpdatePerimeter ->
-      { model | role = Perimeter }
-
-{-
-createGrid : X -> Y -> Model
-createGrid x y =
-  init
-  |> .x x
-  |> .y y
-
-
-createPerimeter : X -> Y -> Model
-createPermiter x y =
-  createGrid
-    |> .role Perimeter
--}
-
-
+-- TODO: All you should need is the view here.
+-- Simply pass it the border color, fill color, and
+-- number of pixels across.  Then adjust the caller
+-- to simply have the view feed to main.
 view : Signal.Address Action -> Model -> Html
 view address model =
   let
+    pixels = model.pixels
     outline =
-      square pixelsAcross
-        |> outlined (solid darkBrown)
+      square pixels
+        |> outlined (solid model.borderColor)
     fill =
-      square pixelsAcross
-        |> filled lightBrown
+      square pixels
+        |> filled model.fillColor
   in
-    collage pixelsAcross pixelsAcross [fill, outline]
+    collage pixels pixels [fill, outline]
       |> Html.fromElement
