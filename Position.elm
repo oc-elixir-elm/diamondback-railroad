@@ -7,15 +7,11 @@ import Html exposing (..)
 
 type Role = Grid | Perimeter
 
-type alias X = Int
-type alias Y = Int
 type alias PixelsAcross = Int
 
 type alias Model =
   { role : Role
   , pixelsAcross : PixelsAcross
-  , x : X
-  , y : Y
   }
 
 pixelsAcross = 50
@@ -24,8 +20,6 @@ init : Model
 init =
   { role = Grid
   , pixelsAcross = pixelsAcross
-  , x = 0
-  , y = 0
   }
 
 
