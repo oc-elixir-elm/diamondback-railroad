@@ -1,31 +1,20 @@
 module Board where
 
-import Effects exposing (Effects)
+-- import Effects exposing (Effects)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Square
+import Position
+import Matrix
+import Maybe exposing (..)
 
---import Matrix exposing (..)
---import Maybe exposing (..)
-
--- MODEL
 
 type alias Model =
-    { left : Square.Model
-    , right : Square.Model
+    { Matrix Position
     }
 
---type alias GameMap = Matrix Cell
-
---type alias PieceId = Int
-
---type alias Piece = (PieceId, Location, Parent)
-
-
---type alias Parent = (Location Direction)
-
-init : (Model, Effects Action)
+{-
+init : Model
 init =
   let
     (left, leftFx) = Square.init
@@ -37,7 +26,15 @@ init =
         , Effects.map Right rightFx
         ]
     )
+-}
 
+pixelsAcross = 50
+
+init : Model
+init =
+  { Matrix.square 5 (\location -> Position.createGrid  location.col location.row )
+
+  }
 
 -- UPDATE
 

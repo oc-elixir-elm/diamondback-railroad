@@ -1,22 +1,14 @@
-import Effects exposing (Never)
-import Game exposing (init, update, view)
-import StartApp
+-- import Effects exposing (Never)
+-- import Game exposing (init, update, view)
+-- import Board exposing (init, update, view)
+import Position exposing (init, update, view)
+import StartApp.Simple exposing (start)
 import Task
 
 
-app =
-  StartApp.start
-    { init = init
+main =
+  start
+    { model = init
     , update = update
     , view = view
-    , inputs = []
     }
-
-
-main =
-  app.html
-
-
-port tasks : Signal (Task.Task Never ())
-port tasks =
-  app.tasks

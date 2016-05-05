@@ -1,20 +1,20 @@
-module Square (Model, Action, init, startTranslate, update, view) where
+module Piece (Model, Action, init, startTranslate, update, view) where
 
 import Color exposing (lightBrown)
 import Easing exposing (ease, easeOutQuint, float)
 import Effects exposing (Effects)
 import Html exposing (Html)
-import Svg exposing (svg, rect, polygon, g, text, text')
-import Svg.Attributes exposing (..)
-import Svg.Events exposing (onClick)
 import Time exposing (Time, second, millisecond)
 import Graphics.Collage exposing (ngon, collage, filled, moveX, toForm)
 
 
 -- MODEL
 
+type alias Role = Head | Middle | Tail
+
 type alias Model =
-    { xTranslation : Float
+    { role : Role
+    , xTranslation : Float
     , animationState : AnimationState
     }
 
@@ -25,7 +25,7 @@ type alias AnimationState =
 
 init : (Model, Effects Action)
 init =
-  ( { xTranslation = 0, animationState = Nothing }
+  ( { role = Head, xTranslation = 0, animationState = Nothing }
   , Effects.none
   )
 

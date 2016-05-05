@@ -1,14 +1,12 @@
 module Game where
 
 import Effects exposing (Effects)
-import Matrix
 import Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Sequence
-import Position
 import Window
 import Board
+import ControlPanel
 
 type alias WindowWidth = Int
 type alias WindowHeight = Int
