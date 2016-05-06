@@ -9,40 +9,17 @@ type alias PixelsAcross = Int
 type alias BorderColor = Color
 type alias FillColor = Color
 
-type alias Model =
-  { borderColor : BorderColor
-  , fillColor : FillColor
-  , pixels : PixelsAcross
-  }
-
-init : PixelsAcross -> BorderColor -> FillColor -> Model
-init pixelsSize borderColor fillColor =
-  { pixels = pixelsSize
-  , borderColor = borderColor
-  , fillColor = fillColor
-  }
-
-
-type Action = Nothing
-
-update : Action -> Model -> Model
-update action model =
-  model
-
--- TODO: All you should need is the view here.
--- Simply pass it the border color, fill color, and
--- number of pixels across.  Then adjust the caller
--- to simply have the view feed to main.
-view : Signal.Address Action -> Model -> Html
-view address model =
+view : PixelsAcross -> BorderColor -> FillColor -> Html
+view pixelsAcross borderColor fillColor =
   let
-    pixels = model.pixels
+    pixels =
+      toFloat pixelsAcross
     outline =
       square pixels
-        |> outlined (solid model.borderColor)
+        |> outlined (solid borderColor)
     fill =
       square pixels
-        |> filled model.fillColor
+        |> filled fillColor
   in
-    collage pixels pixels [fill, outline]
+    collage pixelsAcross pixelsAcross [fill, outline]
       |> Html.fromElement
