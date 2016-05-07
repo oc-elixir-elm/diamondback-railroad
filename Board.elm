@@ -1,13 +1,14 @@
 module Board where
 
 -- import Effects exposing (Effects)
-import Graphics.Elements exposing (..)
+import Graphics.Element exposing (..)
 -- import Html exposing (..)
 -- import Html.Attributes exposing (..)
 -- import Html.Events exposing (onClick)
 import Position
-import Matrix exposing (square)
+import Matrix
 import Maybe exposing (..)
+import Color exposing (lightBrown, darkBrown)
 
 
 -- UPDATE
@@ -24,18 +25,18 @@ type alias Dimensions = { width : Int, height : Int }
 maxPosLength : Int
 maxPosLength = 11
 
-locateGridPosition : Location -> Position
-locateGridPosition location =
+-- locateGridPosition : Location -> Position
+-- locateGridPosition location =
 
 
 
-createMatrix : HorizPosCount -> VertPosCount -> Matrix a
-createMatrix horizPosCount vertPosCount =
-  square
+createMatrix : Int  -> Matrix.Matrix Position
+createMatrix size  =
+  Matrix.square size (\location -> Position.view size lightBrown darkBrown)
 
 
-calculatePosSideInPixels : MaxPosLength -> Window -> Int
-calculatePosSideInPixels maxPosLength window =
+-- calculatePosSideInPixels : MaxPosLength -> Window -> Int
+-- calculatePosSideInPixels maxPosLength window =
 
 
 -- Something to start with:
@@ -52,5 +53,10 @@ view : Element
 view =
   let
     boardSideInPixels = smallestEdgeInPixels dimensions
-    posSideInPixels = boardSideInPixels / maxPosLength
+    posSideInPixels = boardSideInPixels // maxPosLength
+    boardMatrix = createMatrix posSideInPixels
+    -- Try returning one position
+    location = Matrix.loc 1 1
+    position = Matrix.get location
   in
+    position.view
