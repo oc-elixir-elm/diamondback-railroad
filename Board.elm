@@ -1,98 +1,56 @@
 module Board where
 
 -- import Effects exposing (Effects)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Graphics.Elements exposing (..)
+-- import Html exposing (..)
+-- import Html.Attributes exposing (..)
+-- import Html.Events exposing (onClick)
 import Position
-import Matrix
+import Matrix exposing (square)
 import Maybe exposing (..)
 
 
-type alias Model =
-    { Matrix Position
-    }
-
-{-
-init : Model
-init =
-  let
-    (left, leftFx) = Square.init
-    (right, rightFx) = Square.init
-  in
-    ( Model left right
-    , Effects.batch
-        [ Effects.map Left leftFx
-        , Effects.map Right rightFx
-        ]
-    )
--}
-
-pixelsAcross = 50
-
-init : Model
-init =
-  { Matrix.square 5 (\location -> Position.createGrid  location.col location.row )
-
-  }
-
 -- UPDATE
 
-type Action
-    = Left Square.Action
-    | Right Square.Action
-    | MoveBoth
-
-
-
-update : Action -> Model -> (Model, Effects Action)
-update action model =
-  case action of
-    Left act ->
-      let
-        (left, fx) = Square.update act model.left
-      in
-        ( Model left model.right
-        , Effects.map Left fx
-        )
-
-    Right act ->
-      let
-        (right, fx) = Square.update act model.right
-      in
-        ( Model model.left right
-        , Effects.map Right fx
-        )
-
-    MoveBoth ->
-      let
-        (left, leftFx) = Square.startTranslate model.left
-        (right, rightFx) = Square.startTranslate model.right
-      in
-        ( Model left right
-        , Effects.batch
-            [Effects.map Left leftFx
-            , Effects.map Right rightFx
-            ]
-        )
-
+-- Noting in UPDATE yet until we get seqeunce in
 
 -- VIEW
+type alias PosCount = Int
+type alias BoardSideInPixels = Int
+type alias Width = Int
+type alias Height = Int
+type alias Dimensions = { width : Int, height : Int }
+
+maxPosLength : Int
+maxPosLength = 11
+
+locateGridPosition : Location -> Position
+locateGridPosition location =
 
 
-(=>) = (,)
 
-       {-
-type Direction = MoveLeft | MoveUp |  MoveRight | MoveDown
+createMatrix : HorizPosCount -> VertPosCount -> Matrix a
+createMatrix horizPosCount vertPosCount =
+  square
 
-moves : Signal.Mailbox Direction
-moves = Signal.mailbox MoveLeft
--}
 
-view : Signal.Address Action -> Model -> Html
-view address model =
-  div [ style [ "display" => "flex" ] ]
-    [ Square.view (Signal.forwardTo address Left) model.left
-    , Square.view (Signal.forwardTo address Right) model.right
-    , button [ onClick address MoveBoth ] [ text "Right" ]
-    ]
+calculatePosSideInPixels : MaxPosLength -> Window -> Int
+calculatePosSideInPixels maxPosLength window =
+
+
+-- Something to start with:
+dimensions : Dimensions
+dimensions = { width = 1000, height = 1000 }
+
+
+smallestEdgeInPixels : Dimensions -> Int
+smallestEdgeInPixels dimensions =
+  if dimensions.width > dimensions.height then dimensions.height else dimensions.width
+
+
+view : Element
+view =
+  let
+    boardSideInPixels = smallestEdgeInPixels dimensions
+    posSideInPixels = boardSideInPixels / maxPosLength
+  in
