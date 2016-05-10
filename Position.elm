@@ -1,14 +1,15 @@
 module Position  where
 
 import Graphics.Collage exposing (..)
-import Graphics.Element exposing (..)
+import Graphics.Element
 import Color exposing (..)
+-- import Html exposing ()
 
 type alias PixelsAcross = Int
 type alias BorderColor = Color
 type alias FillColor = Color
 
-view : PixelsAcross -> BorderColor -> FillColor -> Element
+view : PixelsAcross -> BorderColor -> FillColor -> Graphics.Element.Element
 view pixelsAcross borderColor fillColor =
   let
     pixels =

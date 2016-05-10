@@ -25,28 +25,39 @@ type alias Dimensions = { width : Int, height : Int }
 maxPosLength : Int
 maxPosLength = 11
 
+windowSizePixels : Int
+windowSizePixels = 770
+
 -- locateGridPosition : Location -> Position
 -- locateGridPosition location =
 
 
-
+{-}
 createMatrix : Int  -> Matrix.Matrix Position
 createMatrix size  =
   Matrix.square size (\location -> Position.view size lightBrown darkBrown)
+-}
 
-
--- calculatePosSideInPixels : MaxPosLength -> Window -> Int
--- calculatePosSideInPixels maxPosLength window =
+{- No need for this until we have dynamically resizeing windows
+calculatePosSideInPixels : MaxPosLength -> Window -> Int
+calculatePosSideInPixels maxPosLength window =
+-}
 
 
 -- Something to start with:
 dimensions : Dimensions
-dimensions = { width = 1000, height = 1000 }
+dimensions = { width = windowSizePixels, height = windowSizePixels }
 
 
 smallestEdgeInPixels : Dimensions -> Int
 smallestEdgeInPixels dimensions =
   if dimensions.width > dimensions.height then dimensions.height else dimensions.width
+
+
+makeBoardView : Int (Matrix Int)
+makeBoardView pixelsSize matrix =
+
+
 
 
 view : Element
@@ -55,8 +66,5 @@ view =
     boardSideInPixels = smallestEdgeInPixels dimensions
     posSideInPixels = boardSideInPixels // maxPosLength
     boardMatrix = createMatrix posSideInPixels
-    -- Try returning one position
-    location = Matrix.loc 1 1
-    position = Matrix.get location
+    makeBoardView posSideInPixels boardMatrix
   in
-    position.view
