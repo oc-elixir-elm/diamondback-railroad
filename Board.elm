@@ -26,12 +26,15 @@ maxPosLength : Int
 maxPosLength = 11
 
 windowSizePixels : Int
-windowSizePixels = 770
+windowSizePixels = 7840
 
 
-createMatrix : Int  -> Matrix Element
-createMatrix size  =
-  Matrix.square size (\location -> Position.view size lightBrown darkBrown)
+createMatrix : PosCount -> BoardSideInPixels -> Matrix Element
+createMatrix posCount boardSideInPixels =
+  let
+    posSideInPixels = boardSideInPixels // maxPosLength
+  in
+    Matrix.square posCount (\location -> Position.view posSideInPixels lightBrown darkBrown)
 
 
 {- No need for this until we have dynamically resizeing windows
@@ -54,9 +57,9 @@ makeBoardView : Matrix Element -> Element
 makeBoardView matrix =
   let
     rows = Matrix.toList matrix
-    viewRows = List.map (Graphics.Element.flow right rows)
+    viewRows = List.map (Graphics.Element.flow right) rows
   in
-    List.map Graphics.Element.flow down viewRows
+    Graphics.Element.flow down viewRows
 
 
 view : Element
@@ -64,6 +67,6 @@ view =
   let
     boardSideInPixels = smallestEdgeInPixels dimensions
     posSideInPixels = boardSideInPixels // maxPosLength
-    boardMatrix = createMatrix posSideInPixels
+    boardMatrix = createMatrix maxPosLength posSideInPixels
   in
     makeBoardView boardMatrix
