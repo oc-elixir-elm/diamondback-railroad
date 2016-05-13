@@ -1,4 +1,4 @@
-module Position  where
+module Position  exposing (view)
 
 import Graphics.Collage exposing (..)
 import Graphics.Element

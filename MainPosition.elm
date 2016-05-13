@@ -1,5 +1,6 @@
 import Graphics.Element
-import Position
+import
+  Position
 import Color exposing (..)
 
 
