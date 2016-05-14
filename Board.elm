@@ -21,85 +21,85 @@ import Color exposing (Color, lightBrown, darkBrown)
 
 
 type alias PosCount =
-    Int
+  Int
 
 
 type alias BoardSideInPixels =
-    Int
+  Int
 
 
 type alias Width =
-    Int
+  Int
 
 
 type alias Height =
-    Int
+  Int
 
 
 type alias Dimensions =
-    ( Width, Height )
+  ( Width, Height )
 
 
 maxPosLength : PosCount
 maxPosLength =
-    11
+  11
 
 
 borderColor : Color
 borderColor =
-    darkBrown
+  darkBrown
 
 
 fillColor : Color
 fillColor =
-    lightBrown
+  lightBrown
 
 
 borderThickness : Int
 borderThickness =
-    10
+  10
 
 
 createMatrix : PosCount -> BoardSideInPixels -> Matrix Element
 createMatrix posCount boardSideInPixels =
-    let
-        posSideInPixels =
-            boardSideInPixels // maxPosLength
-    in
-        Matrix.square posCount (\location -> Position.view posSideInPixels borderColor fillColor)
+  let
+    posSideInPixels =
+      boardSideInPixels // maxPosLength
+  in
+    Matrix.square posCount (\location -> Position.view posSideInPixels borderColor fillColor)
 
 
 smallestEdgeInPixels : Dimensions -> Int
 smallestEdgeInPixels ( x, y ) =
-    if x > y then
-        y
-    else
-        x
+  if x > y then
+    y
+  else
+    x
 
 
 makeBoardView : Matrix Element -> Element
 makeBoardView matrix =
-    let
-        rows =
-            Matrix.toList matrix
+  let
+    rows =
+      Matrix.toList matrix
 
-        viewRows =
-            List.map (Graphics.Element.flow right) rows
-    in
-        Graphics.Element.flow down viewRows
+    viewRows =
+      List.map (Graphics.Element.flow right) rows
+  in
+    Graphics.Element.flow down viewRows
 
 
 view : ( Int, Int ) -> Element
 view ( w, h ) =
-    let
-        boardWithBorder =
-            smallestEdgeInPixels ( w, h )
+  let
+    boardWithBorder =
+      smallestEdgeInPixels ( w, h )
 
-        boardMatrix =
-            createMatrix maxPosLength (boardWithBorder - (2 * borderThickness))
+    boardMatrix =
+      createMatrix maxPosLength (boardWithBorder - (2 * borderThickness))
 
-        myBoard =
-            makeBoardView boardMatrix
-                |> container boardWithBorder boardWithBorder middle
-    in
-        color borderColor myBoard
+    myBoard =
+      makeBoardView boardMatrix
+        |> container boardWithBorder boardWithBorder middle
+  in
+    color borderColor myBoard
