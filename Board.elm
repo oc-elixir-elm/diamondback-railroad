@@ -8,7 +8,7 @@ import Graphics.Element exposing (..)
 import Position
 import Matrix exposing (..)
 import Maybe exposing (..)
-import Color exposing (lightBrown, darkBrown)
+import Color exposing (Color, lightBrown, darkBrown)
 
 
 -- UPDATE
@@ -20,18 +20,24 @@ type alias PosCount = Int
 type alias BoardSideInPixels = Int
 type alias Width = Int
 type alias Height = Int
-type alias Dimensions = (Int, Int)
+type alias Dimensions = (Width, Height)
 
-maxPosLength : Int
+
+maxPosLength : PosCount
 maxPosLength = 11
 
+borderColor : Color
+borderColor = darkBrown
+
+fillColor : Color
+fillColor = lightBrown
 
 createMatrix : PosCount -> BoardSideInPixels -> Matrix Element
 createMatrix posCount boardSideInPixels =
   let
     posSideInPixels = boardSideInPixels // maxPosLength
   in
-    Matrix.square posCount (\location -> Position.view posSideInPixels darkBrown lightBrown)
+    Matrix.square posCount (\location -> Position.view posSideInPixels borderColor fillColor)
 
 
 smallestEdgeInPixels : Dimensions -> Int
