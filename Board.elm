@@ -40,6 +40,12 @@ type alias Dimensions =
   ( Width, Height )
 
 
+type alias Model =
+  (Matrix Position
+   -- I'm sure something will need to be added.
+  )
+
+
 maxPosLength : PosCount
 maxPosLength =
   11

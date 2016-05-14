@@ -1,3 +1,5 @@
+module Main (..) where
+
 import Graphics.Element exposing (..)
 import Window
 
@@ -7,6 +9,6 @@ main =
   Signal.map view Window.dimensions
 
 
-view : (Int,Int) -> Element
-view (w,h) =
-  container w h middle (show (toString (w, h)))
+view : ( Int, Int ) -> Element
+view ( w, h ) =
+  container w h middle (show (toString ( w, h )))

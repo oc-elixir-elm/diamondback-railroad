@@ -1,9 +1,12 @@
 module Sequence (Model, Action, init) where
 
+import Piece exposing (Piece)
 
-type alias Role = Grid | Perimeter
 
 type alias Model =
-    { Role
-    , Position
-    }
+  List Piece
+
+
+init : List Piece
+init =
+  []

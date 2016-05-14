@@ -1,3 +1,5 @@
+module Main (..) where
+
 import Graphics.Element exposing (..)
 import Window
 import Board
@@ -9,6 +11,6 @@ main =
   Signal.map view Window.dimensions
 
 
-view : (Int,Int) -> Element
-view (w,h) =
-  Board.view (w,h)
+view : ( Int, Int ) -> Element
+view ( w, h ) =
+  Board.view ( w, h )
