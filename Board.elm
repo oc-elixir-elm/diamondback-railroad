@@ -1,69 +1,112 @@
 module Board exposing (..)
 
+
 -- import Effects exposing (Effects)
+
 import Graphics.Element exposing (..)
+
+
 -- import Html exposing (..)
 -- import Html.Attributes exposing (..)
 -- import Html.Events exposing (onClick)
+
 import Position
 import Matrix exposing (..)
 import Maybe exposing (..)
-import Color exposing (lightBrown, darkBrown)
+import Color exposing (Color, lightBrown, darkBrown)
 
 
 -- UPDATE
-
 -- Noting in UPDATE yet until we get seqeunce in
-
 -- VIEW
-type alias PosCount = Int
-type alias BoardSideInPixels = Int
-type alias Width = Int
-type alias Height = Int
-type alias Dimensions = { width : Int, height : Int }
-
-maxPosLength : Int
-maxPosLength = 11
-
-windowSizePixels : Int
-windowSizePixels = 770
 
 
-createMatrix : Int  -> Matrix Element
-createMatrix size  =
-  Matrix.square size (\location -> Position.view size lightBrown darkBrown)
+type alias PosCount =
+  Int
 
 
-{- No need for this until we have dynamically resizeing windows
-calculatePosSideInPixels : MaxPosLength -> Window -> Int
-calculatePosSideInPixels maxPosLength window =
--}
+type alias BoardSideInPixels =
+  Int
 
 
--- Something to start with:
-dimensions : Dimensions
-dimensions = { width = windowSizePixels, height = windowSizePixels }
+type alias Width =
+  Int
+
+
+type alias Height =
+  Int
+
+
+type alias Dimensions =
+  ( Width, Height )
+
+
+type alias Model =
+  (Matrix Position
+   -- I'm sure something will need to be added.
+  )
+
+
+maxPosLength : PosCount
+maxPosLength =
+  11
+
+
+borderColor : Color
+borderColor =
+  darkBrown
+
+
+fillColor : Color
+fillColor =
+  lightBrown
+
+
+borderThickness : Int
+borderThickness =
+  10
+
+
+createMatrix : PosCount -> BoardSideInPixels -> Matrix Element
+createMatrix posCount boardSideInPixels =
+  let
+    posSideInPixels =
+      boardSideInPixels // maxPosLength
+  in
+    Matrix.square posCount (\location -> Position.view posSideInPixels borderColor fillColor)
 
 
 smallestEdgeInPixels : Dimensions -> Int
-smallestEdgeInPixels dimensions =
-  if dimensions.width > dimensions.height then dimensions.height else dimensions.width
+smallestEdgeInPixels ( x, y ) =
+  if x > y then
+    y
+  else
+    x
 
 
 makeBoardView : Matrix Element -> Element
 makeBoardView matrix =
   let
-    rows = Matrix.toList matrix
-    viewRows = List.map (Graphics.Element.flow right rows)
+    rows =
+      Matrix.toList matrix
+
+    viewRows =
+      List.map (Graphics.Element.flow right) rows
   in
-    List.map Graphics.Element.flow down viewRows
+    Graphics.Element.flow down viewRows
 
 
-view : Element
-view =
+view : ( Int, Int ) -> Element
+view ( w, h ) =
   let
-    boardSideInPixels = smallestEdgeInPixels dimensions
-    posSideInPixels = boardSideInPixels // maxPosLength
-    boardMatrix = createMatrix posSideInPixels
+    boardWithBorder =
+      smallestEdgeInPixels ( w, h )
+
+    boardMatrix =
+      createMatrix maxPosLength (boardWithBorder - (2 * borderThickness))
+
+    myBoard =
+      makeBoardView boardMatrix
+        |> container boardWithBorder boardWithBorder middle
   in
-    makeBoardView boardMatrix
+    color borderColor myBoard

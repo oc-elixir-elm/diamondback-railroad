@@ -1,4 +1,4 @@
-module Game where
+module Game (..) where
 
 import Effects exposing (Effects)
 import Html
@@ -7,20 +7,28 @@ import Html.Events exposing (onClick)
 import Window
 import Board
 import ControlPanel
+import Sequence
 
-type alias WindowWidth = Int
-type alias WindowHeight = Int
+
+type alias WindowWidth =
+  Int
+
+
+type alias WindowHeight =
+  Int
+
 
 type alias Model =
-  { WindowWidth
-  , WindowHeight
-  , Matrix Position
-  , Sequence
-  }
+  ( WindowWidth, WindowHeight, Board, Sequence )
 
 
-init : (Model, Effects Action)
+
+-- Will have to add Board below
+
+
+init : ( Model, Effects Action )
 init =
-  { Window.width
+  ( Window.width
   , Window.height
-  ,
+  , Sequence.init
+  )

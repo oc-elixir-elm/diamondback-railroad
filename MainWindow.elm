@@ -2,8 +2,6 @@ module Main (..) where
 
 import Graphics.Element exposing (..)
 import Window
-import Board
-import Color exposing (..)
 
 
 main : Signal Element
@@ -13,4 +11,4 @@ main =
 
 view : ( Int, Int ) -> Element
 view ( w, h ) =
-  Board.view ( w, h )
+  container w h middle (show (toString ( w, h )))
