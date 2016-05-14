@@ -32,6 +32,10 @@ borderColor = darkBrown
 fillColor : Color
 fillColor = lightBrown
 
+borderThickness : Int
+borderThickness = 10
+
+
 createMatrix : PosCount -> BoardSideInPixels -> Matrix Element
 createMatrix posCount boardSideInPixels =
   let
@@ -57,7 +61,8 @@ makeBoardView matrix =
 view : (Int,Int) -> Element
 view (w,h) =
   let
-    boardSideInPixels = smallestEdgeInPixels (w,h)
-    boardMatrix = createMatrix maxPosLength boardSideInPixels
+    boardWithBorder = smallestEdgeInPixels (w,h)
+    boardMatrix = createMatrix maxPosLength (boardWithBorder - (2 * borderThickness))
+    myBoard = container boardWithBorder boardWithBorder middle (makeBoardView boardMatrix)
   in
-    makeBoardView boardMatrix
+    color borderColor myBoard
