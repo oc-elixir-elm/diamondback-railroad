@@ -20,13 +20,10 @@ type alias PosCount = Int
 type alias BoardSideInPixels = Int
 type alias Width = Int
 type alias Height = Int
-type alias Dimensions = { width : Int, height : Int }
+type alias Dimensions = (Int, Int)
 
 maxPosLength : Int
 maxPosLength = 11
-
-windowSizePixels : Int
-windowSizePixels = 7840
 
 
 createMatrix : PosCount -> BoardSideInPixels -> Matrix Element
@@ -34,23 +31,12 @@ createMatrix posCount boardSideInPixels =
   let
     posSideInPixels = boardSideInPixels // maxPosLength
   in
-    Matrix.square posCount (\location -> Position.view posSideInPixels lightBrown darkBrown)
-
-
-{- No need for this until we have dynamically resizeing windows
-calculatePosSideInPixels : MaxPosLength -> Window -> Int
-calculatePosSideInPixels maxPosLength window =
--}
-
-
--- Something to start with:
-dimensions : Dimensions
-dimensions = { width = windowSizePixels, height = windowSizePixels }
+    Matrix.square posCount (\location -> Position.view posSideInPixels darkBrown lightBrown)
 
 
 smallestEdgeInPixels : Dimensions -> Int
-smallestEdgeInPixels dimensions =
-  if dimensions.width > dimensions.height then dimensions.height else dimensions.width
+smallestEdgeInPixels (x,y) =
+  if x > y then y else x
 
 
 makeBoardView : Matrix Element -> Element
@@ -62,11 +48,10 @@ makeBoardView matrix =
     Graphics.Element.flow down viewRows
 
 
-view : Element
-view =
+view : (Int,Int) -> Element
+view (w,h) =
   let
-    boardSideInPixels = smallestEdgeInPixels dimensions
-    posSideInPixels = boardSideInPixels // maxPosLength
-    boardMatrix = createMatrix maxPosLength posSideInPixels
+    boardSideInPixels = smallestEdgeInPixels (w,h)
+    boardMatrix = createMatrix maxPosLength boardSideInPixels
   in
     makeBoardView boardMatrix

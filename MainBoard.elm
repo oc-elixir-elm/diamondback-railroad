@@ -10,4 +10,4 @@ main =
 
 view : (Int,Int) -> Element
 view (w,h) =
-  container w h middle Board.view
+  container w h middle (Board.view (w,h))
