@@ -1,11 +1,19 @@
-module Position  exposing (view)
+module Position exposing (view)
 
-import Graphics.Collage exposing (..)
-import Graphics.Element
+import Html exposing (..)
+import Html.App as Html
+import Svg exposing (..)
+import Svg.Attributes exposing (..)
+import PositionType
 import Color exposing (..)
 
-
--- import Html exposing ()
+main =
+  Html.program
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
 
 
 type alias PixelsAcross =
@@ -19,6 +27,26 @@ type alias BorderColor =
 type alias FillColor =
   Color
 
+-- MODEL
+
+type alias Model = (PositionType, Location)
+
+
+-- UPDATE
+
+type Msg = Reset
+
+update : Msg -> Model -> Model
+update msg model =
+  case msg of
+    Reset ->
+      model
+
+
+-- VIEW
+
+view : Model -> Html Msg
+view model =
 
 view : PixelsAcross -> BorderColor -> FillColor -> Graphics.Element.Element
 view pixelsAcross borderColor fillColor =

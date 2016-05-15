@@ -1,6 +1,5 @@
 module Board exposing (..)
 
-
 -- import Effects exposing (Effects)
 
 import Graphics.Element exposing (..)

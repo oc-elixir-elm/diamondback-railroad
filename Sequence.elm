@@ -1,4 +1,4 @@
-module Sequence (Model, Action, init) where
+module Sequence exposing (Model, Action, init)
 
 import Piece exposing (Piece)
 

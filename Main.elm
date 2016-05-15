@@ -2,7 +2,7 @@
 -- import Game exposing (init, update, view)
 
 
-module Main (..) where
+module Main exposing (..)
 
 import Board exposing (view)
 

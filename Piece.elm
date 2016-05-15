@@ -1,4 +1,4 @@
-module Piece (Model, Action, init, startTranslate, update, view) where
+module Piece exposing (Model, Action, init, startTranslate, update, view)
 
 import Color exposing (lightBrown)
 import Easing exposing (ease, easeOutQuint, float)

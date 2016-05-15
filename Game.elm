@@ -1,4 +1,4 @@
-module Game (..) where
+module Game exposing (..)
 
 import Effects exposing (Effects)
 import Html

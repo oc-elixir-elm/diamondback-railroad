@@ -1,8 +1,6 @@
-module Main (..) where
+module MainPosition exposing (..)
 
-import Graphics.Element
-import
-  Position
+import Position exposing (..)
 import Color exposing (..)
 
 
