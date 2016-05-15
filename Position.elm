@@ -7,6 +7,7 @@ import Svg.Attributes exposing (..)
 import PositionType
 import Color exposing (..)
 
+
 main =
   Html.program
     { init = init
@@ -27,14 +28,22 @@ type alias BorderColor =
 type alias FillColor =
   Color
 
+
+
 -- MODEL
 
-type alias Model = (PositionType, Location)
+
+type alias Model =
+  ( PositionType, Location )
+
 
 
 -- UPDATE
 
-type Msg = Reset
+
+type Msg
+  = Reset
+
 
 update : Msg -> Model -> Model
 update msg model =
@@ -43,23 +52,32 @@ update msg model =
       model
 
 
+
 -- VIEW
+
 
 view : Model -> Html Msg
 view model =
+  text "hello, world"
 
-view : PixelsAcross -> BorderColor -> FillColor -> Graphics.Element.Element
-view pixelsAcross borderColor fillColor =
-  let
-    pixels =
-      toFloat pixelsAcross
 
-    outline =
-      square pixels
-        |> outlined (solid borderColor)
 
-    fill =
-      square pixels
-        |> filled fillColor
-  in
-    collage pixelsAcross pixelsAcross [ fill, outline ]
+{-
+
+   view : PixelsAcross -> BorderColor -> FillColor -> Graphics.Element.Element
+   view pixelsAcross borderColor fillColor =
+     let
+       pixels =
+         toFloat pixelsAcross
+
+       outline =
+         square pixels
+           |> outlined (solid borderColor)
+
+       fill =
+         square pixels
+           |> filled fillColor
+     in
+       collage pixelsAcross pixelsAcross [ fill, outline ]
+
+-}
