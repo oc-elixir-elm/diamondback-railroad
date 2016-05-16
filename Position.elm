@@ -4,8 +4,10 @@ import Html exposing (..)
 import Html.App as Html
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import PositionType
+import PositionType exposing (..)
 import Color exposing (..)
+import Matrix exposing (Location, loc)
+import Time exposing (Time, second)
 
 
 main =
@@ -37,29 +39,38 @@ type alias Model =
   ( PositionType, Location )
 
 
+init : ( Model, Cmd Msg )
+init =
+  (( PositionType.assignGrid, loc 1 1 ), Cmd.none)
+
 
 -- UPDATE
 
 
 type Msg
-  = Reset
+  = Tick Time
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Reset ->
-      model
+    Tick newTime ->
+      (model, Cmd.none)
 
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Time.every second Tick
 
 
 -- VIEW
 
-
 view : Model -> Html Msg
 view model =
-  text "hello, world"
-
+  Html.text "Hello, World"
 
 
 {-
