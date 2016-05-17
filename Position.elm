@@ -31,7 +31,9 @@ type alias FillColor =
   Color
 
 
-pixelsAcross = 100
+pixelsAcross =
+  100
+
 
 
 -- MODEL
@@ -43,7 +45,8 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-  (( PositionType.assignGrid, loc 1 1 ), Cmd.none)
+  ( ( PositionType.assignGrid, loc 1 1 ), Cmd.none )
+
 
 
 -- UPDATE
@@ -53,11 +56,12 @@ type Msg
   = Tick Time
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     Tick newTime ->
-      (model, Cmd.none)
+      ( model, Cmd.none )
+
 
 
 -- SUBSCRIPTIONS
@@ -68,13 +72,21 @@ subscriptions model =
   Time.every second Tick
 
 
+
 -- VIEW
 
 
 view : Model -> Html Msg
 view model =
-  Svg.svg
-    [ version "1.1", x "0", y "0", viewBox "0 0 100 100"
-    ]
-    [ polygon [ fill "#F0AD00", points "50 0, 100 50, 50 100, 0 50" ] []
-    ]
+  let
+    polys =
+      polygon [ fill "#F0AD00", points "50 0, 100 50, 50 100, 0 50" ] []
+  in
+    Svg.svg
+      [ version "1.1"
+      , x "0"
+      , y "0"
+      , viewBox "0 0 100 100"
+      ]
+      [ polys
+      ]
