@@ -3,39 +3,52 @@ module Position exposing (init, subscriptions, update, view)
 import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import PositionType exposing (..)
 import Color exposing (..)
 import Matrix exposing (Location, loc)
 import Time exposing (Time, second)
 
 
-type alias PixelsAcross =
-  Int
+-- CONSTANTS
 
 
-type alias BorderColor =
-  Color
+lightBrown =
+  "peru"
 
 
-type alias FillColor =
-  Color
-
-
-pixelsAcross =
-  100
+darkBrown =
+  "saddlebrown"
 
 
 
 -- MODEL
 
 
+type Role
+  = Head
+  | Link
+  | Tail
+
+
+type Square
+  = Perimeter
+  | Grid
+  | Piece Role
+
+
 type alias Model =
-  ( PositionType, Location )
+  ( Square, Location )
 
 
 init : ( Model, Cmd Msg )
 init =
-  ( ( PositionType.assignGrid, loc 1 1 ), Cmd.none )
+  let
+    square =
+      Grid
+
+    location =
+      loc 1 1
+  in
+    ( ( square, location ), Cmd.none )
 
 
 
@@ -70,7 +83,23 @@ view : Model -> Html Msg
 view model =
   let
     polys =
-      polygon [ fill "#F0AD00", points "50 0, 100 50, 50 100, 0 50" ] []
+      polygon
+        [ fill lightBrown
+        , points "50 0, 100 50, 50 100, 0 50"
+        , stroke "indianred"
+        , strokeWidth "3"
+        ]
+        []
+
+    rectangle =
+      rect
+        [ width "100"
+        , height "100"
+        , fill "wheat"
+        , stroke darkBrown
+        , strokeWidth "5"
+        ]
+        []
   in
     Svg.svg
       [ version "1.1"
@@ -78,5 +107,6 @@ view model =
       , y "0"
       , viewBox "0 0 100 100"
       ]
-      [ polys
+      [ rectangle
+      , polys
       ]
