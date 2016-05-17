@@ -100,6 +100,15 @@ view model =
         , strokeWidth "5"
         ]
         []
+
+    myText =
+      text'
+        [ x "50"
+        , y "50"
+        , fill "black"
+        , fontSize "16"
+        ]
+        [ text "99" ]
   in
     Svg.svg
       [ version "1.1"
@@ -109,4 +118,5 @@ view model =
       ]
       [ rectangle
       , polys
+      , myText
       ]
