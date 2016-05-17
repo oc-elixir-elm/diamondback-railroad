@@ -103,10 +103,12 @@ view model =
 
     myText =
       text'
-        [ x "50"
-        , y "50"
+        [ x "50%"
+        , y "50%"
         , fill "black"
-        , fontSize "16"
+        , fontSize "48"
+        , alignmentBaseline "middle"
+        , textAnchor "middle"
         ]
         [ text "99" ]
   in
