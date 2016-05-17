@@ -1,22 +1,12 @@
-module Position exposing (view)
+module Position exposing (init, subscriptions, update, view)
 
-import Html exposing (..)
-import Html.App as Html
+import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import PositionType exposing (..)
 import Color exposing (..)
 import Matrix exposing (Location, loc)
 import Time exposing (Time, second)
-
-
-main =
-  Html.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
 
 
 type alias PixelsAcross =

@@ -1,12 +1,14 @@
 module MainPosition exposing (..)
 
-import Position exposing (..)
-import Color exposing (..)
-
-
-pixelsAcross =
-  70
+import Html exposing (Html)
+import Html.App as Html
+import Position exposing (init, subscriptions, update, view)
 
 
 main =
-  Position.view pixelsAcross darkBrown lightBrown
+  Html.program
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
