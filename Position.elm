@@ -19,6 +19,10 @@ darkBrown =
   "saddlebrown"
 
 
+edgeThickness =
+  3
+
+
 
 -- MODEL
 
@@ -82,12 +86,29 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   let
+    plusIndent =
+      toString edgeThickness
+
+    minusIndent =
+      toString (100 - edgeThickness)
+
+    polyPoints =
+      "50 "
+        ++ plusIndent
+        ++ ", "
+        ++ minusIndent
+        ++ " 50, 50 "
+        ++ minusIndent
+        ++ ", "
+        ++ plusIndent
+        ++ " 50"
+
     polys =
       polygon
         [ fill lightBrown
-        , points "50 0, 100 50, 50 100, 0 50"
+        , points polyPoints
         , stroke "indianred"
-        , strokeWidth "3"
+        , strokeWidth (toString edgeThickness)
         ]
         []
 
