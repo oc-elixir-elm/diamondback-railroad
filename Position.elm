@@ -124,8 +124,8 @@ view model =
 
     myText =
       text'
-        [ x "50%"
-        , y "50%"
+        [ x "50"
+        , y "50"
         , fill "black"
         , fontSize "48"
         , alignmentBaseline "middle"
@@ -137,7 +137,7 @@ view model =
       [ version "1.1"
       , x "0"
       , y "0"
-      , viewBox "0 0 100 100"
+      , viewBox "0 0 1000 1000"
       ]
       [ rectangle
       , polys
