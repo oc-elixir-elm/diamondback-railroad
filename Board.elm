@@ -1,4 +1,4 @@
-module Board exposing (..)
+module Board exposing (init, view, update, subscriptions)
 
 -- import Effects exposing (Effects)
 -- import Graphics.Element exposing (..)
@@ -13,10 +13,15 @@ import Position
 import Matrix exposing (Matrix)
 import Maybe exposing (..)
 import Color exposing (Color, lightBrown, darkBrown)
+import Time exposing (Time, second)
 
 
 -- UPDATE
--- Noting in UPDATE yet until we get seqeunce in
+
+update : Msg -> Model -> Model
+update msg model =
+    model
+
 -- VIEW
 -- Number of positions on the side of the boafd
 
@@ -98,13 +103,18 @@ makeBoardView matrix =
 -}
 
 
-render_rows : Html msg
 render_rows =
   text " square"
 
+init : (Model, Cmd Msg)
+init =
+    (createMatrix maxPosLength (boardWithBorder - (2 * borderThickness)), Cmd.none)
 
-view : ( Int, Int ) -> Html msg
-view ( w, h ) =
+type Msg
+  = Tick Time
+
+view : Model -> Html Msg
+view model =
 {-
   let
     boardWithBorder =
@@ -121,7 +131,6 @@ view ( w, h ) =
     --    color borderColor myBoard
 -}
   let
-    matrix = createMatrix maxPosLength (boardWithBorder - (2 * borderThickness))
     rows =
       Matrix.toList matrix
   in
