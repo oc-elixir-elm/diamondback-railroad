@@ -1,17 +1,11 @@
 module Main exposing (..)
+import Board exposing (init, view, update, subscriptions)
+import Html.App as Html
 
-import Html exposing (..)
--- import Graphics.Element exposing (..)
--- import Window
-import Board
-import Color exposing (..)
-
-
-main : Html msg
 main =
-  view (1, 1)
-
-
-view : ( Int, Int ) -> Html msg
-view ( w, h ) =
-  Board.view ( w, h )
+  Html.program
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
