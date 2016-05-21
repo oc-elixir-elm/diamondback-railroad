@@ -102,7 +102,7 @@ subscriptions model =
 myDivStyle : Attribute msg
 myDivStyle =
   Html.Attributes.style
-    [ ( "width", "100px" )
+    [ ( "width", "200px" )
     , ( "height", "100px" )
     , ( "position", "absolute" )
     , ( "left", "0px" )
@@ -160,18 +160,29 @@ view model =
         , textAnchor "middle"
         ]
         [ text "99" ]
+
+    mySvg =
+      Svg.svg
+        [ version "1.1"
+        , Svg.Attributes.width "100"
+        , Svg.Attributes.height "100"
+        , viewBox "0 0 100 100"
+        ]
+        [ rectangle
+        , polys
+        , myText
+        ]
+    mySpan =
+      span
+        [ myDivStyle
+        ]
+        [ span []
+            [ mySvg
+            ]
+        , span []
+            [ mySvg
+            ]
+      ]
+
   in
-    span
-      [ myDivStyle
-      ]
-      [ Svg.svg
-          [ version "1.1"
-          , Svg.Attributes.width "100"
-          , Svg.Attributes.height "100"
-          , viewBox "0 0 100 100"
-          ]
-          [ rectangle
-          , polys
-          , myText
-          ]
-      ]
+    mySpan
