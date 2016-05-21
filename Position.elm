@@ -1,4 +1,4 @@
-module Position exposing (init, subscriptions, update, view)
+module Position exposing (Model, init, subscriptions, update, view)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (style)
@@ -104,9 +104,9 @@ myDivStyle =
   Html.Attributes.style
     [ ( "width", "200px" )
     , ( "height", "100px" )
-    -- , ( "position", "absolute" )
-    , ( "left", "0px" )
-    , ( "top", "0px" )
+--    , ( "position", "absolute" )
+--    , ( "left", "0px" )
+--    , ( "top", "0px" )
     , ( "backgroundColor", "red" )
     ]
 

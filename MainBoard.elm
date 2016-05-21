@@ -1,16 +1,17 @@
 module Main exposing (..)
 
-import Graphics.Element exposing (..)
-import Window
+import Html exposing (..)
+-- import Graphics.Element exposing (..)
+-- import Window
 import Board
 import Color exposing (..)
 
 
-main : Signal Element
+main : Html msg
 main =
-  Signal.map view Window.dimensions
+  view (1, 1)
 
 
-view : ( Int, Int ) -> Element
+view : ( Int, Int ) -> Html msg
 view ( w, h ) =
   Board.view ( w, h )
