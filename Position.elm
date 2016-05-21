@@ -1,6 +1,6 @@
 module Position exposing (init, subscriptions, update, view)
 
-import Html exposing (Html, div)
+import Html exposing (Html, div, span)
 import Html.Attributes exposing (style)
 import Svg exposing (..)
 import Svg.Attributes
@@ -104,7 +104,7 @@ myDivStyle =
   Html.Attributes.style
     [ ( "width", "100px" )
     , ( "height", "100px" )
-      -- , ( "position", "absolute" )
+    , ( "position", "absolute" )
     , ( "left", "0px" )
     , ( "top", "0px" )
     , ( "backgroundColor", "red" )
@@ -161,7 +161,7 @@ view model =
         ]
         [ text "99" ]
   in
-    div
+    span
       [ myDivStyle
       ]
       [ Svg.svg
