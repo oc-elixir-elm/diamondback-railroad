@@ -104,7 +104,7 @@ myDivStyle =
   Html.Attributes.style
     [ ( "width", "200px" )
     , ( "height", "100px" )
-    , ( "position", "absolute" )
+    -- , ( "position", "absolute" )
     , ( "left", "0px" )
     , ( "top", "0px" )
     , ( "backgroundColor", "red" )
@@ -172,6 +172,7 @@ view model =
         , polys
         , myText
         ]
+
     mySpan =
       span
         [ myDivStyle
@@ -182,7 +183,13 @@ view model =
         , span []
             [ mySvg
             ]
-      ]
-
+        ]
   in
-    mySpan
+    div []
+      [ div []
+          [ mySpan
+          ]
+      , div []
+          [ mySpan
+          ]
+      ]
