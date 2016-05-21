@@ -1,8 +1,24 @@
 module Position exposing (init, subscriptions, update, view)
 
-import Html exposing (Html)
+import Html exposing (Html, div)
+import Html.Attributes exposing (style)
 import Svg exposing (..)
-import Svg.Attributes exposing (..)
+import Svg.Attributes
+  exposing
+    ( alignmentBaseline
+    , fill
+    , fontSize
+    , height
+    , points
+    , stroke
+    , strokeWidth
+    , textAnchor
+    , version
+    , viewBox
+    , width
+    , x
+    , y
+    )
 import Color exposing (..)
 import Matrix exposing (Location, loc)
 import Time exposing (Time, second)
@@ -83,6 +99,18 @@ subscriptions model =
 -- VIEW
 
 
+myDivStyle : Attribute msg
+myDivStyle =
+  Html.Attributes.style
+    [ ( "width", "100px" )
+    , ( "height", "100px" )
+      -- , ( "position", "absolute" )
+    , ( "left", "0px" )
+    , ( "top", "0px" )
+    , ( "backgroundColor", "red" )
+    ]
+
+
 view : Model -> Html Msg
 view model =
   let
@@ -133,13 +161,17 @@ view model =
         ]
         [ text "99" ]
   in
-    Svg.svg
-      [ version "1.1"
-      , x "0"
-      , y "0"
-      , viewBox "0 0 1000 1000"
+    div
+      [ myDivStyle
       ]
-      [ rectangle
-      , polys
-      , myText
+      [ Svg.svg
+          [ version "1.1"
+          , Svg.Attributes.width "100"
+          , Svg.Attributes.height "100"
+          , viewBox "0 0 100 100"
+          ]
+          [ rectangle
+          , polys
+          , myText
+          ]
       ]
