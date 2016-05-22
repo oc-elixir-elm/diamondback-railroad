@@ -81,6 +81,17 @@ testView model =
         ]
 
 
+viewPort : Model -> Html.Html msg
+viewPort model =
+    svg [ width "400", height "400" ]
+        [ rect
+            [ stroke "blue"
+            , fill "white"
+            , width "400"
+            , height "400"
+            ]
+            []
+        , mySquare model
         ]
 
 
@@ -126,17 +137,3 @@ shiftY model =
             Result.withDefault 0 (String.toInt model.size)
     in
         toString (y * size)
-
-
-roundRect : Model -> Html.Html msg
-roundRect model =
-    svg [ width "400", height "400" ]
-        [ rect
-            [ stroke "blue"
-            , fill "white"
-            , width "400"
-            , height "400"
-            ]
-            []
-        , mySquare model
-        ]
