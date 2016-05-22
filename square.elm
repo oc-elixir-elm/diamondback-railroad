@@ -34,10 +34,13 @@ type alias Model =
 
 
 model : Model
-model =
-    { locationX = "0"
-    , locationY = "0"
-    , size = "50"
+model = init 0 0 50
+
+init : Int -> Int -> Int -> Model
+init x y size =
+    { locationX = toString x
+    , locationY = toString y
+    , size = toString size
     }
 
 
