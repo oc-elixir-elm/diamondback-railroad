@@ -1,3 +1,48 @@
+# Welcome
+
+## What Just Happened?
+
+I've recently opened up this Elm game I'm developing the the Orange County
+(Calif) Elixir/Elm group as we've recently been working on this in a weekly
+hackfest.
+
+## Purpose
+
+A group of us is developing this game as an exercise in learning Elm.  We
+have evolved to a specific purpose for this game:
+
+> Implement a non-trivial 2-d board game to develop our skills in
+> using Elm to drive **Svg** and interact w/ HTML in general.
+
+## Status
+
+We are still working on the board logistics, including animation.  There
+is no "game theory" implemented yet, although there are documents strewn
+around discussing possibilities.
+
+Presently there are too many branches; I'll prune these down soon.
+In the meantime, as of May 21, 2016, the most recent branch is the
+**working** branch quickly named as the group started an exploratory
+detour to more rapidly get the next functionality of the game running.
+
+This was branched from the **elm17** branch where the game was converted
+from Elm 0.16 to 0.17.  Along the way, we switched from using the
+**[Graphics.Element](http://package.elm-lang.org/packages/elm-lang/core/3.0.0/Graphics-Element)** package under Elm 0.16 to the
+**[Svg](https://github.com/elm-lang/svg)** and
+**[Html](https://github.com/elm-lang/html)** modules under
+0.17.
+
+There is a lot of cleanup of branches and code we won't ever use to be
+done; hopefully I'll get to it soon.
+
+## What's the remainder of this README?
+
+The remainder of this document is a rambling attempt to capture the
+ideas, vocabulary, and design justifications for the implementation of
+the game.
+
+> ENJOY!
+
 # The Sequence Game
 
 Name ideas:
