@@ -96,5 +96,8 @@ viewPort model =
             , height model.height
             ]
             []
-            , Square.init 0 0 50 |> Square.square
+        , Square.init 0 0 50 |> Square.square
+        , Square.init 0 1 50 |> Square.square
+        , Square.init 1 0 50 |> Square.square
+        , Square.init 1 1 50 |> Square.square
         ]
