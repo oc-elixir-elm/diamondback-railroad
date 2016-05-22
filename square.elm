@@ -81,11 +81,12 @@ testView model =
         ]
 
 
-view : Model -> Html Msg
-view model =
-    div []
-        [ div [] [ roundRect model ]
         ]
+
+
+view : Model -> Svg Msg
+view model =
+    mySquare model
 
 
 mySquare : Model -> Svg a
