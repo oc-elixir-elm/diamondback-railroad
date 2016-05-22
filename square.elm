@@ -1,4 +1,4 @@
-module Square exposing (view, model)
+module Square exposing (view, model, square)
 
 import Html exposing (Html, button, div, text, input, h2)
 import Html.Attributes exposing (placeholder)
@@ -91,17 +91,17 @@ viewPort model =
             , height "400"
             ]
             []
-        , mySquare model
+        , square model
         ]
 
 
 view : Model -> Svg Msg
 view model =
-    mySquare model
+    square model
 
 
-mySquare : Model -> Svg a
-mySquare model =
+square : Model -> Svg a
+square model =
     rect
         [ stroke "brown"
         , fill "beige"
