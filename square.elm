@@ -1,4 +1,4 @@
-module Square exposing (view, model, square)
+module Square exposing (view, model, square, init )
 
 import Html exposing (Html, button, div, text, input, h2)
 import Html.Attributes exposing (placeholder)
