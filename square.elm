@@ -70,7 +70,7 @@ update msg model =
 
 testView : Model -> Html Msg
 testView model =
-    div []
+    div [ Html.Attributes.style[("border", "solid")]]
         [ viewPort model
         , h2 [] [ Html.text "size" ]
         , input [ placeholder model.size, onInput Resize ] []
