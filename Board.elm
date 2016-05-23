@@ -6,6 +6,7 @@ import Html.Events exposing (onInput)
 import Html.App as Html
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import String
 
 
 -- import String exposing (toInt)
@@ -83,6 +84,16 @@ view model =
         ]
 
 
+numSquares : Model -> Int
+numSquares model =
+    Result.withDefault 1 (String.toInt model.squares)
+
+
+squarePlacer : Int -> Svg msg
+squarePlacer column =
+        Square.init column 0 50 |> Square.square
+
+
 viewPort : Model -> Html.Html msg
 viewPort model =
     svg
@@ -96,8 +107,6 @@ viewPort model =
             , height model.height
             ]
             []
-        , Square.init 0 0 50 |> Square.square
-        , Square.init 0 1 50 |> Square.square
-        , Square.init 1 0 50 |> Square.square
-        , Square.init 1 1 50 |> Square.square
+        , svg []
+            (List.map squarePlacer [0..(numSquares (model) - 1)])
         ]
