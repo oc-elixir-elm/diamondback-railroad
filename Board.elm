@@ -75,7 +75,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [ Html.Attributes.style [ ( "border", "solid" ) ] ]
+    div [ Html.Attributes.style [ ( "border", "solid" ), ( "padding", "4px" ) ] ]
         [ viewPort model
         , h2 [] [ Html.text "squares" ]
         , input [ placeholder model.squares, onInput Renumber ] []
@@ -89,9 +89,18 @@ numSquares model =
     Result.withDefault 1 (String.toInt model.squares)
 
 
-squarePlacer : Int -> Svg msg
-squarePlacer column =
-        Square.init column 0 50 |> Square.square
+widthToInt : Model -> Int
+widthToInt model =
+    Result.withDefault 400 (String.toInt model.width)
+
+
+squarePlacer : Model -> Int -> Int -> Svg msg
+squarePlacer model row column =
+    let
+        squareSize =
+            ((widthToInt model) - 4) // (numSquares model)
+    in
+        Square.init column row squareSize |> Square.square
 
 
 viewPort : Model -> Html.Html msg
@@ -108,5 +117,5 @@ viewPort model =
             ]
             []
         , svg []
-            (List.map squarePlacer [0..(numSquares (model) - 1)])
+            (List.map (squarePlacer model 0) [0..(numSquares (model) - 1)])
         ]
