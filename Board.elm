@@ -1,111 +1,121 @@
-module Board exposing (..)
+module Board exposing (model)
 
--- import Effects exposing (Effects)
-
-import Graphics.Element exposing (..)
-
-
--- import Html exposing (..)
--- import Html.Attributes exposing (..)
--- import Html.Events exposing (onClick)
-
-import Position
-import Matrix exposing (..)
-import Maybe exposing (..)
-import Color exposing (Color, lightBrown, darkBrown)
+import Html exposing (Html, button, div, text, input, h2)
+import Html.Attributes exposing (placeholder)
+import Html.Events exposing (onInput)
+import Html.App as Html
+import Svg exposing (..)
+import Svg.Attributes exposing (..)
+import String
 
 
--- UPDATE
--- Noting in UPDATE yet until we get seqeunce in
--- VIEW
+-- import String exposing (toInt)
+
+import Square
 
 
-type alias PosCount =
-  Int
+main : Program Never
+main =
+    Html.beginnerProgram { model = model, view = view, update = update }
 
 
-type alias BoardSideInPixels =
-  Int
+
+-- MODEL
 
 
-type alias Width =
-  Int
+type alias NumSquares =
+    String
 
 
 type alias Height =
-  Int
+    String
 
 
-type alias Dimensions =
-  ( Width, Height )
+type alias Width =
+    String
 
 
 type alias Model =
-  (Matrix Position
-   -- I'm sure something will need to be added.
-  )
+    { squares : NumSquares
+    , height : Height
+    , width : Width
+    }
 
 
-maxPosLength : PosCount
-maxPosLength =
-  11
+model : Model
+model =
+    { squares = "11"
+    , height = "400"
+    , width = "400"
+    }
 
 
-borderColor : Color
-borderColor =
-  darkBrown
+
+-- UPDATE
 
 
-fillColor : Color
-fillColor =
-  lightBrown
+type Msg
+    = Renumber NumSquares
+    | Rewidth Width
 
 
-borderThickness : Int
-borderThickness =
-  10
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Renumber squares ->
+            { model | squares = squares }
+
+        Rewidth px ->
+            { model | width = px, height = px }
 
 
-createMatrix : PosCount -> BoardSideInPixels -> Matrix Element
-createMatrix posCount boardSideInPixels =
-  let
-    posSideInPixels =
-      boardSideInPixels // maxPosLength
-  in
-    Matrix.square posCount (\location -> Position.view posSideInPixels borderColor fillColor)
+
+-- VIEW
 
 
-smallestEdgeInPixels : Dimensions -> Int
-smallestEdgeInPixels ( x, y ) =
-  if x > y then
-    y
-  else
-    x
+view : Model -> Html Msg
+view model =
+    div [ Html.Attributes.style [ ( "border", "solid" ), ( "padding", "4px" ) ] ]
+        [ viewPort model
+        , h2 [] [ Html.text "squares" ]
+        , input [ placeholder model.squares, onInput Renumber ] []
+        , h2 [] [ Html.text "size" ]
+        , input [ placeholder model.width, onInput Rewidth ] []
+        ]
 
 
-makeBoardView : Matrix Element -> Element
-makeBoardView matrix =
-  let
-    rows =
-      Matrix.toList matrix
-
-    viewRows =
-      List.map (Graphics.Element.flow right) rows
-  in
-    Graphics.Element.flow down viewRows
+numSquares : Model -> Int
+numSquares model =
+    Result.withDefault 1 (String.toInt model.squares)
 
 
-view : ( Int, Int ) -> Element
-view ( w, h ) =
-  let
-    boardWithBorder =
-      smallestEdgeInPixels ( w, h )
+widthToInt : Model -> Int
+widthToInt model =
+    Result.withDefault 400 (String.toInt model.width)
 
-    boardMatrix =
-      createMatrix maxPosLength (boardWithBorder - (2 * borderThickness))
 
-    myBoard =
-      makeBoardView boardMatrix
-        |> container boardWithBorder boardWithBorder middle
-  in
-    color borderColor myBoard
+squarePlacer : Model -> Int -> Int -> Svg msg
+squarePlacer model row column =
+    let
+        squareSize =
+            ((widthToInt model) - 4) // (numSquares model)
+    in
+        Square.init column row squareSize |> Square.square
+
+
+viewPort : Model -> Html.Html msg
+viewPort model =
+    svg
+        [ width model.width
+        , height model.height
+        ]
+        [ rect
+            [ stroke "blue"
+            , fill "white"
+            , width model.width
+            , height model.height
+            ]
+            []
+        , svg []
+            (List.map (squarePlacer model 0) [0..(numSquares (model) - 1)])
+        ]
