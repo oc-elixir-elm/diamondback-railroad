@@ -59,17 +59,9 @@ type alias Model =
   ( Square, Location )
 
 
-init : ( Model, Cmd Msg )
-init =
-  let
-    square =
-      Grid
-
-    location =
-      loc 1 1
-  in
-    ( ( square, location ), Cmd.none )
-
+init : Location -> ( Model, Cmd Msg )
+init location =
+  ( ( Grid, location ), Cmd.none )
 
 
 -- UPDATE
