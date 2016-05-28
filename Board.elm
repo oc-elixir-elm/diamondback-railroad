@@ -154,9 +154,5 @@ view model =
       dimensions
   in
     div
-      [ style
-          [ ( "width", "600px" )
-          , ( "height", "600px" )
-          ]
-      ]
+      []
       (List.map renderRows rows)
