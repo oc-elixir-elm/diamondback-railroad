@@ -59,9 +59,9 @@ type Msg
   = Tick Time
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  (model, Cmd.none)
+  ( model, Cmd.none )
 
 
 
@@ -109,11 +109,17 @@ borderThickness =
   10
 
 
-render_rows =
-  [ text " square"
-  ]
+renderRow : List Position.Model -> Html Msg
+renderRow model =
+  div []
+    [ text "square" ]
 
 
 view : Model -> Html Msg
 view model =
-  text "Hello"
+  let
+    rows =
+      Matrix.toList model.board
+  in
+    div []
+      (List.map renderRow rows)
