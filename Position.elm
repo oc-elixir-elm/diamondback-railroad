@@ -43,6 +43,10 @@ edgeThickness =
 -- MODEL
 
 
+type alias PieceNumber =
+  Int
+
+
 type Role
   = Head
   | Link
@@ -52,16 +56,16 @@ type Role
 type Square
   = Perimeter
   | Grid
-  | Piece Role
+  | Piece Role PieceNumber
 
 
 type alias Model =
-  ( Square, Location )
+  { square : Square, location : Location, pieceNumber : PieceNumber }
 
 
 init : Location -> ( Model, Cmd Msg )
 init location =
-  ( ( Grid, location ), Cmd.none )
+  ( { square = Grid, location = location, pieceNumber = 81 }, Cmd.none )
 
 
 location : Model -> Location
@@ -92,11 +96,6 @@ update msg model =
       ( model, Cmd.none )
 
 
-nothingMsg : Msg
-nothingMsg =
-  Nothing
-
-
 
 -- SUBSCRIPTIONS
 
@@ -110,8 +109,31 @@ subscriptions model =
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
+renderEmptySquare : Square -> Html Msg
+renderEmptySquare square =
+  let
+    rectangle =
+      rect
+        [ width "100"
+        , height "100"
+        , fill "wheat"
+        , stroke darkBrown
+        , strokeWidth "5"
+        ]
+        []
+  in
+    Svg.svg
+      [ version "1.1"
+      , x "100"
+      , y "100"
+      , viewBox "0 0 100 100"
+      ]
+      [ rectangle
+      ]
+
+
+renderPiece : Role -> PieceNumber -> Html Msg
+renderPiece role pieceNumber =
   let
     plusIndent =
       toString edgeThickness
@@ -170,3 +192,20 @@ view model =
       , polys
       , myText
       ]
+
+
+view : Model -> Html Msg
+view model =
+  let
+    square =
+      model.square
+  in
+    case square of
+      Grid ->
+        renderEmptySquare Grid
+
+      Perimeter ->
+        renderEmptySquare Perimeter
+
+      Piece pieceLook pieceNumber ->
+        renderPiece pieceLook pieceNumber
