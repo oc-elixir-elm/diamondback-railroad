@@ -1,6 +1,7 @@
-module Main exposing (..)
-import Board exposing (init, view, update, subscriptions)
+module MainBoard exposing (..)
+
 import Html.App as Html
+import Board exposing (..)
 
 main =
   Html.program

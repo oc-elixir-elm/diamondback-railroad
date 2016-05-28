@@ -1,4 +1,4 @@
-module Position exposing (Model, init, subscriptions, update, view)
+module Position exposing (Model, Msg, init, subscriptions, update, view, location)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (style)
@@ -20,7 +20,7 @@ import Svg.Attributes
     , y
     )
 import Color exposing (..)
-import Matrix exposing (Location, loc)
+import Matrix exposing (Location)
 import Time exposing (Time, second)
 
 
@@ -59,16 +59,18 @@ type alias Model =
   ( Square, Location )
 
 
-init : ( Model, Cmd Msg )
-init =
-  let
-    square =
-      Grid
+init : Location -> ( Model, Cmd Msg )
+init location =
+  ( ( Grid, location ), Cmd.none )
 
-    location =
-      loc 1 1
+
+location : Model -> Location
+location model =
+  let
+    ( _, loc ) =
+      model
   in
-    ( ( square, location ), Cmd.none )
+    loc
 
 
 
@@ -77,6 +79,7 @@ init =
 
 type Msg
   = Tick Time
+  | Nothing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -84,6 +87,14 @@ update msg model =
   case msg of
     Tick newTime ->
       ( model, Cmd.none )
+
+    Nothing ->
+      ( model, Cmd.none )
+
+
+nothingMsg : Msg
+nothingMsg =
+  Nothing
 
 
 
@@ -97,18 +108,6 @@ subscriptions model =
 
 
 -- VIEW
-
-
-myDivStyle : Attribute msg
-myDivStyle =
-  Html.Attributes.style
-    [ ( "width", "200px" )
-    , ( "height", "100px" )
---    , ( "position", "absolute" )
---    , ( "left", "0px" )
---    , ( "top", "0px" )
-    , ( "backgroundColor", "red" )
-    ]
 
 
 view : Model -> Html Msg
@@ -160,36 +159,14 @@ view model =
         , textAnchor "middle"
         ]
         [ text "99" ]
-
-    mySvg =
-      Svg.svg
-        [ version "1.1"
-        , Svg.Attributes.width "100"
-        , Svg.Attributes.height "100"
-        , viewBox "0 0 100 100"
-        ]
-        [ rectangle
-        , polys
-        , myText
-        ]
-
-    mySpan =
-      span
-        [ myDivStyle
-        ]
-        [ span []
-            [ mySvg
-            ]
-        , span []
-            [ mySvg
-            ]
-        ]
   in
-    div []
-      [ div []
-          [ mySpan
-          ]
-      , div []
-          [ mySpan
-          ]
+    Svg.svg
+      [ version "1.1"
+      , x "100"
+      , y "100"
+      , viewBox "0 0 100 100"
+      ]
+      [ rectangle
+      , polys
+      , myText
       ]
