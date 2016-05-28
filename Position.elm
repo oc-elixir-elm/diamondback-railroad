@@ -151,8 +151,8 @@ view model =
   in
     Svg.svg
       [ version "1.1"
-      , Svg.Attributes.width "100"
-      , Svg.Attributes.height "100"
+      , x "100"
+      , y "100"
       , viewBox "0 0 100 100"
       ]
       [ rectangle

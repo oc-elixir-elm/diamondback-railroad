@@ -13,12 +13,12 @@ import Position exposing (init, subscriptions, update, view)
 myDivStyle : Attribute msg
 myDivStyle =
   Html.Attributes.style
-    [ ( "width", "100px" )
-    , ( "height", "100px" )
+    [ ( "width", "200px" )
+    , ( "height", "200px" )
       --    , ( "position", "absolute" )
       --    , ( "left", "0px" )
       --    , ( "top", "0px" )
-      --    , ( "backgroundColor", "red" )
+    , ( "backgroundColor", "red" )
     ]
 
 
