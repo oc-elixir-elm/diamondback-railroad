@@ -1,4 +1,4 @@
-module Position exposing (Model, Msg, init, subscriptions, update, view)
+module Position exposing (Model, Msg, init, subscriptions, update, view, location)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (style)
@@ -64,6 +64,15 @@ init location =
   ( ( Grid, location ), Cmd.none )
 
 
+location : Model -> Location
+location model =
+  let
+    ( _, loc ) =
+      model
+  in
+    loc
+
+
 
 -- UPDATE
 
@@ -78,6 +87,7 @@ update msg model =
   case msg of
     Tick newTime ->
       ( model, Cmd.none )
+
     Nothing ->
       ( model, Cmd.none )
 
@@ -85,6 +95,7 @@ update msg model =
 nothingMsg : Msg
 nothingMsg =
   Nothing
+
 
 
 -- SUBSCRIPTIONS

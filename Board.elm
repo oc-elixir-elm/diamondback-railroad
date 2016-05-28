@@ -4,6 +4,7 @@ module Board exposing (init, view, update, subscriptions)
 -- import Graphics.Element exposing (..)
 
 import Html exposing (..)
+import Html.App
 import Html.Attributes exposing (..)
 
 
@@ -46,6 +47,12 @@ type alias Model =
   { board : Matrix Position.Model }
 
 
+type alias PositionLocator =
+  { location : Matrix.Location
+  , model : Position.Model
+  }
+
+
 init : ( Model, Cmd Msg )
 init =
   ( { board = createMatrix maxPosLength }, Cmd.none )
@@ -57,6 +64,7 @@ init =
 
 type Msg
   = Tick Time
+  | Modify Matrix.Location Position.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -109,10 +117,20 @@ borderThickness =
   10
 
 
-renderRow : List Position.Model -> Html Msg
-renderRow model =
+renderPosition : Position.Model -> Html Msg
+renderPosition position =
+  let
+    location =
+      Position.location position
+  in
+    span []
+      [ Html.App.map (Modify location) (Position.view position) ]
+
+
+renderRows : List Position.Model -> Html Msg
+renderRows columns =
   div []
-    [ text "square" ]
+    (List.map renderPosition columns)
 
 
 view : Model -> Html Msg
@@ -122,4 +140,4 @@ view model =
       Matrix.toList model.board
   in
     div []
-      (List.map renderRow rows)
+      (List.map renderRows rows)
