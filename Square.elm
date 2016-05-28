@@ -1,4 +1,4 @@
-module Square exposing (view, model, square, init )
+module Square exposing (view, model, square, init)
 
 import Html exposing (Html, button, div, text, input, h2)
 import Html.Attributes exposing (placeholder)
@@ -26,21 +26,31 @@ type alias Position =
     String
 
 
+type alias XY =
+    Int
+
+
+type alias Pixels =
+    Int
+
+
 type alias Model =
-    { locationX : Position
-    , locationY : Position
-    , size : Size
+    { locationX : XY
+    , locationY : XY
+    , size : Pixels
     }
 
 
 model : Model
-model = init 0 0 50
+model =
+    init 0 0 50
+
 
 init : Int -> Int -> Int -> Model
 init x y size =
-    { locationX = toString x
-    , locationY = toString y
-    , size = toString size
+    { locationX = x
+    , locationY = y
+    , size = size
     }
 
 
@@ -50,21 +60,33 @@ init x y size =
 
 type Msg
     = Resize Size
-    | ShiftX Position
-    | ShiftY Position
+    | ShiftX String
+    | ShiftY String
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
         Resize size ->
-            { model | size = size }
+            let
+                s =
+                    Result.withDefault 1 (String.toInt size)
+            in
+                { model | size = s }
 
         ShiftX position ->
-            { model | locationX = position }
+            let
+                p =
+                    Result.withDefault 1 (String.toInt position)
+            in
+                { model | locationX = p }
 
         ShiftY position ->
-            { model | locationY = position }
+            let
+                p =
+                    Result.withDefault 1 (String.toInt position)
+            in
+                { model | locationY = p }
 
 
 
@@ -76,11 +98,11 @@ testView model =
     div [ Html.Attributes.style [ ( "border", "solid" ) ] ]
         [ viewPort model
         , h2 [] [ Html.text "size" ]
-        , input [ placeholder model.size, onInput Resize ] []
+        , input [ placeholder (toString model.size), onInput Resize ] []
         , h2 [] [ Html.text "column" ]
-        , input [ placeholder model.locationX, onInput ShiftX ] []
+        , input [ placeholder (toString model.locationX), onInput ShiftX ] []
         , h2 [] [ Html.text "row" ]
-        , input [ placeholder model.locationY, onInput ShiftY ] []
+        , input [ placeholder (toString model.locationY), onInput ShiftY ] []
         ]
 
 
@@ -110,8 +132,8 @@ square model =
         , fill "beige"
         , x (shiftX model)
         , y (shiftY model)
-        , width model.size
-        , height model.size
+        , width (toString model.size)
+        , height (toString model.size)
         , rx "4"
         , ry "4"
         ]
@@ -122,10 +144,10 @@ shiftX : Model -> String
 shiftX model =
     let
         x =
-            Result.withDefault 0 (String.toInt model.locationX)
+            model.locationX
 
         size =
-            Result.withDefault 0 (String.toInt model.size)
+            model.size
     in
         toString (x * size)
 
@@ -134,9 +156,9 @@ shiftY : Model -> String
 shiftY model =
     let
         y =
-            Result.withDefault 0 (String.toInt model.locationY)
+            model.locationY
 
         size =
-            Result.withDefault 0 (String.toInt model.size)
+            model.size
     in
         toString (y * size)
