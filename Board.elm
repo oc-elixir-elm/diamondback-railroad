@@ -59,9 +59,9 @@ type Msg
   = Tick Time
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  model
+  (model, Cmd.none)
 
 
 
@@ -110,13 +110,10 @@ borderThickness =
 
 
 render_rows =
-  text " square"
+  [ text " square"
+  ]
 
 
 view : Model -> Html Msg
 view model =
-  let
-    rows =
-      Matrix.toList model.board
-  in
-    List.map rows render_rows
+  text "Hello"
