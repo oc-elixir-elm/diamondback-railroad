@@ -15,6 +15,7 @@ import Matrix exposing (Matrix)
 import Maybe exposing (..)
 import Color exposing (Color, lightBrown, darkBrown)
 import Time exposing (Time, second)
+import Window
 
 
 -- MODEL
