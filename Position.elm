@@ -102,10 +102,11 @@ subscriptions model =
 
 -- VIEW
 
-
-half = "50%"
-whole = "100%"
-narrow = "5%"
+-- Seem to have good luck simply maintaining ratios.
+-- Hence, "narrow" is the stroke width.
+half = "10"
+whole = "20"
+narrow = "1"
 
 renderEmptySquare : Square -> Html Msg
 renderEmptySquare square =
