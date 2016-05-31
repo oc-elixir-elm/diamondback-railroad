@@ -127,7 +127,7 @@ renderPosition : Position.Model -> Html Msg
 renderPosition position =
   span
     [ style
-        [ ( "width", "25px" )
+        [ ( "width", "50px" )
         , ( "display", "inline-block" )
         ]
     ]
