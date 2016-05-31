@@ -1,4 +1,4 @@
-module Position exposing (Model, Msg, init, subscriptions, update, view, location)
+module Position exposing (Model, Msg, init, subscriptions, update, view)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (style)
@@ -64,17 +64,11 @@ type alias Model =
 
 
 init : Location -> ( Model, Cmd Msg )
-init location =
-  ( { square = Grid, location = location, pieceNumber = 81 }, Cmd.none )
-
-
-location : Model -> Location
-location model =
+init loc =
   let
-    ( _, loc ) =
-      model
+    model =   { square = Grid, location = loc, pieceNumber = 81 }
   in
-    loc
+    ( model, Cmd.none )
 
 
 

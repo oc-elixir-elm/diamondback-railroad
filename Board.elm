@@ -125,17 +125,13 @@ borderThickness =
 
 renderPosition : Position.Model -> Html Msg
 renderPosition position =
-  let
-    location =
-      Position.location position
-  in
-    span
-      [ style
-          [ ( "width", "100px" )
-          , ( "display", "inline-block")
-          ]
-      ]
-      [ Html.App.map (Modify location) (Position.view position) ]
+  span
+    [ style
+        [ ( "width", "100px" )
+        , ( "display", "inline-block" )
+        ]
+    ]
+    [ Html.App.map (Modify position.location) (Position.view position) ]
 
 
 renderRows : List Position.Model -> Html Msg
@@ -153,6 +149,5 @@ view model =
     ( thisWidth, height ) =
       dimensions
   in
-    div
-      []
+    div []
       (List.map renderRows rows)
