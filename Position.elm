@@ -103,24 +103,28 @@ subscriptions model =
 -- VIEW
 
 
+half = "50"
+whole = "100"
+narrow = "5"
+
 renderEmptySquare : Square -> Html Msg
 renderEmptySquare square =
   let
     rectangle =
       rect
-        [ width "100"
-        , height "100"
+        [ width whole
+        , height whole
         , fill "wheat"
         , stroke darkBrown
-        , strokeWidth "5"
+        , strokeWidth narrow
         ]
         []
   in
     Svg.svg
       [ version "1.1"
-      , x "100"
-      , y "100"
-      , viewBox "0 0 100 100"
+      , x whole
+      , y whole
+      , viewBox ("0 0 " ++ whole ++ " " ++ whole)
       ]
       [ rectangle
       ]
@@ -136,15 +140,21 @@ renderPiece role pieceNumber =
       toString (100 - edgeThickness)
 
     polyPoints =
-      "50 "
+      half
+        ++ " "
         ++ plusIndent
         ++ ", "
         ++ minusIndent
-        ++ " 50, 50 "
+        ++ " "
+        ++ half
+        ++ ", "
+        ++ half
+        ++ " "
         ++ minusIndent
         ++ ", "
         ++ plusIndent
-        ++ " 50"
+        ++ " "
+        ++ half
 
     polys =
       polygon
@@ -157,18 +167,18 @@ renderPiece role pieceNumber =
 
     rectangle =
       rect
-        [ width "100"
-        , height "100"
+        [ width whole
+        , height whole
         , fill "wheat"
         , stroke darkBrown
-        , strokeWidth "5"
+        , strokeWidth narrow
         ]
         []
 
     myText =
       text'
-        [ x "50"
-        , y "50"
+        [ x half
+        , y half
         , fill "black"
         , fontSize "48"
         , alignmentBaseline "middle"
@@ -178,9 +188,9 @@ renderPiece role pieceNumber =
   in
     Svg.svg
       [ version "1.1"
-      , x "100"
-      , y "100"
-      , viewBox "0 0 100 100"
+      , x whole
+      , y whole
+      , viewBox ("0 0 " ++ whole ++ " " ++ whole)
       ]
       [ rectangle
       , polys
