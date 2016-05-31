@@ -103,6 +103,11 @@ type alias Dimensions =
   ( Width, Height )
 
 
+dimensions : Dimensions
+dimensions =
+  ( 1200, 700 )
+
+
 borderColor : Color
 borderColor =
   darkBrown
@@ -120,12 +125,13 @@ borderThickness =
 
 renderPosition : Position.Model -> Html Msg
 renderPosition position =
-  let
-    location =
-      Position.location position
-  in
-    span []
-      [ Html.App.map (Modify location) (Position.view position) ]
+  span
+    [ style
+        [ ( "width", "50px" )
+        , ( "display", "inline-block" )
+        ]
+    ]
+    [ Html.App.map (Modify position.location) (Position.view position) ]
 
 
 renderRows : List Position.Model -> Html Msg
@@ -139,6 +145,9 @@ view model =
   let
     rows =
       Matrix.toList model.board
+
+    ( thisWidth, height ) =
+      dimensions
   in
     div []
       (List.map renderRows rows)

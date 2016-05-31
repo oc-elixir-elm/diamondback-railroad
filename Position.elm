@@ -1,4 +1,4 @@
-module Position exposing (Model, Msg, init, subscriptions, update, view, location)
+module Position exposing (Model, Msg, init, subscriptions, update, view)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (style)
@@ -43,6 +43,10 @@ edgeThickness =
 -- MODEL
 
 
+type alias PieceNumber =
+  Int
+
+
 type Role
   = Head
   | Link
@@ -52,25 +56,19 @@ type Role
 type Square
   = Perimeter
   | Grid
-  | Piece Role
+  | Piece Role PieceNumber
 
 
 type alias Model =
-  ( Square, Location )
+  { square : Square, location : Location, pieceNumber : PieceNumber }
 
 
 init : Location -> ( Model, Cmd Msg )
-init location =
-  ( ( Grid, location ), Cmd.none )
-
-
-location : Model -> Location
-location model =
+init loc =
   let
-    ( _, loc ) =
-      model
+    model =   { square = Grid, location = loc, pieceNumber = 81 }
   in
-    loc
+    ( model, Cmd.none )
 
 
 
@@ -92,11 +90,6 @@ update msg model =
       ( model, Cmd.none )
 
 
-nothingMsg : Msg
-nothingMsg =
-  Nothing
-
-
 
 -- SUBSCRIPTIONS
 
@@ -109,9 +102,37 @@ subscriptions model =
 
 -- VIEW
 
+-- Seem to have good luck simply maintaining ratios.
+-- Hence, "narrow" is the stroke width.
+half = "10"
+whole = "20"
+narrow = "1"
 
-view : Model -> Html Msg
-view model =
+renderEmptySquare : Square -> Html Msg
+renderEmptySquare square =
+  let
+    rectangle =
+      rect
+        [ width whole
+        , height whole
+        , fill "wheat"
+        , stroke darkBrown
+        , strokeWidth narrow
+        ]
+        []
+  in
+    Svg.svg
+      [ version "1.1"
+      , x whole
+      , y whole
+      , viewBox ("0 0 " ++ whole ++ " " ++ whole)
+      ]
+      [ rectangle
+      ]
+
+
+renderPiece : Role -> PieceNumber -> Html Msg
+renderPiece role pieceNumber =
   let
     plusIndent =
       toString edgeThickness
@@ -120,15 +141,21 @@ view model =
       toString (100 - edgeThickness)
 
     polyPoints =
-      "50 "
+      half
+        ++ " "
         ++ plusIndent
         ++ ", "
         ++ minusIndent
-        ++ " 50, 50 "
+        ++ " "
+        ++ half
+        ++ ", "
+        ++ half
+        ++ " "
         ++ minusIndent
         ++ ", "
         ++ plusIndent
-        ++ " 50"
+        ++ " "
+        ++ half
 
     polys =
       polygon
@@ -141,18 +168,18 @@ view model =
 
     rectangle =
       rect
-        [ width "100"
-        , height "100"
+        [ width whole
+        , height whole
         , fill "wheat"
         , stroke darkBrown
-        , strokeWidth "5"
+        , strokeWidth narrow
         ]
         []
 
     myText =
       text'
-        [ x "50"
-        , y "50"
+        [ x half
+        , y half
         , fill "black"
         , fontSize "48"
         , alignmentBaseline "middle"
@@ -162,11 +189,28 @@ view model =
   in
     Svg.svg
       [ version "1.1"
-      , x "100"
-      , y "100"
-      , viewBox "0 0 100 100"
+      , x whole
+      , y whole
+      , viewBox ("0 0 " ++ whole ++ " " ++ whole)
       ]
       [ rectangle
       , polys
       , myText
       ]
+
+
+view : Model -> Html Msg
+view model =
+  let
+    square =
+      model.square
+  in
+    case square of
+      Grid ->
+        renderEmptySquare Grid
+
+      Perimeter ->
+        renderEmptySquare Perimeter
+
+      Piece pieceLook pieceNumber ->
+        renderPiece pieceLook pieceNumber
