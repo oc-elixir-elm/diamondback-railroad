@@ -103,9 +103,9 @@ subscriptions model =
 -- VIEW
 
 
-half = "50"
-whole = "100"
-narrow = "5"
+half = "50%"
+whole = "100%"
+narrow = "5%"
 
 renderEmptySquare : Square -> Html Msg
 renderEmptySquare square =
