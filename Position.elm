@@ -13,7 +13,10 @@ module Position
         )
 
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (style)
+
+
+--import Html.Attributes exposing (style)
+
 import Svg exposing (..)
 import Svg.Attributes
     exposing
@@ -31,7 +34,10 @@ import Svg.Attributes
         , x
         , y
         )
-import Color exposing (..)
+
+
+-- import Color exposing (..)
+
 import Matrix exposing (Location)
 import Time exposing (Time, second)
 
@@ -39,14 +45,17 @@ import Time exposing (Time, second)
 -- CONSTANTS
 
 
+lightBrown : String
 lightBrown =
     "peru"
 
 
+darkBrown : String
 darkBrown =
     "saddlebrown"
 
 
+edgeThickness : number
 edgeThickness =
     3
 
