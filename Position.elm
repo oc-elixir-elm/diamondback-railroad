@@ -181,6 +181,8 @@ renderPiece sideSize role pieceNumber =
     narrow =
       toString (sideSize / 10.0)
 
+    textDownMore = toString (sideSize / 1.8)
+
     polyPoints =
       half
         ++ " "
@@ -220,9 +222,9 @@ renderPiece sideSize role pieceNumber =
     myText =
       text'
         [ x half
-        , y half
+        , y textDownMore
         , fill "black"
-        , fontSize "48"
+        , fontSize "568"
         , alignmentBaseline "middle"
         , textAnchor "middle"
         ]
@@ -232,7 +234,7 @@ renderPiece sideSize role pieceNumber =
       [ version "1.1"
       , x "0"
       , y "0"
-      , viewBox ("0 0 " ++ "1000" ++ " " ++ "1000")
+      , viewBox ("0 0 " ++ "10000" ++ " " ++ "10000")
       ]
       [ rectangle
       , polys
