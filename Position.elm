@@ -1,4 +1,16 @@
-module Position exposing (Model, Msg, init, subscriptions, update, view)
+module Position
+  exposing
+    ( Model
+    , Msg
+    , init
+    , initWithLocation
+    , subscriptions
+    , update
+    , view
+    , Role(..)
+    , PositionType(..)
+    , renderEmptySquare
+    )
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (style)
@@ -47,28 +59,48 @@ type alias PieceNumber =
   Int
 
 
+type alias Pixels =
+  Float
+
+
 type Role
   = Head
   | Link
   | Tail
 
 
-type Square
+type PositionType
   = Perimeter
   | Grid
   | Piece Role PieceNumber
 
 
 type alias Model =
-  { square : Square, location : Location, pieceNumber : PieceNumber }
+  { location : Location
+  , sideSize : Pixels
+  , positionType : PositionType
+  }
 
 
-init : Location -> ( Model, Cmd Msg )
-init loc =
+init : ( Model, Cmd Msg )
+init =
   let
-    model =   { square = Grid, location = loc, pieceNumber = 81 }
+    model =
+      { positionType = Piece Head 43
+      , location = ( 1, 1 )
+      , sideSize = 1000
+      }
   in
     ( model, Cmd.none )
+
+
+initWithLocation : Location -> ( Model, Cmd Msg )
+initWithLocation location =
+  let
+    ( model, cmd ) =
+      init
+  in
+    ( { model | location = location }, cmd )
 
 
 
@@ -102,22 +134,41 @@ subscriptions model =
 
 -- VIEW
 
--- Seem to have good luck simply maintaining ratios.
--- Hence, "narrow" is the stroke width.
-half = "10"
-whole = "20"
-narrow = "1"
 
-renderEmptySquare : Square -> Html Msg
-renderEmptySquare square =
+renderEmptySquare : Pixels -> PositionType -> Html Msg
+renderEmptySquare sideSize positionType =
   let
+    role =
+      Nothing
+
+    pieceNumber =
+      0
+
+    fillColor =
+      case positionType of
+        Grid ->
+          "wheat"
+
+        Perimeter ->
+          "white"
+
+        Piece role pieceNumber ->
+          "white"
+
+    -- doesn't matter
+    myStrokeWidth =
+      toString (sideSize / 10)
+
+    whole =
+      toString sideSize
+
     rectangle =
       rect
         [ width whole
         , height whole
-        , fill "wheat"
+        , fill fillColor
         , stroke darkBrown
-        , strokeWidth narrow
+        , strokeWidth myStrokeWidth
         ]
         []
   in
@@ -131,14 +182,29 @@ renderEmptySquare square =
       ]
 
 
-renderPiece : Role -> PieceNumber -> Html Msg
-renderPiece role pieceNumber =
+renderPiece : Pixels -> Role -> PieceNumber -> Html Msg
+renderPiece sideSize role pieceNumber =
   let
+    edgeRatio =
+      (edgeThickness * sideSize) / 100
+
     plusIndent =
-      toString edgeThickness
+      toString edgeRatio
 
     minusIndent =
-      toString (100 - edgeThickness)
+      toString (sideSize - edgeRatio)
+
+    whole =
+      toString sideSize
+
+    half =
+      toString (sideSize / 2.0)
+
+    narrow =
+      toString (sideSize / 10.0)
+
+    textDownMore =
+      toString (sideSize / 1.8)
 
     polyPoints =
       half
@@ -162,7 +228,7 @@ renderPiece role pieceNumber =
         [ fill lightBrown
         , points polyPoints
         , stroke "indianred"
-        , strokeWidth (toString edgeThickness)
+        , strokeWidth (toString edgeRatio)
         ]
         []
 
@@ -179,19 +245,19 @@ renderPiece role pieceNumber =
     myText =
       text'
         [ x half
-        , y half
+        , y textDownMore
         , fill "black"
-        , fontSize "48"
+        , fontSize "568"
         , alignmentBaseline "middle"
         , textAnchor "middle"
         ]
-        [ text "99" ]
+        [ text (toString pieceNumber) ]
   in
     Svg.svg
       [ version "1.1"
-      , x whole
-      , y whole
-      , viewBox ("0 0 " ++ whole ++ " " ++ whole)
+      , x "0"
+      , y "0"
+      , viewBox ("0 0 " ++ "1000" ++ " " ++ "1000")
       ]
       [ rectangle
       , polys
@@ -202,15 +268,15 @@ renderPiece role pieceNumber =
 view : Model -> Html Msg
 view model =
   let
-    square =
-      model.square
+    positionType =
+      model.positionType
   in
-    case square of
+    case positionType of
       Grid ->
-        renderEmptySquare Grid
+        renderEmptySquare model.sideSize Grid
 
       Perimeter ->
-        renderEmptySquare Perimeter
+        renderEmptySquare model.sideSize Perimeter
 
-      Piece pieceLook pieceNumber ->
-        renderPiece pieceLook pieceNumber
+      Piece role pieceNumber ->
+        renderPiece model.sideSize role pieceNumber

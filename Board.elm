@@ -3,9 +3,11 @@ module Board exposing (init, view, update, subscriptions)
 -- import Effects exposing (Effects)
 -- import Graphics.Element exposing (..)
 
-import Html exposing (..)
+import Html exposing (Html)
 import Html.App
-import Html.Attributes exposing (..)
+-- import Html.Attributes exposing (..)
+import Svg exposing (..)
+import Svg.Attributes exposing (..)
 
 
 -- import Html.Events exposing (onClick)
@@ -34,7 +36,7 @@ positionFromInit : Matrix.Location -> Position.Model
 positionFromInit location =
   let
     ( position, msg ) =
-      Position.init location
+      Position.initWithLocation location
   in
     position
 
@@ -125,29 +127,17 @@ borderThickness =
 
 renderPosition : Position.Model -> Html Msg
 renderPosition position =
-  span
-    [ style
-        [ ( "width", "50px" )
-        , ( "display", "inline-block" )
-        ]
-    ]
-    [ Html.App.map (Modify position.location) (Position.view position) ]
-
-
-renderRows : List Position.Model -> Html Msg
-renderRows columns =
-  div []
-    (List.map renderPosition columns)
+  Html.App.map (Modify position.location) (Position.view position)
 
 
 view : Model -> Html Msg
 view model =
   let
-    rows =
-      Matrix.toList model.board
-
-    ( thisWidth, height ) =
-      dimensions
+    positions =
+      Matrix.flatten model.board
   in
-    div []
-      (List.map renderRows rows)
+    svg
+      [ width "400"
+      , height "400"
+      ]
+      (List.map renderPosition positions)
