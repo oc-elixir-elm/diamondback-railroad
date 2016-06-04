@@ -51,8 +51,8 @@ type alias Pixels =
   Float
 
 
-type Role =
-  Head
+type Role
+  = Head
   | Link
   | Tail
 
@@ -67,8 +67,6 @@ type alias Model =
   { location : Location
   , sideSize : Pixels
   , positionType : PositionType
-  , role : Role
-  , pieceNumber : PieceNumber
   }
 
 
@@ -76,14 +74,13 @@ init : ( Model, Cmd Msg )
 init =
   let
     model =
-      { positionType = Grid
-      , location = (1, 1)
+      { positionType = Piece Head 43
+      , location = ( 1, 1 )
       , sideSize = 1000
-      , role = Head
-      , pieceNumber = 0
       }
   in
     ( model, Cmd.none )
+
 
 
 -- UPDATE
@@ -135,8 +132,9 @@ renderEmptySquare sideSize positionType =
           "white"
 
         Piece role pieceNumber ->
-          "white" -- doesn't matter
+          "white"
 
+    -- doesn't matter
     myStrokeWidth =
       toString (sideSize / 10)
 
@@ -245,12 +243,6 @@ view model =
   let
     positionType =
       model.positionType
-
-    role =
-      model.role
-
-    pieceNumber =
-      model.pieceNumber
   in
     case positionType of
       Grid ->
