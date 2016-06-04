@@ -5,7 +5,10 @@ module Board exposing (init, view, update, subscriptions)
 
 import Html exposing (Html)
 import Html.App
+
+
 -- import Html.Attributes exposing (..)
+
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
@@ -24,41 +27,41 @@ import Window
 
 
 type alias PosCount =
-  Int
+    Int
 
 
 maxPosLength : PosCount
 maxPosLength =
-  11
+    11
 
 
 positionFromInit : Matrix.Location -> Position.Model
 positionFromInit location =
-  let
-    ( position, msg ) =
-      Position.initWithLocation location
-  in
-    position
+    let
+        ( position, msg ) =
+            Position.initWithLocation location
+    in
+        position
 
 
 createMatrix : PosCount -> Matrix Position.Model
 createMatrix posCount =
-  Matrix.square posCount (\location -> positionFromInit location)
+    Matrix.square posCount (\location -> positionFromInit location)
 
 
 type alias Model =
-  { board : Matrix Position.Model }
+    { board : Matrix Position.Model }
 
 
 type alias PositionLocator =
-  { location : Matrix.Location
-  , model : Position.Model
-  }
+    { location : Matrix.Location
+    , model : Position.Model
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-  ( { board = createMatrix maxPosLength }, Cmd.none )
+    ( { board = createMatrix maxPosLength }, Cmd.none )
 
 
 
@@ -66,13 +69,13 @@ init =
 
 
 type Msg
-  = Tick Time
-  | Modify Matrix.Location Position.Msg
+    = Tick Time
+    | Modify Matrix.Location Position.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  ( model, Cmd.none )
+    ( model, Cmd.none )
 
 
 
@@ -81,7 +84,7 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every second Tick
+    Time.every second Tick
 
 
 
@@ -90,54 +93,54 @@ subscriptions model =
 
 
 type alias BoardSideInPixels =
-  Int
+    Int
 
 
 type alias Width =
-  Int
+    Int
 
 
 type alias Height =
-  Int
+    Int
 
 
 type alias Dimensions =
-  ( Width, Height )
+    ( Width, Height )
 
 
 dimensions : Dimensions
 dimensions =
-  ( 1200, 700 )
+    ( 1200, 700 )
 
 
 borderColor : Color
 borderColor =
-  darkBrown
+    darkBrown
 
 
 fillColor : Color
 fillColor =
-  lightBrown
+    lightBrown
 
 
 borderThickness : Int
 borderThickness =
-  10
+    10
 
 
 renderPosition : Position.Model -> Html Msg
 renderPosition position =
-  Html.App.map (Modify position.location) (Position.view position)
+    Html.App.map (Modify position.location) (Position.view position)
 
 
 view : Model -> Html Msg
 view model =
-  let
-    positions =
-      Matrix.flatten model.board
-  in
-    svg
-      [ width "400"
-      , height "400"
-      ]
-      (List.map renderPosition positions)
+    let
+        positions =
+            Matrix.flatten model.board
+    in
+        svg
+            [ width "400"
+            , height "400"
+            ]
+            (List.map renderPosition positions)
