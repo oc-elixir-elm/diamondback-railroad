@@ -34,7 +34,7 @@ positionFromInit : Matrix.Location -> Position.Model
 positionFromInit location =
   let
     ( position, msg ) =
-      Position.init location
+      Position.initWithLocation location
   in
     position
 
