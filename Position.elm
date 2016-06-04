@@ -1,4 +1,4 @@
-module Position exposing (Model, Msg, init, subscriptions, update, view)
+module Position exposing (Model, Msg, init, subscriptions, update, view, Role(..))
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (style)
@@ -51,8 +51,8 @@ type alias Pixels =
   Float
 
 
-type Role
-  = Head
+type Role =
+  Head
   | Link
   | Tail
 
