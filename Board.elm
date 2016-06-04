@@ -45,8 +45,8 @@ type alias Model =
 model : Model
 model =
     { squares = "11"
-    , height = "400"
-    , width = "400"
+    , height = "440"
+    , width = "440"
     }
 
 
@@ -86,19 +86,19 @@ view model =
 
 numSquares : Model -> Int
 numSquares model =
-    Result.withDefault 1 (String.toInt model.squares)
+    Result.withDefault 4 (String.toInt model.squares)
 
 
 widthToInt : Model -> Int
 widthToInt model =
-    Result.withDefault 400 (String.toInt model.width)
+    Result.withDefault 440 (String.toInt model.width)
 
 
 squarePlacer : Model -> Int -> Int -> Svg msg
 squarePlacer model row column =
     let
         squareSize =
-            ((widthToInt model) - 4) // (numSquares model)
+            ((widthToInt model) ) // (numSquares model)
     in
         Square.init column row squareSize |> Square.square
 

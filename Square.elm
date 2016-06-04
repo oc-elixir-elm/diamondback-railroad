@@ -132,8 +132,8 @@ square model =
         , fill "beige"
         , x (shiftX model)
         , y (shiftY model)
-        , width (toString model.size)
-        , height (toString model.size)
+        , width (toString (model.size - 2))
+        , height (toString (model.size - 2))
         , rx "4"
         , ry "4"
         ]
@@ -149,7 +149,7 @@ shiftX model =
         size =
             model.size
     in
-        toString (x * size)
+        toString (x * size + 1)
 
 
 shiftY : Model -> String
