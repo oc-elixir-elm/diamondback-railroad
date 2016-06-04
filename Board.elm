@@ -17,10 +17,10 @@ import Svg.Attributes exposing (..)
 
 import Position
 import Matrix exposing (Matrix)
-import Maybe exposing (..)
+-- import Maybe exposing (..)
 import Color exposing (Color, lightBrown, darkBrown)
 import Time exposing (Time, second)
-import Window
+-- import Window
 
 
 -- MODEL
