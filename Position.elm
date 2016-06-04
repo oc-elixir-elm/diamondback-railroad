@@ -1,4 +1,16 @@
-module Position exposing (Model, Msg, init, subscriptions, update, view, Role(..))
+module Position
+  exposing
+    ( Model
+    , Msg
+    , init
+    , initWithLocation
+    , subscriptions
+    , update
+    , view
+    , Role(..)
+    , PositionType(..)
+    , renderEmptySquare
+    )
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (style)
@@ -80,6 +92,15 @@ init =
       }
   in
     ( model, Cmd.none )
+
+
+initWithLocation : Location -> ( Model, Cmd Msg )
+initWithLocation location =
+  let
+    ( model, cmd ) =
+      init
+  in
+    ( { model | location = location }, cmd )
 
 
 
@@ -164,7 +185,8 @@ renderEmptySquare sideSize positionType =
 renderPiece : Pixels -> Role -> PieceNumber -> Html Msg
 renderPiece sideSize role pieceNumber =
   let
-    edgeRatio = (edgeThickness * sideSize) / 100
+    edgeRatio =
+      (edgeThickness * sideSize) / 100
 
     plusIndent =
       toString edgeRatio
@@ -181,7 +203,8 @@ renderPiece sideSize role pieceNumber =
     narrow =
       toString (sideSize / 10.0)
 
-    textDownMore = toString (sideSize / 1.8)
+    textDownMore =
+      toString (sideSize / 1.8)
 
     polyPoints =
       half
