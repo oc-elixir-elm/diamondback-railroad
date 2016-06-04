@@ -164,20 +164,22 @@ renderEmptySquare sideSize positionType =
 renderPiece : Pixels -> Role -> PieceNumber -> Html Msg
 renderPiece sideSize role pieceNumber =
   let
+    edgeRatio = (edgeThickness * sideSize) / 100
+
     plusIndent =
-      toString edgeThickness
+      toString edgeRatio
 
     minusIndent =
-      toString (100 - edgeThickness)
+      toString (sideSize - edgeRatio)
 
     whole =
       toString sideSize
 
     half =
-      toString (sideSize / 2)
+      toString (sideSize / 2.0)
 
     narrow =
-      toString (sideSize / 10)
+      toString (sideSize / 10.0)
 
     polyPoints =
       half
@@ -201,7 +203,7 @@ renderPiece sideSize role pieceNumber =
         [ fill lightBrown
         , points polyPoints
         , stroke "indianred"
-        , strokeWidth (toString edgeThickness)
+        , strokeWidth (toString edgeRatio)
         ]
         []
 
@@ -224,13 +226,13 @@ renderPiece sideSize role pieceNumber =
         , alignmentBaseline "middle"
         , textAnchor "middle"
         ]
-        [ text "99" ]
+        [ text (toString pieceNumber) ]
   in
     Svg.svg
       [ version "1.1"
-      , x whole
-      , y whole
-      , viewBox ("0 0 " ++ whole ++ " " ++ whole)
+      , x "0"
+      , y "0"
+      , viewBox ("0 0 " ++ "1000" ++ " " ++ "1000")
       ]
       [ rectangle
       , polys
