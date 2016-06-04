@@ -257,7 +257,7 @@ renderPiece sideSize role pieceNumber =
       [ version "1.1"
       , x "0"
       , y "0"
-      , viewBox ("0 0 " ++ "10000" ++ " " ++ "10000")
+      , viewBox ("0 0 " ++ "1000" ++ " " ++ "1000")
       ]
       [ rectangle
       , polys
