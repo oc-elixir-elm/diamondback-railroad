@@ -17,12 +17,15 @@ import Svg.Attributes exposing (..)
 
 import Position
 import Matrix exposing (Matrix)
+
+
 -- import Maybe exposing (..)
+
 import Color exposing (Color, lightBrown, darkBrown)
 import Time exposing (Time, second)
+
+
 -- import Window
-
-
 -- MODEL
 
 
@@ -140,7 +143,16 @@ view model =
             Matrix.flatten model.board
     in
         svg
-            [ width "400"
-            , height "400"
+            [ width "600"
+            , height "600"
             ]
-            (List.map renderPosition positions)
+            [ rect
+                [ stroke "blue"
+                , fill "white"
+                , width "600"
+                , height "600"
+                ]
+                []
+            , svg []
+                (List.map renderPosition positions)
+            ]
