@@ -97,7 +97,7 @@ init =
         model =
             { positionType = Piece Head 43
             , location = ( 1, 1 )
-            , sideSize = 1000
+            , sideSize = 50
             }
     in
         ( model, Cmd.none )
@@ -108,8 +108,19 @@ initWithLocation location =
     let
         ( model, cmd ) =
             init
+
+        ( locX, locY ) =
+            location
+
+        pieceNumber =
+            (locY * 11) + locX
     in
-        ( { model | location = location }, cmd )
+        ( { model
+            | location = location
+            , positionType = Piece Head pieceNumber
+          }
+        , cmd
+        )
 
 
 
@@ -201,10 +212,10 @@ renderPiece model role pieceNumber =
             model.location
 
         pixelsX =
-            toString ( sideSize * (toFloat locX))
+            toString (sideSize * (toFloat locX))
 
         pixelsY =
-          toString ( sideSize * (toFloat locY))
+            toString (sideSize * (toFloat locY))
 
         edgeRatio =
             (edgeThickness * sideSize) / 100
@@ -268,7 +279,7 @@ renderPiece model role pieceNumber =
                 [ x half
                 , y textDownMore
                 , fill "black"
-                , fontSize "568"
+                , fontSize half
                 , alignmentBaseline "middle"
                 , textAnchor "middle"
                 ]
@@ -278,7 +289,6 @@ renderPiece model role pieceNumber =
             [ version "1.1"
             , x pixelsX
             , y pixelsY
-            , viewBox ("0 0 " ++ "1000" ++ " " ++ "1000")
             ]
             [ rectangle
             , polys
