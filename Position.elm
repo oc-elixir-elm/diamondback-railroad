@@ -191,9 +191,21 @@ renderEmptySquare sideSize positionType =
             ]
 
 
-renderPiece : Pixels -> Role -> PieceNumber -> Html Msg
-renderPiece sideSize role pieceNumber =
+renderPiece : Model -> Role -> PieceNumber -> Html Msg
+renderPiece model role pieceNumber =
     let
+        sideSize =
+            model.sideSize
+
+        ( locX, locY ) =
+            model.location
+
+        pixelsX =
+            toString ( sideSize * (toFloat locX))
+
+        pixelsY =
+          toString ( sideSize * (toFloat locY))
+
         edgeRatio =
             (edgeThickness * sideSize) / 100
 
@@ -264,8 +276,8 @@ renderPiece sideSize role pieceNumber =
     in
         Svg.svg
             [ version "1.1"
-            , x "0"
-            , y "0"
+            , x pixelsX
+            , y pixelsY
             , viewBox ("0 0 " ++ "1000" ++ " " ++ "1000")
             ]
             [ rectangle
@@ -288,4 +300,4 @@ view model =
                 renderEmptySquare model.sideSize Perimeter
 
             Piece role pieceNumber ->
-                renderPiece model.sideSize role pieceNumber
+                renderPiece model role pieceNumber
