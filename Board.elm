@@ -71,7 +71,7 @@ positionFromInit : Matrix.Location -> Position.Model
 positionFromInit location =
     let
         ( position, msg ) =
-            Position.initWithLocation location
+            Position.initWithInfo (squareType location) maxPosLength sideSize location
     in
         position
 

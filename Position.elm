@@ -3,7 +3,7 @@ module Position
         ( Model
         , Msg
         , init
-        , initWithLocation
+        , initWithInfo
         , subscriptions
         , update
         , view
@@ -86,6 +86,7 @@ type PositionType
 
 type alias Model =
     { location : Location
+    , maxPosLength : Int
     , sideSize : Pixels
     , positionType : PositionType
     }
@@ -96,6 +97,7 @@ init =
     let
         model =
             { positionType = Piece Head 43
+            , maxPosLength = 11
             , location = ( 1, 1 )
             , sideSize = 50
             }
@@ -103,8 +105,8 @@ init =
         ( model, Cmd.none )
 
 
-initWithLocation : Location -> ( Model, Cmd Msg )
-initWithLocation location =
+initWithInfo : PositionType -> Int -> Pixels -> Location -> ( Model, Cmd Msg )
+initWithInfo positionType maxPosLength sideSize location =
     let
         ( model, cmd ) =
             init
@@ -116,7 +118,10 @@ initWithLocation location =
             (locY * 11) + locX
     in
         ( { model
-            | location = location
+            | positionType = positionType
+            , maxPosLength = maxPosLength
+            , sideSize = sideSize
+            , location = location
             , positionType = Piece Head pieceNumber
           }
         , cmd
