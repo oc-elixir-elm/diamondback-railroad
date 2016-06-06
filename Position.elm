@@ -113,16 +113,12 @@ initWithInfo positionType maxPosLength sideSize location pieceNumber =
     let
         ( model, cmd ) =
             init
-
-        ( locX, locY ) =
-            location
     in
         ( { model
             | positionType = positionType
             , maxPosLength = maxPosLength
             , sideSize = sideSize
             , location = location
-            , positionType = Piece Head pieceNumber
             , pieceNumber = pieceNumber
           }
         , cmd
@@ -164,6 +160,9 @@ subscriptions model =
 renderEmptySquare : Model -> Html Msg
 renderEmptySquare model =
     let
+        sideSize =
+            model.sideSize
+
         role =
             Nothing
 
@@ -188,6 +187,15 @@ renderEmptySquare model =
         boardSize =
             (toFloat model.maxPosLength) * model.sideSize
 
+        ( locX, locY ) =
+            model.location
+
+        pixelsX =
+            toString (sideSize * (toFloat locX))
+
+        pixelsY =
+            toString (sideSize * (toFloat locY))
+
         whole =
             toString model.sideSize
 
@@ -203,9 +211,8 @@ renderEmptySquare model =
     in
         Svg.svg
             [ version "1.1"
-            , x whole
-            , y whole
-            , viewBox ("0 0 " ++ whole ++ " " ++ whole)
+            , x pixelsX
+            , y pixelsY
             ]
             [ rectangle
             ]
