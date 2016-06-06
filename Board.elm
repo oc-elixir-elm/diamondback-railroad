@@ -53,25 +53,37 @@ sideSize =
 
 squareType : Matrix.Location -> Position.PositionType
 squareType location =
-  let
-    ( x, y ) =
-      location
+    let
+        ( x, y ) =
+            location
 
-    maxPos =
-      maxPosLength - 1
+        maxPos =
+            maxPosLength - 1
+    in
+        if (x == 0) || (x == maxPos) || (y == 0) || (y == maxPos) then
+            Position.Perimeter
+        else
+            Position.Grid
 
-  in
-    if (x == 0) || (x == maxPos) || (y == 0) || (y == maxPos) then
-      Position.Perimeter
-    else
-      Position.Grid
+
+calculatedPieceNumber : Matrix.Location -> Position.PieceNumber
+calculatedPieceNumber location =
+    let
+        ( x, y ) =
+            location
+    in
+        1 + x + (maxPosLength * y)
 
 
 positionFromInit : Matrix.Location -> Position.Model
 positionFromInit location =
     let
         ( position, msg ) =
-            Position.initWithInfo (squareType location) maxPosLength sideSize location
+            Position.initWithInfo (squareType location)
+                maxPosLength
+                sideSize
+                location
+                (calculatedPieceNumber location)
     in
         position
 
