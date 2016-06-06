@@ -3,13 +3,14 @@ module Position
         ( Model
         , Msg
         , init
-        , initWithLocation
+        , initWithInfo
         , subscriptions
         , update
         , view
         , Role(..)
         , PositionType(..)
         , renderEmptySquare
+        , PieceNumber
         )
 
 import Html exposing (Html, div, span)
@@ -86,8 +87,10 @@ type PositionType
 
 type alias Model =
     { location : Location
+    , maxPosLength : Int
     , sideSize : Pixels
     , positionType : PositionType
+    , pieceNumber : PieceNumber
     }
 
 
@@ -96,28 +99,27 @@ init =
     let
         model =
             { positionType = Piece Head 43
+            , maxPosLength = 11
             , location = ( 1, 1 )
             , sideSize = 50
+            , pieceNumber = 43
             }
     in
         ( model, Cmd.none )
 
 
-initWithLocation : Location -> ( Model, Cmd Msg )
-initWithLocation location =
+initWithInfo : PositionType -> Int -> Pixels -> Location -> PieceNumber -> ( Model, Cmd Msg )
+initWithInfo positionType maxPosLength sideSize location pieceNumber =
     let
         ( model, cmd ) =
             init
-
-        ( locX, locY ) =
-            location
-
-        pieceNumber =
-            (locY * 11) + locX
     in
         ( { model
-            | location = location
-            , positionType = Piece Head pieceNumber
+            | positionType = positionType
+            , maxPosLength = maxPosLength
+            , sideSize = sideSize
+            , location = location
+            , pieceNumber = pieceNumber
           }
         , cmd
         )
@@ -155,9 +157,12 @@ subscriptions model =
 -- VIEW
 
 
-renderEmptySquare : Pixels -> PositionType -> Html Msg
-renderEmptySquare sideSize positionType =
+renderEmptySquare : Model -> Html Msg
+renderEmptySquare model =
     let
+        sideSize =
+            model.sideSize
+
         role =
             Nothing
 
@@ -165,7 +170,7 @@ renderEmptySquare sideSize positionType =
             0
 
         fillColor =
-            case positionType of
+            case model.positionType of
                 Grid ->
                     "wheat"
 
@@ -177,10 +182,22 @@ renderEmptySquare sideSize positionType =
 
         -- doesn't matter
         myStrokeWidth =
-            toString (sideSize / 10)
+            toString (model.sideSize / 10)
+
+        boardSize =
+            (toFloat model.maxPosLength) * model.sideSize
+
+        ( locX, locY ) =
+            model.location
+
+        pixelsX =
+            toString (sideSize * (toFloat locX))
+
+        pixelsY =
+            toString (sideSize * (toFloat locY))
 
         whole =
-            toString sideSize
+            toString model.sideSize
 
         rectangle =
             rect
@@ -194,16 +211,15 @@ renderEmptySquare sideSize positionType =
     in
         Svg.svg
             [ version "1.1"
-            , x whole
-            , y whole
-            , viewBox ("0 0 " ++ whole ++ " " ++ whole)
+            , x pixelsX
+            , y pixelsY
             ]
             [ rectangle
             ]
 
 
-renderPiece : Model -> Role -> PieceNumber -> Html Msg
-renderPiece model role pieceNumber =
+renderPiece : Model -> Html Msg
+renderPiece model =
     let
         sideSize =
             model.sideSize
@@ -283,7 +299,7 @@ renderPiece model role pieceNumber =
                 , alignmentBaseline "middle"
                 , textAnchor "middle"
                 ]
-                [ text (toString pieceNumber) ]
+                [ text (toString model.pieceNumber) ]
     in
         Svg.svg
             [ version "1.1"
@@ -304,10 +320,10 @@ view model =
     in
         case positionType of
             Grid ->
-                renderEmptySquare model.sideSize Grid
+                renderEmptySquare model
 
             Perimeter ->
-                renderEmptySquare model.sideSize Perimeter
+                renderEmptySquare model
 
             Piece role pieceNumber ->
-                renderPiece model role pieceNumber
+                renderPiece model

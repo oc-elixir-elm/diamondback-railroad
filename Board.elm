@@ -1,7 +1,6 @@
 module Board exposing (init, view, update, subscriptions)
 
 -- import Effects exposing (Effects)
--- import Graphics.Element exposing (..)
 
 import Html exposing (Html)
 import Html.App
@@ -17,15 +16,16 @@ import Svg.Attributes exposing (..)
 
 import Position
 import Matrix exposing (Matrix)
+import Maybe exposing (..)
 
 
 -- import Maybe exposing (..)
 
 import Color exposing (Color, lightBrown, darkBrown)
 import Time exposing (Time, second)
+import Window
 
 
--- import Window
 -- MODEL
 
 
@@ -38,11 +38,52 @@ maxPosLength =
     11
 
 
+type alias BoardSideInPixels =
+    Int
+
+
+boardSideInPixels : BoardSideInPixels
+boardSideInPixels =
+    400
+
+
+sideSize =
+    (toFloat boardSideInPixels) / (toFloat maxPosLength)
+
+
+squareType : Matrix.Location -> Position.PositionType
+squareType location =
+    let
+        ( x, y ) =
+            location
+
+        maxPos =
+            maxPosLength - 1
+    in
+        if (x == 0) || (x == maxPos) || (y == 0) || (y == maxPos) then
+            Position.Perimeter
+        else
+            Position.Grid
+
+
+calculatedPieceNumber : Matrix.Location -> Position.PieceNumber
+calculatedPieceNumber location =
+    let
+        ( x, y ) =
+            location
+    in
+        1 + x + (maxPosLength * y)
+
+
 positionFromInit : Matrix.Location -> Position.Model
 positionFromInit location =
     let
         ( position, msg ) =
-            Position.initWithLocation location
+            Position.initWithInfo (squareType location)
+                maxPosLength
+                sideSize
+                location
+                (calculatedPieceNumber location)
     in
         position
 
@@ -93,10 +134,6 @@ subscriptions model =
 
 -- VIEW
 -- Number of positions on the side of the boafd
-
-
-type alias BoardSideInPixels =
-    Int
 
 
 type alias Width =
