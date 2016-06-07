@@ -96,10 +96,11 @@ type alias PositionLocator =
 
 init : ( Model, Cmd Msg )
 init =
-  let
-    (piece, _) = Piece.init
-  in
-    ( { board = createMatrix maxPosLength, pieces = [ piece ] }, Cmd.none )
+    let
+        ( piece, _ ) =
+            Piece.init
+    in
+        ( { board = createMatrix maxPosLength, pieces = [ piece ] }, Cmd.none )
 
 
 
@@ -108,7 +109,8 @@ init =
 
 type Msg
     = Tick Time
-    | Modify Matrix.Location Position.Msg
+    | ModifyPosition Matrix.Location Position.Msg
+    | ModifyPiece Matrix.Location Piece.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -164,7 +166,12 @@ borderThickness =
 
 renderPosition : Position.Model -> Html Msg
 renderPosition position =
-    Html.App.map (Modify position.location) (Position.view position)
+    Html.App.map (ModifyPosition position.location) (Position.view position)
+
+
+renderPiece : Piece.Model -> Html Msg
+renderPiece piece =
+    Html.App.map (ModifyPiece piece.location) (Piece.view piece)
 
 
 view : Model -> Html Msg
@@ -172,6 +179,9 @@ view model =
     let
         positions =
             Matrix.flatten model.board
+
+        pieces =
+            model.pieces
     in
         svg
             [ width "600"
@@ -186,4 +196,6 @@ view model =
                 []
             , svg []
                 (List.map renderPosition positions)
+            , svg []
+                (List.map renderPiece pieces)
             ]

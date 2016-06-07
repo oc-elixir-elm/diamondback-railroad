@@ -1,4 +1,11 @@
-module Piece exposing (Model, init, update, view)
+module Piece
+    exposing
+        ( Model
+        , Msg
+        , init
+        , update
+        , view
+        )
 
 import Color
 
