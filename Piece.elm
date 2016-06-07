@@ -276,20 +276,10 @@ renderPiece model =
 
         polys =
             polygon
-                [ fill "lightBrown"
+                [ fill "white"
                 , points polyPoints
                 , stroke "indianred"
                 , strokeWidth (toString edgeRatio)
-                ]
-                []
-
-        rectangle =
-            rect
-                [ width whole
-                , height whole
-                , fill "wheat"
-                , stroke darkBrown
-                , strokeWidth narrow
                 ]
                 []
 
@@ -298,7 +288,7 @@ renderPiece model =
                 [ x half
                 , y textDownMore
                 , fill "black"
-                , fontSize half
+                , fontSize "30"
                 , alignmentBaseline "middle"
                 , textAnchor "middle"
                 ]
@@ -309,8 +299,7 @@ renderPiece model =
             , x pixelsX
             , y pixelsY
             ]
-            [ rectangle
-            , polys
+            [ polys
             , myText
             ]
 
