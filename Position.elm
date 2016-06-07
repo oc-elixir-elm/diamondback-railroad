@@ -7,10 +7,8 @@ module Position
         , subscriptions
         , update
         , view
-        , Role(..)
         , PositionType(..)
         , renderEmptySquare
-        , PieceNumber
         )
 
 import Html exposing (Html, div, span)
@@ -56,33 +54,16 @@ darkBrown =
     "saddlebrown"
 
 
-edgeThickness : number
-edgeThickness =
-    3
-
-
-
 -- MODEL
-
-
-type alias PieceNumber =
-    Int
 
 
 type alias Pixels =
     Float
 
 
-type Role
-    = Head
-    | Link
-    | Tail
-
-
 type PositionType
     = Perimeter
     | Grid
-    | Piece Role PieceNumber
 
 
 type alias Model =
@@ -90,7 +71,6 @@ type alias Model =
     , maxPosLength : Int
     , sideSize : Pixels
     , positionType : PositionType
-    , pieceNumber : PieceNumber
     }
 
 
@@ -98,18 +78,17 @@ init : ( Model, Cmd Msg )
 init =
     let
         model =
-            { positionType = Piece Head 43
+            { positionType = Grid
             , maxPosLength = 11
             , location = ( 1, 1 )
             , sideSize = 50
-            , pieceNumber = 43
             }
     in
         ( model, Cmd.none )
 
 
-initWithInfo : PositionType -> Int -> Pixels -> Location -> PieceNumber -> ( Model, Cmd Msg )
-initWithInfo positionType maxPosLength sideSize location pieceNumber =
+initWithInfo : PositionType -> Int -> Pixels -> Location -> ( Model, Cmd Msg )
+initWithInfo positionType maxPosLength sideSize location =
     let
         ( model, cmd ) =
             init
@@ -119,7 +98,6 @@ initWithInfo positionType maxPosLength sideSize location pieceNumber =
             , maxPosLength = maxPosLength
             , sideSize = sideSize
             , location = location
-            , pieceNumber = pieceNumber
           }
         , cmd
         )
@@ -132,6 +110,7 @@ initWithInfo positionType maxPosLength sideSize location pieceNumber =
 type Msg
     = Tick Time
     | Nothing
+
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -166,18 +145,12 @@ renderEmptySquare model =
         role =
             Nothing
 
-        pieceNumber =
-            0
-
         fillColor =
             case model.positionType of
                 Grid ->
                     "wheat"
 
                 Perimeter ->
-                    "white"
-
-                Piece role pieceNumber ->
                     "white"
 
         -- doesn't matter
@@ -218,112 +191,6 @@ renderEmptySquare model =
             ]
 
 
-renderPiece : Model -> Html Msg
-renderPiece model =
-    let
-        sideSize =
-            model.sideSize
-
-        ( locX, locY ) =
-            model.location
-
-        pixelsX =
-            toString (sideSize * (toFloat locX))
-
-        pixelsY =
-            toString (sideSize * (toFloat locY))
-
-        edgeRatio =
-            (edgeThickness * sideSize) / 100
-
-        plusIndent =
-            toString edgeRatio
-
-        minusIndent =
-            toString (sideSize - edgeRatio)
-
-        whole =
-            toString sideSize
-
-        half =
-            toString (sideSize / 2.0)
-
-        narrow =
-            toString (sideSize / 10.0)
-
-        textDownMore =
-            toString (sideSize / 1.8)
-
-        polyPoints =
-            half
-                ++ " "
-                ++ plusIndent
-                ++ ", "
-                ++ minusIndent
-                ++ " "
-                ++ half
-                ++ ", "
-                ++ half
-                ++ " "
-                ++ minusIndent
-                ++ ", "
-                ++ plusIndent
-                ++ " "
-                ++ half
-
-        polys =
-            polygon
-                [ fill lightBrown
-                , points polyPoints
-                , stroke "indianred"
-                , strokeWidth (toString edgeRatio)
-                ]
-                []
-
-        rectangle =
-            rect
-                [ width whole
-                , height whole
-                , fill "wheat"
-                , stroke darkBrown
-                , strokeWidth narrow
-                ]
-                []
-
-        myText =
-            text'
-                [ x half
-                , y textDownMore
-                , fill "black"
-                , fontSize half
-                , alignmentBaseline "middle"
-                , textAnchor "middle"
-                ]
-                [ text (toString model.pieceNumber) ]
-    in
-        Svg.svg
-            [ version "1.1"
-            , x pixelsX
-            , y pixelsY
-            ]
-            [ rectangle
-            , polys
-            , myText
-            ]
-
-
 view : Model -> Html Msg
 view model =
-    let
-        positionType =
-            model.positionType
-    in
-        case positionType of
-            Grid ->
-                renderEmptySquare model
-
-            Perimeter ->
-                renderEmptySquare model
-
-            Piece role pieceNumber ->
-                renderPiece model
+    renderEmptySquare model

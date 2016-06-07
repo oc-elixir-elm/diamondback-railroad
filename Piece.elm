@@ -1,95 +1,163 @@
-module Piece exposing (Model, Action, init, startTranslate, update, view)
+module Piece
+    exposing
+        ( Model
+        , Msg
+        , init
+        , initWithInfo
+        , update
+        , view
+        )
 
-import Color exposing (lightBrown)
-import Easing exposing (ease, easeOutQuint, float)
-import Effects exposing (Effects)
+import Color
+
+
+-- import Easing exposing (ease, easeOutQuint, float)
+-- import Effects exposing (Effects)
+
 import Html exposing (Html)
+import Svg exposing (..)
+import Svg.Attributes
+    exposing
+        ( alignmentBaseline
+        , fill
+        , fontSize
+        , height
+        , points
+        , stroke
+        , strokeWidth
+        , textAnchor
+        , version
+        , viewBox
+        , width
+        , x
+        , y
+        )
+import Matrix exposing (Location)
 import Time exposing (Time, second, millisecond)
-import Graphics.Collage exposing (ngon, collage, filled, moveX, toForm)
 
 
 -- MODEL
 
 
+type alias Pixels =
+    Float
+
+
+type alias PieceNumber =
+    Int
+
+
 type Role
-  = Head
-  | Middle
-  | Tail
+    = Head
+    | Middle
+    | Tail
+
+
+
+--  | Piece Role PieceNumber
 
 
 type alias Model =
-  { role : Role
-  , xTranslation : Float
-  , animationState : AnimationState
-  }
+    { role : Role
+    , location : Location
+    , pieceNumber : PieceNumber
+    , sideSize : Pixels
+    , xTranslation : Float
+    , animationState : AnimationState
+    }
 
 
 type alias AnimationState =
-  Maybe { prevClockTime : Time, elapsedTime : Time }
+    Maybe { prevClockTime : Time, elapsedTime : Time }
 
 
-init : ( Model, Effects Action )
+init : ( Model, Cmd Msg )
 init =
-  ( { role = Head, xTranslation = 0, animationState = Nothing }
-  , Effects.none
-  )
+    ( { role = Head
+      , location = ( 1, 1 )
+      , pieceNumber = 1
+      , sideSize = 44
+      , xTranslation = 0
+      , animationState = Nothing
+      }
+    , Cmd.none
+    )
+
+
+initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
+initWithInfo pieceNumber sideSize location =
+    let
+        ( model, cmd ) =
+            init
+    in
+        ( { model
+            | pieceNumber = pieceNumber
+            , sideSize = sideSize
+            , location = location
+          }
+        , cmd
+        )
 
 
 xTranslation =
-  100
+    100
 
 
 duration =
-  (500 * millisecond)
+    (500 * millisecond)
 
 
 
 -- UPDATE
 
 
-type Action
-  = XTranslate
-  | Tick Time
+type Msg
+    = XTranslate
+    | Tick Time
 
 
-update : Action -> Model -> ( Model, Effects Action )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  case msg of
-    XTranslate ->
-      case model.animationState of
-        Nothing ->
-          ( model, Effects.tick Tick )
-
-        Just _ ->
-          ( model, Effects.none )
-
-    Tick clockTime ->
-      let
-        newElapsedTime =
-          case model.animationState of
-            Nothing ->
-              0
-
-            Just { elapsedTime, prevClockTime } ->
-              elapsedTime + (clockTime - prevClockTime)
-      in
-        if newElapsedTime > duration then
-          ( { xTranslation = model.xTranslation + xTranslation
-            , animationState = Nothing
-            }
-          , Effects.none
-          )
-        else
-          ( { xTranslation = model.xTranslation
-            , animationState = Just { elapsedTime = newElapsedTime, prevClockTime = clockTime }
-            }
-          , Effects.tick Tick
-          )
+    ( model, Cmd.none )
 
 
-startTranslate : Model -> ( Model, Effects Action )
+{-|
+    case msg of
+        XTranslate ->
+            case model.animationState of
+                Nothing ->
+                    ( model, Cmd.tick Tick )
+
+                Just _ ->
+                    ( model, Cmd.none )
+
+        Tick clockTime ->
+            let
+                newElapsedTime =
+                    case model.animationState of
+                        Nothing ->
+                            0
+
+                        Just { elapsedTime, prevClockTime } ->
+                            elapsedTime + (clockTime - prevClockTime)
+            in
+                if newElapsedTime > duration then
+                    ( { xTranslation = model.xTranslation + xTranslation
+                      , animationState = Nothing
+                      }
+                    , Cmd.none
+                    )
+                else
+                    ( { xTranslation = model.xTranslation
+                      , animationState = Just { elapsedTime = newElapsedTime, prevClockTime = clockTime }
+                      }
+                    , Cmd.tick Tick
+                    )
+
+
+startTranslate : Model -> ( Model, Cmd Msg )
 startTranslate model =
-  update XTranslate model
+    update XTranslate model
 
 
 
@@ -98,12 +166,14 @@ startTranslate model =
 
 toOffset : AnimationState -> Float
 toOffset animationState =
-  case animationState of
-    Nothing ->
-      0
+    case animationState of
+        Nothing ->
+            0
 
-    Just { elapsedTime } ->
-      ease easeOutQuint float 0 xTranslation duration elapsedTime
+        Just { elapsedTime } ->
+            ease easeOutQuint float 0 xTranslation duration elapsedTime
+
+-}
 
 
 
@@ -157,23 +227,121 @@ toOffset animationState =
 -}
 
 
-view : Signal.Address Action -> Model -> Html
+edgeThickness : number
+edgeThickness =
+    3
+
+
+darkBrown : String
+darkBrown =
+    "saddlebrown"
+
+
+renderPiece : Model -> Html Msg
+renderPiece model =
+    let
+        sideSize =
+            model.sideSize
+
+        ( locX, locY ) =
+            model.location
+
+        pixelsX =
+            toString (sideSize * (toFloat locX))
+
+        pixelsY =
+            toString (sideSize * (toFloat locY))
+
+        edgeRatio =
+            (edgeThickness * sideSize) / 100
+
+        plusIndent =
+            toString edgeRatio
+
+        minusIndent =
+            toString (sideSize - edgeRatio)
+
+        whole =
+            toString sideSize
+
+        half =
+            toString (sideSize / 2.0)
+
+        narrow =
+            toString (sideSize / 10.0)
+
+        textDownMore =
+            toString (sideSize / 1.8)
+
+        polyPoints =
+            half
+                ++ " "
+                ++ plusIndent
+                ++ ", "
+                ++ minusIndent
+                ++ " "
+                ++ half
+                ++ ", "
+                ++ half
+                ++ " "
+                ++ minusIndent
+                ++ ", "
+                ++ plusIndent
+                ++ " "
+                ++ half
+
+        polys =
+            polygon
+                [ fill "white"
+                , points polyPoints
+                , stroke "indianred"
+                , strokeWidth (toString edgeRatio)
+                ]
+                []
+
+        myText =
+            text'
+                [ x half
+                , y textDownMore
+                , fill "black"
+                , fontSize "20"
+                , alignmentBaseline "middle"
+                , textAnchor "middle"
+                ]
+                [ text (toString model.pieceNumber) ]
+    in
+        Svg.svg
+            [ version "1.1"
+            , x pixelsX
+            , y pixelsY
+            ]
+            [ polys
+            , myText
+            ]
+
+
+{-|
+view : Signal.Address Msg -> Model -> Html
 view address model =
-  let
-    xTranslation =
-      model.xTranslation + toOffset model.animationState
+    let
+        xTranslation =
+            model.xTranslation + toOffset model.animationState
 
-    lPiece =
-      ngon 4 50
-        |> filled lightBrown
-        |> moveX -100
-        |> moveX xTranslation
+        lPiece =
+            ngon 4 50
+                |> filled lightBrown
+                |> moveX -100
+                |> moveX xTranslation
 
-    piece =
-      ngon 4 50
-        |> filled lightBrown
-        |> moveX xTranslation
-  in
-    [ lPiece, piece ]
-      |> collage 100 100
-      |> Html.fromElement
+        piece =
+            ngon 4 50
+                |> filled lightBrown
+                |> moveX xTranslation
+    in
+        [ lPiece, piece ]
+            |> collage 100 100
+            |> Html.fromElement
+-}
+view : Model -> Html Msg
+view model =
+    renderPiece model
