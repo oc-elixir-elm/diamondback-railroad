@@ -97,10 +97,11 @@ type alias PositionLocator =
 init : ( Model, Cmd Msg )
 init =
     let
-        ( piece, _ ) =
-            Piece.init
+      board = createMatrix maxPosLength
+      ( piece, _ ) =
+            Piece.initWithInfo 47 sideSize (2, 2)
     in
-        ( { board = createMatrix maxPosLength, pieces = [ piece ] }, Cmd.none )
+        ( { board = board, pieces = [ piece ] }, Cmd.none )
 
 
 

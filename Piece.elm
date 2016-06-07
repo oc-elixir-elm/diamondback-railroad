@@ -3,6 +3,7 @@ module Piece
         ( Model
         , Msg
         , init
+        , initWithInfo
         , update
         , view
         )
@@ -81,6 +82,21 @@ init =
       }
     , Cmd.none
     )
+
+
+initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
+initWithInfo pieceNumber sideSize location =
+    let
+        ( model, cmd ) =
+            init
+    in
+        ( { model
+            | pieceNumber = pieceNumber
+            , sideSize = sideSize
+            , location = location
+          }
+        , cmd
+        )
 
 
 xTranslation =
@@ -288,7 +304,7 @@ renderPiece model =
                 [ x half
                 , y textDownMore
                 , fill "black"
-                , fontSize "30"
+                , fontSize "20"
                 , alignmentBaseline "middle"
                 , textAnchor "middle"
                 ]
