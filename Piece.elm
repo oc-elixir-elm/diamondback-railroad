@@ -1,13 +1,38 @@
-module Piece exposing (Model, Action, init, startTranslate, update, view)
+module Piece exposing (Model, init, update, view)
 
-import Color exposing (lightBrown)
-import Easing exposing (ease, easeOutQuint, float)
-import Effects exposing (Effects)
+import Color
+
+
+-- import Easing exposing (ease, easeOutQuint, float)
+-- import Effects exposing (Effects)
+
 import Html exposing (Html)
+import Svg exposing (..)
+import Svg.Attributes
+    exposing
+        ( alignmentBaseline
+        , fill
+        , fontSize
+        , height
+        , points
+        , stroke
+        , strokeWidth
+        , textAnchor
+        , version
+        , viewBox
+        , width
+        , x
+        , y
+        )
+import Matrix exposing (Location)
 import Time exposing (Time, second, millisecond)
 
 
 -- MODEL
+
+
+type alias Pixels =
+    Float
 
 
 type alias PieceNumber =
@@ -26,7 +51,9 @@ type Role
 
 type alias Model =
     { role : Role
+    , location : Location
     , pieceNumber : PieceNumber
+    , sideSize : Pixels
     , xTranslation : Float
     , animationState : AnimationState
     }
@@ -36,10 +63,16 @@ type alias AnimationState =
     Maybe { prevClockTime : Time, elapsedTime : Time }
 
 
-init : ( Model, Effects Action )
+init : ( Model, Cmd Msg )
 init =
-    ( { role = Head, xTranslation = 0, animationState = Nothing }
-    , Effects.none
+    ( { role = Head
+      , location = ( 1, 1 )
+      , pieceNumber = 1
+      , sideSize = 44
+      , xTranslation = 0
+      , animationState = Nothing
+      }
+    , Cmd.none
     )
 
 
@@ -55,21 +88,25 @@ duration =
 -- UPDATE
 
 
-type Action
+type Msg
     = XTranslate
     | Tick Time
 
 
-update : Action -> Model -> ( Model, Effects Action )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    ( model, Cmd.none )
+
+
+{-|
     case msg of
         XTranslate ->
             case model.animationState of
                 Nothing ->
-                    ( model, Effects.tick Tick )
+                    ( model, Cmd.tick Tick )
 
                 Just _ ->
-                    ( model, Effects.none )
+                    ( model, Cmd.none )
 
         Tick clockTime ->
             let
@@ -85,17 +122,17 @@ update msg model =
                     ( { xTranslation = model.xTranslation + xTranslation
                       , animationState = Nothing
                       }
-                    , Effects.none
+                    , Cmd.none
                     )
                 else
                     ( { xTranslation = model.xTranslation
                       , animationState = Just { elapsedTime = newElapsedTime, prevClockTime = clockTime }
                       }
-                    , Effects.tick Tick
+                    , Cmd.tick Tick
                     )
 
 
-startTranslate : Model -> ( Model, Effects Action )
+startTranslate : Model -> ( Model, Cmd Msg )
 startTranslate model =
     update XTranslate model
 
@@ -112,6 +149,8 @@ toOffset animationState =
 
         Just { elapsedTime } ->
             ease easeOutQuint float 0 xTranslation duration elapsedTime
+
+-}
 
 
 
@@ -163,6 +202,16 @@ toOffset animationState =
      * "TranslationSquare" becomes simply "Square".
      * "SequenceGame becomes simply "Board" or "Game".
 -}
+
+
+edgeThickness : number
+edgeThickness =
+    3
+
+
+darkBrown : String
+darkBrown =
+    "saddlebrown"
 
 
 renderPiece : Model -> Html Msg
@@ -220,7 +269,7 @@ renderPiece model =
 
         polys =
             polygon
-                [ fill lightBrown
+                [ fill "lightBrown"
                 , points polyPoints
                 , stroke "indianred"
                 , strokeWidth (toString edgeRatio)
@@ -260,7 +309,7 @@ renderPiece model =
 
 
 {-|
-view : Signal.Address Action -> Model -> Html
+view : Signal.Address Msg -> Model -> Html
 view address model =
     let
         xTranslation =
@@ -281,8 +330,6 @@ view address model =
             |> collage 100 100
             |> Html.fromElement
 -}
-
-
 view : Model -> Html Msg
 view model =
     renderPiece model

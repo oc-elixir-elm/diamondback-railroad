@@ -14,8 +14,9 @@ import Svg.Attributes exposing (..)
 
 -- import Html.Events exposing (onClick)
 
-import Position
 import Matrix exposing (Matrix)
+import Position
+import Piece
 import Maybe exposing (..)
 
 

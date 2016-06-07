@@ -54,12 +54,6 @@ darkBrown =
     "saddlebrown"
 
 
-edgeThickness : number
-edgeThickness =
-    3
-
-
-
 -- MODEL
 
 
@@ -116,6 +110,7 @@ initWithInfo positionType maxPosLength sideSize location =
 type Msg
     = Tick Time
     | Nothing
+
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
