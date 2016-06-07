@@ -66,15 +66,6 @@ squareType location =
             Position.Grid
 
 
-calculatedPieceNumber : Matrix.Location -> Position.PieceNumber
-calculatedPieceNumber location =
-    let
-        ( x, y ) =
-            location
-    in
-        1 + x + (maxPosLength * y)
-
-
 positionFromInit : Matrix.Location -> Position.Model
 positionFromInit location =
     let
@@ -83,7 +74,6 @@ positionFromInit location =
                 maxPosLength
                 sideSize
                 location
-                (calculatedPieceNumber location)
     in
         position
 

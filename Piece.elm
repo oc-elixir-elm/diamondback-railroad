@@ -5,42 +5,50 @@ import Easing exposing (ease, easeOutQuint, float)
 import Effects exposing (Effects)
 import Html exposing (Html)
 import Time exposing (Time, second, millisecond)
-import Graphics.Collage exposing (ngon, collage, filled, moveX, toForm)
 
 
 -- MODEL
 
 
+type alias PieceNumber =
+    Int
+
+
 type Role
-  = Head
-  | Middle
-  | Tail
+    = Head
+    | Middle
+    | Tail
+
+
+
+--  | Piece Role PieceNumber
 
 
 type alias Model =
-  { role : Role
-  , xTranslation : Float
-  , animationState : AnimationState
-  }
+    { role : Role
+    , pieceNumber : PieceNumber
+    , xTranslation : Float
+    , animationState : AnimationState
+    }
 
 
 type alias AnimationState =
-  Maybe { prevClockTime : Time, elapsedTime : Time }
+    Maybe { prevClockTime : Time, elapsedTime : Time }
 
 
 init : ( Model, Effects Action )
 init =
-  ( { role = Head, xTranslation = 0, animationState = Nothing }
-  , Effects.none
-  )
+    ( { role = Head, xTranslation = 0, animationState = Nothing }
+    , Effects.none
+    )
 
 
 xTranslation =
-  100
+    100
 
 
 duration =
-  (500 * millisecond)
+    (500 * millisecond)
 
 
 
@@ -48,48 +56,48 @@ duration =
 
 
 type Action
-  = XTranslate
-  | Tick Time
+    = XTranslate
+    | Tick Time
 
 
 update : Action -> Model -> ( Model, Effects Action )
 update msg model =
-  case msg of
-    XTranslate ->
-      case model.animationState of
-        Nothing ->
-          ( model, Effects.tick Tick )
+    case msg of
+        XTranslate ->
+            case model.animationState of
+                Nothing ->
+                    ( model, Effects.tick Tick )
 
-        Just _ ->
-          ( model, Effects.none )
+                Just _ ->
+                    ( model, Effects.none )
 
-    Tick clockTime ->
-      let
-        newElapsedTime =
-          case model.animationState of
-            Nothing ->
-              0
+        Tick clockTime ->
+            let
+                newElapsedTime =
+                    case model.animationState of
+                        Nothing ->
+                            0
 
-            Just { elapsedTime, prevClockTime } ->
-              elapsedTime + (clockTime - prevClockTime)
-      in
-        if newElapsedTime > duration then
-          ( { xTranslation = model.xTranslation + xTranslation
-            , animationState = Nothing
-            }
-          , Effects.none
-          )
-        else
-          ( { xTranslation = model.xTranslation
-            , animationState = Just { elapsedTime = newElapsedTime, prevClockTime = clockTime }
-            }
-          , Effects.tick Tick
-          )
+                        Just { elapsedTime, prevClockTime } ->
+                            elapsedTime + (clockTime - prevClockTime)
+            in
+                if newElapsedTime > duration then
+                    ( { xTranslation = model.xTranslation + xTranslation
+                      , animationState = Nothing
+                      }
+                    , Effects.none
+                    )
+                else
+                    ( { xTranslation = model.xTranslation
+                      , animationState = Just { elapsedTime = newElapsedTime, prevClockTime = clockTime }
+                      }
+                    , Effects.tick Tick
+                    )
 
 
 startTranslate : Model -> ( Model, Effects Action )
 startTranslate model =
-  update XTranslate model
+    update XTranslate model
 
 
 
@@ -98,12 +106,12 @@ startTranslate model =
 
 toOffset : AnimationState -> Float
 toOffset animationState =
-  case animationState of
-    Nothing ->
-      0
+    case animationState of
+        Nothing ->
+            0
 
-    Just { elapsedTime } ->
-      ease easeOutQuint float 0 xTranslation duration elapsedTime
+        Just { elapsedTime } ->
+            ease easeOutQuint float 0 xTranslation duration elapsedTime
 
 
 
@@ -157,23 +165,124 @@ toOffset animationState =
 -}
 
 
+renderPiece : Model -> Html Msg
+renderPiece model =
+    let
+        sideSize =
+            model.sideSize
+
+        ( locX, locY ) =
+            model.location
+
+        pixelsX =
+            toString (sideSize * (toFloat locX))
+
+        pixelsY =
+            toString (sideSize * (toFloat locY))
+
+        edgeRatio =
+            (edgeThickness * sideSize) / 100
+
+        plusIndent =
+            toString edgeRatio
+
+        minusIndent =
+            toString (sideSize - edgeRatio)
+
+        whole =
+            toString sideSize
+
+        half =
+            toString (sideSize / 2.0)
+
+        narrow =
+            toString (sideSize / 10.0)
+
+        textDownMore =
+            toString (sideSize / 1.8)
+
+        polyPoints =
+            half
+                ++ " "
+                ++ plusIndent
+                ++ ", "
+                ++ minusIndent
+                ++ " "
+                ++ half
+                ++ ", "
+                ++ half
+                ++ " "
+                ++ minusIndent
+                ++ ", "
+                ++ plusIndent
+                ++ " "
+                ++ half
+
+        polys =
+            polygon
+                [ fill lightBrown
+                , points polyPoints
+                , stroke "indianred"
+                , strokeWidth (toString edgeRatio)
+                ]
+                []
+
+        rectangle =
+            rect
+                [ width whole
+                , height whole
+                , fill "wheat"
+                , stroke darkBrown
+                , strokeWidth narrow
+                ]
+                []
+
+        myText =
+            text'
+                [ x half
+                , y textDownMore
+                , fill "black"
+                , fontSize half
+                , alignmentBaseline "middle"
+                , textAnchor "middle"
+                ]
+                [ text (toString model.pieceNumber) ]
+    in
+        Svg.svg
+            [ version "1.1"
+            , x pixelsX
+            , y pixelsY
+            ]
+            [ rectangle
+            , polys
+            , myText
+            ]
+
+
+{-|
 view : Signal.Address Action -> Model -> Html
 view address model =
-  let
-    xTranslation =
-      model.xTranslation + toOffset model.animationState
+    let
+        xTranslation =
+            model.xTranslation + toOffset model.animationState
 
-    lPiece =
-      ngon 4 50
-        |> filled lightBrown
-        |> moveX -100
-        |> moveX xTranslation
+        lPiece =
+            ngon 4 50
+                |> filled lightBrown
+                |> moveX -100
+                |> moveX xTranslation
 
-    piece =
-      ngon 4 50
-        |> filled lightBrown
-        |> moveX xTranslation
-  in
-    [ lPiece, piece ]
-      |> collage 100 100
-      |> Html.fromElement
+        piece =
+            ngon 4 50
+                |> filled lightBrown
+                |> moveX xTranslation
+    in
+        [ lPiece, piece ]
+            |> collage 100 100
+            |> Html.fromElement
+-}
+
+
+view : Model -> Html Msg
+view model =
+    renderPiece model
