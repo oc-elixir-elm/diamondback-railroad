@@ -85,7 +85,7 @@ createMatrix posCount =
 
 
 type alias Model =
-    { board : Matrix Position.Model }
+    { board : Matrix Position.Model, pieces : List Piece.Model }
 
 
 type alias PositionLocator =
@@ -96,7 +96,10 @@ type alias PositionLocator =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { board = createMatrix maxPosLength }, Cmd.none )
+  let
+    (piece, _) = Piece.init
+  in
+    ( { board = createMatrix maxPosLength, pieces = [ piece ] }, Cmd.none )
 
 
 
