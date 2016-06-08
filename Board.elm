@@ -94,14 +94,33 @@ type alias PositionLocator =
     }
 
 
+piecesInfo =
+    [ ( 47, 2, 2 )
+    , ( 48, 3, 2 )
+    , ( 49, 3, 3 )
+    , ( 4, 8, 6 )
+    , ( 5, 9, 9 )
+    ]
+
+
+initPiece : ( Int, Int, Int ) -> Piece.Model
+initPiece tuple =
+  let
+    ( pieceNumber, x, y ) = tuple
+    ( piece, _) = Piece.initWithInfo pieceNumber sideSize (x, y)
+  in
+    piece
+
+
 init : ( Model, Cmd Msg )
 init =
     let
-      board = createMatrix maxPosLength
-      ( piece, _ ) =
-            Piece.initWithInfo 47 sideSize (2, 2)
+        board =
+            createMatrix maxPosLength
+
+        pieces = List.map (\pieceInfo -> (initPiece pieceInfo)) piecesInfo
     in
-        ( { board = board, pieces = [ piece ] }, Cmd.none )
+        ( { board = board, pieces = pieces }, Cmd.none )
 
 
 
