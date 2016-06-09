@@ -9,11 +9,7 @@ module Piece
         )
 
 import Color
-
-
--- import Easing exposing (ease, easeOutQuint, float)
--- import Effects exposing (Effects)
-
+import Ease exposing (Easing, outQuint)
 import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes
