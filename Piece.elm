@@ -8,9 +8,6 @@ module Piece
         , view
         )
 
-import Color
-
-
 -- import Easing exposing (ease, easeOutQuint, float)
 -- import Effects exposing (Effects)
 
@@ -32,6 +29,8 @@ import Svg.Attributes
         , x
         , y
         )
+import Color
+import AnimationFrame
 import Matrix exposing (Location)
 import Time exposing (Time, second, millisecond)
 import Style
@@ -64,8 +63,7 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , xTranslation : Float
-    , animationState : AnimationState
+    , style : Style.Animation
     }
 
 
@@ -79,8 +77,8 @@ init =
       , location = ( 1, 1 )
       , pieceNumber = 1
       , sideSize = 44
-      , xTranslation = 0
-      , animationState = Nothing
+      , style =
+            Style.init []
       }
     , Cmd.none
     )
@@ -101,6 +99,11 @@ initWithInfo pieceNumber sideSize location =
         )
 
 
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    AnimationFrame.times Animate
+
+
 xTranslation =
     100
 
@@ -114,13 +117,18 @@ duration =
 
 
 type Msg
-    = XTranslate
-    | Tick Time
+    = Show
+    | Animate Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        Show ->
+            ( model, Cmd.none )
+
+        Animate time ->
+            ( model, Cmd.none )
 
 
 {-|
