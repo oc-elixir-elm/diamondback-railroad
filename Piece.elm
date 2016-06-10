@@ -34,6 +34,8 @@ import Svg.Attributes
         )
 import Matrix exposing (Location)
 import Time exposing (Time, second, millisecond)
+import Style
+import Style.Properties
 
 
 -- MODEL
