@@ -8,9 +8,6 @@ module Piece
         , view
         )
 
-import Color
-
-
 -- import Easing exposing (ease, easeOutQuint, float)
 -- import Effects exposing (Effects)
 
@@ -32,8 +29,12 @@ import Svg.Attributes
         , x
         , y
         )
+import Color
+import AnimationFrame
 import Matrix exposing (Location)
 import Time exposing (Time, second, millisecond)
+import Style
+import Style.Properties
 
 
 -- MODEL
@@ -62,8 +63,7 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , xTranslation : Float
-    , animationState : AnimationState
+    , svgStyle : Style.Animation
     }
 
 
@@ -77,8 +77,8 @@ init =
       , location = ( 1, 1 )
       , pieceNumber = 1
       , sideSize = 44
-      , xTranslation = 0
-      , animationState = Nothing
+      , svgStyle =
+            Style.init []
       }
     , Cmd.none
     )
@@ -99,6 +99,11 @@ initWithInfo pieceNumber sideSize location =
         )
 
 
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    AnimationFrame.times Animate
+
+
 xTranslation =
     100
 
@@ -112,13 +117,18 @@ duration =
 
 
 type Msg
-    = XTranslate
-    | Tick Time
+    = Show
+    | Animate Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        Show ->
+            ( model, Cmd.none )
+
+        Animate time ->
+            ( model, Cmd.none )
 
 
 {-|
@@ -162,16 +172,6 @@ startTranslate model =
 
 
 -- VIEW
-
-
-toOffset : AnimationState -> Float
-toOffset animationState =
-    case animationState of
-        Nothing ->
-            0
-
-        Just { elapsedTime } ->
-            ease easeOutQuint float 0 xTranslation duration elapsedTime
 
 -}
 
@@ -310,38 +310,20 @@ renderPiece model =
                 ]
                 [ text (toString model.pieceNumber) ]
     in
-        Svg.svg
-            [ version "1.1"
-            , x pixelsX
-            , y pixelsY
-            ]
+        -- This will work; must put calculation of pixelsx and pixelsy
+        -- into init and initwithinfo initializations.
+        -- Gonna have to implmenet chains so that the Cx and Cy
+        -- can be calculated.
+        Svg.svg(Style.renderAttr model.svgStyle)
+            -- [ version "1.1"
+            -- , x pixelsX
+            --, y pixelsY
+            -- ]
             [ polys
             , myText
             ]
 
 
-{-|
-view : Signal.Address Msg -> Model -> Html
-view address model =
-    let
-        xTranslation =
-            model.xTranslation + toOffset model.animationState
-
-        lPiece =
-            ngon 4 50
-                |> filled lightBrown
-                |> moveX -100
-                |> moveX xTranslation
-
-        piece =
-            ngon 4 50
-                |> filled lightBrown
-                |> moveX xTranslation
-    in
-        [ lPiece, piece ]
-            |> collage 100 100
-            |> Html.fromElement
--}
 view : Model -> Html Msg
 view model =
     renderPiece model
