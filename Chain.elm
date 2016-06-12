@@ -1,9 +1,10 @@
-module Chain exposing (Model, init, view, update, subscriptions)
+module Chain exposing (Model, init, update, subscriptions)
 
 import Html exposing (Html)
-import Piece exposing (Msg, PieceNumber)
+import Piece exposing (Msg)
 import AnimationFrame
 import Time exposing (Time)
+import Style
 
 
 type alias Model =
@@ -23,20 +24,33 @@ subscriptions model =
 type Msg
     = Show
     | Animate Time
+    | Up
+    | Right
+    | Down
+    | Left
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        ( pieceNumber, x, y ) =
-            tuple
+        result =
+            case msg of
+                Up ->
+                    model
 
-        ( piece, _ ) =
-            Piece.initWithInfo pieceNumber sideSize ( x, y )
+                Right ->
+                    model
+
+                Down ->
+                    model
+
+                Left ->
+                    model
+
+                Show ->
+                    model
+
+                Animate time ->
+                    model
     in
-        piece
-
-
-view : Model -> Html Msg
-view model =
-    Html.text "chain"
+        ( result, Cmd.none )

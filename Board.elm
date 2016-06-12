@@ -17,6 +17,7 @@ import Svg.Attributes exposing (..)
 import Matrix exposing (Matrix)
 import Position
 import Piece
+import Chain
 import Maybe exposing (..)
 
 
@@ -85,7 +86,10 @@ createMatrix posCount =
 
 
 type alias Model =
-    { board : Matrix Position.Model, pieces : List Piece.Model }
+    { board : Matrix Position.Model
+    , pieces : List Piece.Model
+    , chain : Chain.Model
+    }
 
 
 type alias PositionLocator =
@@ -105,11 +109,19 @@ piecesInfo =
 
 initPiece : ( Int, Int, Int ) -> Piece.Model
 initPiece tuple =
-  let
-    ( pieceNumber, x, y ) = tuple
-    ( piece, _) = Piece.initWithInfo pieceNumber sideSize (x, y)
-  in
-    piece
+    let
+        ( pieceNumber, x, y ) =
+            tuple
+
+        ( piece, _ ) =
+            Piece.initWithInfo pieceNumber sideSize ( x, y )
+    in
+        piece
+
+
+initChain : List Piece.Model -> Chain.Model
+initChain pieces =
+    List.take 3 pieces
 
 
 init : ( Model, Cmd Msg )
@@ -118,9 +130,13 @@ init =
         board =
             createMatrix maxPosLength
 
-        pieces = List.map (\pieceInfo -> (initPiece pieceInfo)) piecesInfo
+        pieces =
+            List.map (\pieceInfo -> (initPiece pieceInfo)) piecesInfo
+
+        chain =
+            initChain pieces
     in
-        ( { board = board, pieces = pieces }, Cmd.none )
+        ( { board = board, pieces = pieces, chain = chain }, Cmd.none )
 
 
 
