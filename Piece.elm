@@ -326,10 +326,6 @@ renderPiece model =
         -- Gonna have to implmenet chains so that the Cx and Cy
         -- can be calculated.
         Svg.svg (Style.renderAttr model.svgStyle)
-            -- [ version "1.1"
-            -- , x pixelsX
-            --, y pixelsY
-            -- ]
             [ polys
             , myText
             ]
