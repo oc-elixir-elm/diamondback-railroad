@@ -1,7 +1,7 @@
 module Chain exposing (Model, init, update, subscriptions)
 
 import Html exposing (Html)
-import Piece exposing (Msg)
+import Piece
 import AnimationFrame
 import Time exposing (Time)
 import Style
