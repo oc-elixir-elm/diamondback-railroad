@@ -34,7 +34,7 @@ import AnimationFrame
 import Matrix exposing (Location)
 import Time exposing (Time, second, millisecond)
 import Style
-import Style.Properties
+import Style.Properties exposing (..)
 
 
 -- MODEL
@@ -52,6 +52,7 @@ type Role
     = Head
     | Middle
     | Tail
+    | Unassigned
 
 
 
@@ -73,7 +74,7 @@ type alias AnimationState =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { role = Head
+    ( { role = Unassigned
       , location = ( 1, 1 )
       , pieceNumber = 1
       , sideSize = 44
@@ -87,15 +88,31 @@ init =
 initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
 initWithInfo pieceNumber sideSize location =
     let
-        ( model, cmd ) =
-            init
-    in
-        ( { model
-            | pieceNumber = pieceNumber
-            , sideSize = sideSize
+        ( xloc, yloc ) =
+            location
+
+        pixelsX =
+            sideSize * (toFloat xloc)
+
+        pixelsY =
+            sideSize * (toFloat yloc)
+
+        svgInit =
+            Style.init
+                [ X pixelsX
+                , Y pixelsY
+                ]
+
+        model =
+            { role = Unassigned
             , location = location
-          }
-        , cmd
+            , pieceNumber = pieceNumber
+            , sideSize = sideSize
+            , svgStyle = svgInit
+            }
+    in
+        ( model
+        , Cmd.none
         )
 
 
@@ -246,12 +263,6 @@ renderPiece model =
         ( locX, locY ) =
             model.location
 
-        pixelsX =
-            toString (sideSize * (toFloat locX))
-
-        pixelsY =
-            toString (sideSize * (toFloat locY))
-
         edgeRatio =
             (edgeThickness * sideSize) / 100
 
@@ -314,7 +325,7 @@ renderPiece model =
         -- into init and initwithinfo initializations.
         -- Gonna have to implmenet chains so that the Cx and Cy
         -- can be calculated.
-        Svg.svg(Style.renderAttr model.svgStyle)
+        Svg.svg (Style.renderAttr model.svgStyle)
             -- [ version "1.1"
             -- , x pixelsX
             --, y pixelsY
