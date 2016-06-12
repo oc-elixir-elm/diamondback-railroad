@@ -54,3 +54,6 @@ update msg model =
                     model
     in
         ( result, Cmd.none )
+
+-- Note that we are not rendering a view;
+-- letting Piece handle.
