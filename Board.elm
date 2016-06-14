@@ -1,4 +1,10 @@
-module Board exposing (init, view, update, subscriptions)
+module Board
+    exposing
+        ( init
+        , view
+        , update
+        , subscriptions
+        )
 
 -- import Effects exposing (Effects)
 
@@ -50,7 +56,8 @@ boardSideInPixels =
 
 
 sideSize =
-    (toFloat boardSideInPixels) / (toFloat maxPosLength)
+    (toFloat boardSideInPixels)
+        / (toFloat maxPosLength)
 
 
 squareType : Matrix.Location -> Position.PositionType
@@ -62,7 +69,12 @@ squareType location =
         maxPos =
             maxPosLength - 1
     in
-        if (x == 0) || (x == maxPos) || (y == 0) || (y == maxPos) then
+        if
+            (x == 0)
+                || (x == maxPos)
+                || (y == 0)
+                || (y == maxPos)
+        then
             Position.Perimeter
         else
             Position.Grid
@@ -82,7 +94,8 @@ positionFromInit location =
 
 createMatrix : PosCount -> Matrix Position.Model
 createMatrix posCount =
-    Matrix.square posCount (\location -> positionFromInit location)
+    Matrix.square posCount
+        (\location -> positionFromInit location)
 
 
 type alias Model =
@@ -114,7 +127,9 @@ initPiece tuple =
             tuple
 
         ( piece, _ ) =
-            Piece.initWithInfo pieceNumber sideSize ( x, y )
+            Piece.initWithInfo pieceNumber
+                sideSize
+                ( x, y )
     in
         piece
 
@@ -131,12 +146,18 @@ init =
             createMatrix maxPosLength
 
         pieces =
-            List.map (\pieceInfo -> (initPiece pieceInfo)) piecesInfo
+            List.map (\pieceInfo -> (initPiece pieceInfo))
+                piecesInfo
 
         chain =
             initChain pieces
     in
-        ( { board = board, pieces = pieces, chain = chain }, Cmd.none )
+        ( { board = board
+          , pieces = pieces
+          , chain = chain
+          }
+        , Cmd.none
+        )
 
 
 
@@ -202,12 +223,14 @@ borderThickness =
 
 renderPosition : Position.Model -> Html Msg
 renderPosition position =
-    Html.App.map (ModifyPosition position.location) (Position.view position)
+    Html.App.map (ModifyPosition position.location)
+        (Position.view position)
 
 
 renderPiece : Piece.Model -> Html Msg
 renderPiece piece =
-    Html.App.map (ModifyPiece piece.location) (Piece.view piece)
+    Html.App.map (ModifyPiece piece.location)
+        (Piece.view piece)
 
 
 view : Model -> Html Msg
