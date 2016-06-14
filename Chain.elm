@@ -1,4 +1,10 @@
-module Chain exposing (Model, init, update, subscriptions)
+module Chain
+    exposing
+        ( Model
+        , init
+        , update
+        , subscriptions
+        )
 
 import Html exposing (Html)
 import Piece
@@ -54,6 +60,8 @@ update msg model =
                     model
     in
         ( result, Cmd.none )
+
+
 
 -- Note that we are not rendering a view;
 -- letting Piece handle.
