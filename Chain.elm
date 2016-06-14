@@ -26,7 +26,10 @@ init =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    AnimationFrame.times Animate
+    Sub.batch
+        [ AnimationFrame.times Animate
+        , Keyboard.downs KeyDown
+        ]
 
 
 type Msg
@@ -54,21 +57,22 @@ update msg model =
 
 keyDown : KeyCode -> model -> model
 keyDown keyCode model =
-  case Key.fromCode keyCode of
-    ArrowLeft ->
-      model
+    case Key.fromCode keyCode of
+        ArrowLeft ->
+            model
 
-    ArrowUp ->
-      model
+        ArrowUp ->
+            model
 
-    ArrowRight ->
-      model
+        ArrowRight ->
+            model
 
-    ArrowDown ->
-      model
+        ArrowDown ->
+            model
 
-    Unknown ->
-      model
+        Unknown ->
+            model
+
 
 
 -- Note that we are not rendering a view;
