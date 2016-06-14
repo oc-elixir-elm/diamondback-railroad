@@ -11,6 +11,8 @@ import Piece
 import AnimationFrame
 import Time exposing (Time)
 import Style
+import Keyboard exposing (KeyCode)
+import Key exposing (..)
 
 
 type alias Model =
