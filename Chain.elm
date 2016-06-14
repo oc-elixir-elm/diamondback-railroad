@@ -32,10 +32,7 @@ subscriptions model =
 type Msg
     = Show
     | Animate Time
-    | Up
-    | Right
-    | Down
-    | Left
+    | KeyDown KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -43,17 +40,8 @@ update msg model =
     let
         result =
             case msg of
-                Up ->
-                    model
-
-                Right ->
-                    model
-
-                Down ->
-                    model
-
-                Left ->
-                    model
+                KeyDown keyCode ->
+                    keyDown keyCode model
 
                 Show ->
                     model
@@ -63,6 +51,24 @@ update msg model =
     in
         ( result, Cmd.none )
 
+
+keyDown : KeyCode -> model -> model
+keyDown keyCode model =
+  case Key.fromCode keyCode of
+    ArrowLeft ->
+      model
+
+    ArrowUp ->
+      model
+
+    ArrowRight ->
+      model
+
+    ArrowDown ->
+      model
+
+    Unknown ->
+      model
 
 
 -- Note that we are not rendering a view;
