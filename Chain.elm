@@ -77,41 +77,48 @@ keyDown keyCode model =
 
 updateLoc : Location -> Model -> Model
 updateLoc delta chain =
-  let
-    ( dx, dy ) =
-      delta
+    let
+        updatedChain =
+            updateLocForHead delta (List.head chain) chain
+    in
+        updatedChain
 
-    headPiece = List.head chain
 
-    updatedChain =
-      case headPiece of
-        Just headPiece ->
+updateLocForHead : Location -> Maybe Piece.Model -> Model -> Model
+updateLocForHead delta piece chain =
+    case piece of
+        Nothing ->
+            chain
 
-          ( x, y ) =
+        Just piece ->
+            case List.tail chain of
+                Nothing ->
+                    chain
+
+                Just tailChain ->
+                    changeLocForHead delta piece chain
+
+
+changeLocForHead : Location -> Piece.Model -> Model -> Model
+changeLocForHead delta headPiece tailChain =
+    let
+        ( dx, dy ) =
+            delta
+
+        ( x, y ) =
             headPiece.location
 
-          newLocation =
-            ( x +  dx, y + dy )
+        newLocation =
+            ( x + dx, y + dy )
 
-          changedPiece =
+        changedPiece =
             { headPiece | location = newLocation }
 
-          tailChain = List.tail chain
+        updatedChain =
+            (changedPiece :: tailChain)
+    in
+        updatedChain
 
-          case tailChain of
-
-            Just tailChain ->
-
-              (changedPiece :: tailChain)
-
-            Nothing ->
-
-              chain
-
-      Nothing ->
-        chain
-  in
-    uupdatedChain
 
 
 -- Note that we are not rendering a view;
