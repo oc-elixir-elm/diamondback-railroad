@@ -13,6 +13,7 @@ import Time exposing (Time)
 import Style
 import Keyboard exposing (KeyCode)
 import Key exposing (..)
+import Matrix exposing (Location)
 
 
 type alias Model =
@@ -55,24 +56,62 @@ update msg model =
         ( result, Cmd.none )
 
 
-keyDown : KeyCode -> model -> model
+keyDown : KeyCode -> Model -> Model
 keyDown keyCode model =
     case Key.fromCode keyCode of
         ArrowLeft ->
-            model
+            updateLoc ( -1, 0 ) model
 
         ArrowUp ->
-            model
+            updateLoc ( 0, -1 ) model
 
         ArrowRight ->
-            model
+            updateLoc ( 1, 0 ) model
 
         ArrowDown ->
-            model
+            updateLoc ( 0, 1 ) model
 
         Unknown ->
             model
 
+
+updateLoc : Location -> Model -> Model
+updateLoc delta chain =
+  let
+    ( dx, dy ) =
+      delta
+
+    headPiece = List.head chain
+
+    updatedChain =
+      case headPiece of
+        Just headPiece ->
+
+          ( x, y ) =
+            headPiece.location
+
+          newLocation =
+            ( x +  dx, y + dy )
+
+          changedPiece =
+            { headPiece | location = newLocation }
+
+          tailChain = List.tail chain
+
+          case tailChain of
+
+            Just tailChain ->
+
+              (changedPiece :: tailChain)
+
+            Nothing ->
+
+              chain
+
+      Nothing ->
+        chain
+  in
+    uupdatedChain
 
 
 -- Note that we are not rendering a view;
