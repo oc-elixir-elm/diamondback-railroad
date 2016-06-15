@@ -57,46 +57,42 @@ update msg model =
 
 
 keyDown : KeyCode -> Model -> Model
-keyDown keyCode model =
+keyDown keyCode chain =
     case Key.fromCode keyCode of
         ArrowLeft ->
-            updateLoc ( -1, 0 ) model
+          updateLoc ( -1, 0 ) chain
 
         ArrowUp ->
-            updateLoc ( 0, -1 ) model
+            updateLoc ( 0, -1 ) chain
 
         ArrowRight ->
-            updateLoc ( 1, 0 ) model
+            updateLoc ( 1, 0 ) chain
 
         ArrowDown ->
-            updateLoc ( 0, 1 ) model
+            updateLoc ( 0, 1 ) chain
 
         Unknown ->
-            model
+            chain
 
 
 updateLoc : Location -> Model -> Model
 updateLoc delta chain =
-    let
-        updatedChain =
-            updateLocForHead delta (List.head chain) chain
-    in
-        updatedChain
+    updateLocForHead delta (List.head chain) chain
 
 
 updateLocForHead : Location -> Maybe Piece.Model -> Model -> Model
-updateLocForHead delta piece chain =
-    case piece of
+updateLocForHead delta headPiece chain =
+    case headPiece of
         Nothing ->
             chain
 
-        Just piece ->
+        Just headPiece ->
             case List.tail chain of
                 Nothing ->
                     chain
 
                 Just tailChain ->
-                    changeLocForHead delta piece chain
+                    changeLocForHead delta headPiece chain
 
 
 changeLocForHead : Location -> Piece.Model -> Model -> Model
