@@ -14,6 +14,7 @@ import Style
 import Keyboard exposing (KeyCode)
 import Key exposing (..)
 import Matrix exposing (Location)
+import Debug exposing (log)
 
 
 type alias Model =
@@ -34,33 +35,29 @@ subscriptions model =
 
 
 type Msg
-    = Show
-    | Animate Time
+    = Animate Time
     | KeyDown KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        result =
+        updatedModel =
             case msg of
                 KeyDown keyCode ->
-                    keyDown keyCode model
-
-                Show ->
-                    model
+                    keyDown (log "keycode" keyCode) model
 
                 Animate time ->
                     model
     in
-        ( result, Cmd.none )
+        ( updatedModel, Cmd.none )
 
 
 keyDown : KeyCode -> Model -> Model
 keyDown keyCode chain =
     case Key.fromCode keyCode of
         ArrowLeft ->
-          updateLoc ( -1, 0 ) chain
+            updateLoc ( -1, 0 ) chain
 
         ArrowUp ->
             updateLoc ( 0, -1 ) chain
