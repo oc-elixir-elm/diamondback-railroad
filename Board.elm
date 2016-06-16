@@ -182,12 +182,7 @@ update msg model =
             ( model, Cmd.none )
 
         KeyDown keyCode ->
-            let
-                something =
-                    log "keycode" keyCode
-            in
-                ( model, Cmd.none )
-
+            ( model, Cmd.none )
 
 
 -- SUBSCRIPTIONS
@@ -259,8 +254,6 @@ view model =
         pieces =
             model.pieces
 
-        chain =
-            model.chain
     in
         svg
             [ width "600"
@@ -277,6 +270,4 @@ view model =
                 (List.map renderPosition positions)
             , svg []
                 (List.map renderPiece pieces)
-            , svg []
-                (List.map renderPiece chain)
             ]
