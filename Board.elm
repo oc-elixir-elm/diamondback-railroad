@@ -25,13 +25,11 @@ import Position
 import Piece
 import Chain
 import Maybe exposing (..)
-
-
--- import Maybe exposing (..)
-
 import Color exposing (Color, lightBrown, darkBrown)
 import Time exposing (Time, second)
 import Window
+import Keyboard exposing (KeyCode)
+import Debug exposing (log)
 
 
 -- MODEL
@@ -168,11 +166,27 @@ type Msg
     = Tick Time
     | ModifyPosition Matrix.Location Position.Msg
     | ModifyPiece Matrix.Location Piece.Msg
+    | KeyDown KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        Tick time ->
+            ( model, Cmd.none )
+
+        ModifyPosition location positionMsg ->
+            ( model, Cmd.none )
+
+        ModifyPiece location pieceMsg ->
+            ( model, Cmd.none )
+
+        KeyDown keyCode ->
+            let
+                something =
+                    log "keycode" keyCode
+            in
+                ( model, Cmd.none )
 
 
 
@@ -181,7 +195,10 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every second Tick
+    Sub.batch
+        [ Time.every second Tick
+        , Keyboard.downs KeyDown
+        ]
 
 
 
@@ -241,6 +258,9 @@ view model =
 
         pieces =
             model.pieces
+
+        chain =
+            model.chain
     in
         svg
             [ width "600"
@@ -257,4 +277,6 @@ view model =
                 (List.map renderPosition positions)
             , svg []
                 (List.map renderPiece pieces)
+            , svg []
+                (List.map renderPiece chain)
             ]
