@@ -182,7 +182,18 @@ update msg model =
             ( model, Cmd.none )
 
         KeyDown keyCode ->
-            ( model, Cmd.none )
+            let
+                chainMsg =
+                    Chain.KeyDown keyCode
+
+                ( chain, _ ) =
+                    Chain.update chainMsg model.chain
+
+                updatedModel =
+                    { model | chain = chain }
+            in
+                ( updatedModel, Cmd.none )
+
 
 
 -- SUBSCRIPTIONS
@@ -253,7 +264,6 @@ view model =
 
         pieces =
             model.pieces
-
     in
         svg
             [ width "600"

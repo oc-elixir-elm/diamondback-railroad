@@ -4,6 +4,7 @@ module Chain
         , init
         , update
         , subscriptions
+        , Msg(KeyDown)
         )
 
 import Html exposing (Html)
@@ -45,7 +46,7 @@ update msg model =
         updatedModel =
             case msg of
                 KeyDown keyCode ->
-                    keyDown (log "keycode" keyCode) model
+                    keyDown keyCode model
 
                 Animate time ->
                     model
@@ -55,7 +56,10 @@ update msg model =
 
 keyDown : KeyCode -> Model -> Model
 keyDown keyCode chain =
-    case Key.fromCode keyCode of
+    let
+      directionKey = log "directionKey" (Key.fromCode keyCode)
+    in
+      case directionKey of
         ArrowLeft ->
             updateLoc ( -1, 0 ) chain
 
@@ -96,7 +100,7 @@ changeLocForHead : Location -> Piece.Model -> Model -> Model
 changeLocForHead delta headPiece tailChain =
     let
         ( dx, dy ) =
-            delta
+            log "delta" delta
 
         ( x, y ) =
             headPiece.location
