@@ -8,6 +8,7 @@ module Chain
         )
 
 import Html exposing (Html)
+import Html.App
 import Piece
 import AnimationFrame
 import Time exposing (Time)
@@ -57,23 +58,24 @@ update msg model =
 keyDown : KeyCode -> Model -> Model
 keyDown keyCode chain =
     let
-      directionKey = log "directionKey" (Key.fromCode keyCode)
+        directionKey =
+            Key.fromCode keyCode
     in
-      case directionKey of
-        ArrowLeft ->
-            updateLoc ( -1, 0 ) chain
+        case directionKey of
+            ArrowLeft ->
+                updateLoc ( -1, 0 ) chain
 
-        ArrowUp ->
-            updateLoc ( 0, -1 ) chain
+            ArrowUp ->
+                updateLoc ( 0, -1 ) chain
 
-        ArrowRight ->
-            updateLoc ( 1, 0 ) chain
+            ArrowRight ->
+                updateLoc ( 1, 0 ) chain
 
-        ArrowDown ->
-            updateLoc ( 0, 1 ) chain
+            ArrowDown ->
+                updateLoc ( 0, 1 ) chain
 
-        Unknown ->
-            chain
+            Unknown ->
+                chain
 
 
 updateLoc : Location -> Model -> Model
@@ -100,7 +102,7 @@ changeLocForHead : Location -> Piece.Model -> Model -> Model
 changeLocForHead delta headPiece tailChain =
     let
         ( dx, dy ) =
-            log "delta" delta
+            delta
 
         ( x, y ) =
             headPiece.location
@@ -116,7 +118,26 @@ changeLocForHead delta headPiece tailChain =
     in
         updatedChain
 
+{-
+renderPiece : Piece.Model -> Html Msg
+renderPiece piece =
+    Html.App.map (ModifyPiece piece.location)
 
 
--- Note that we are not rendering a view;
--- letting Piece handle.
+view : Model -> Html Msg
+view model =
+    svg
+        [ width "600"
+        , height "600"
+        ]
+        [ rect
+            [ stroke "blue"
+            , fill "white"
+            , width "600"
+            , height "600"
+            ]
+            []
+        , svg []
+            (List.map renderPiece model)
+        ]
+-}
