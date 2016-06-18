@@ -89,28 +89,16 @@ init =
 initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
 initWithInfo pieceNumber sideSize location =
     let
-        ( xloc, yloc ) =
-            location
-
-        pixelsX =
-            sideSize * (toFloat xloc)
-
-        pixelsY =
-            sideSize * (toFloat yloc)
-
-        svgInit =
-            Style.init
-                [ X pixelsX
-                , Y pixelsY
-                ]
-
-        model =
+        m =
             { role = Unassigned
             , location = location
             , pieceNumber = pieceNumber
             , sideSize = sideSize
-            , svgStyle = svgInit
+            , svgStyle = Style.init []
             }
+
+        model =
+            { m | svgStyle = (setSvgStyle m) }
     in
         ( model
         , Cmd.none
@@ -166,6 +154,26 @@ moveLoc delta model =
             ( x + dx, y + dy )
     in
         { model | location = newLocation }
+
+
+setSvgStyle model =
+    let
+        ( xloc, yloc ) =
+            model.location
+
+        pixelsX =
+            model.sideSize * (toFloat xloc)
+
+        pixelsY =
+            model.sideSize * (toFloat yloc)
+
+        svgInit =
+            Style.init
+                [ X pixelsX
+                , Y pixelsY
+                ]
+    in
+        svgInit
 
 
 {-|
@@ -348,7 +356,7 @@ renderPiece model =
         -- into init and initwithinfo initializations.
         -- Gonna have to implmenet chains so that the Cx and Cy
         -- can be calculated.
-        Svg.svg (Style.renderAttr model.svgStyle)
+        Svg.svg (Style.renderAttr (setSvgStyle model))
             [ polys
             , myText
             ]

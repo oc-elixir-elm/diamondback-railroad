@@ -163,8 +163,7 @@ init =
 
 
 type Msg
-    = Tick Time
-    | ModifyPosition Matrix.Location Position.Msg
+    = ModifyPosition Matrix.Location Position.Msg
     | ModifyPiece Matrix.Location Piece.Msg
     | KeyDown KeyCode
 
@@ -172,9 +171,6 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Tick time ->
-            ( model, Cmd.none )
-
         ModifyPosition location positionMsg ->
             ( model, Cmd.none )
 
@@ -208,8 +204,7 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Time.every second Tick
-        , Keyboard.downs KeyDown
+        [ Keyboard.downs KeyDown
         ]
 
 
