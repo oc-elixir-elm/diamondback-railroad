@@ -101,11 +101,11 @@ updateLocForPiece delta headPiece tailChain =
                     []
 
                 Just tailChain ->
-                    changeLocForHead delta headPiece tailChain
+                    changeLocForPiece delta headPiece tailChain
 
 
-changeLocForHead : Location -> Piece.Model -> Model -> Model
-changeLocForHead delta headPiece tailChain =
+changeLocForPiece : Location -> Piece.Model -> Model -> Model
+changeLocForPiece delta headPiece tailChain =
     let
         msg =
             Move delta
