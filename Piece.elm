@@ -1,7 +1,7 @@
 module Piece
     exposing
         ( Model
-        , Msg
+        , Msg(..)
         , init
         , initWithInfo
         , update
@@ -136,6 +136,7 @@ duration =
 type Msg
     = Show
     | Animate Time
+    | Move Location
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -146,6 +147,24 @@ update msg model =
 
         Animate time ->
             ( model, Cmd.none )
+
+        Move location ->
+            ( moveLoc location model, Cmd.none )
+
+
+moveLoc : Location -> Model -> Model
+moveLoc delta model =
+    let
+        ( dx, dy ) =
+            delta
+
+        ( x, y ) =
+            model.location
+
+        newLocation =
+            ( x + dx, y + dy )
+    in
+        { model | location = newLocation }
 
 
 {-|

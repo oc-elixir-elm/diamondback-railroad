@@ -192,7 +192,7 @@ update msg model =
                 updatedModel =
                     { model | chain = chain }
             in
-                ( updatedModel, Cmd.none )
+                ( log "board" updatedModel, Cmd.none )
 
 
 
@@ -264,6 +264,9 @@ view model =
 
         pieces =
             model.pieces
+
+        chain =
+            model.chain
     in
         svg
             [ width "600"
@@ -278,6 +281,8 @@ view model =
                 []
             , svg []
                 (List.map renderPosition positions)
+           -- , svg []
+           --     (List.map renderPiece pieces)
             , svg []
-                (List.map renderPiece pieces)
+                (List.map renderPiece chain)
             ]

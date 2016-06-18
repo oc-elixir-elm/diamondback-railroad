@@ -9,7 +9,7 @@ module Chain
 
 import Html exposing (Html)
 import Html.App
-import Piece
+import Piece exposing (Msg(..))
 import AnimationFrame
 import Time exposing (Time)
 import Style
@@ -95,28 +95,18 @@ updateLocForHead delta headPiece chain =
                     chain
 
                 Just tailChain ->
-                    changeLocForHead delta headPiece chain
+                    changeLocForHead delta headPiece tailChain
 
 
 changeLocForHead : Location -> Piece.Model -> Model -> Model
 changeLocForHead delta headPiece tailChain =
     let
-        ( dx, dy ) =
-            delta
-
-        ( x, y ) =
-            headPiece.location
-
-        newLocation =
-            ( x + dx, y + dy )
-
-        changedPiece =
-            { headPiece | location = newLocation }
-
-        updatedChain =
-            (changedPiece :: tailChain)
+        msg = Move delta
+        (changedPiece, _) =
+          Piece.update msg headPiece
     in
-        updatedChain
+        changedPiece :: tailChain
+
 
 {-
 renderPiece : Piece.Model -> Html Msg
