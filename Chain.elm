@@ -83,7 +83,11 @@ updateLoc delta chain =
     updateLocForHead delta (List.head chain) chain
 
 
-updateLocForHead : Location -> Maybe Piece.Model -> Model -> Model
+updateLocForHead :
+    Location
+    -> Maybe Piece.Model
+    -> Model
+    -> Model
 updateLocForHead delta headPiece chain =
     case headPiece of
         Nothing ->
