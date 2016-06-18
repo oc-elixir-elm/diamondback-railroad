@@ -80,9 +80,13 @@ keyDown keyCode chain =
 
 moveHead : Location -> Model -> Model
 moveHead delta chain =
-    moveChain delta
-        (List.head chain)
-        (List.tail chain)
+    let
+        doneChain =
+            moveChain delta
+                (List.head chain)
+                (List.tail chain)
+    in
+        doneChain
 
 
 moveChain :
