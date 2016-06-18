@@ -63,23 +63,23 @@ keyDown keyCode chain =
     in
         case directionKey of
             ArrowLeft ->
-                moveHead ( -1, 0 ) chain
+                moveChainStartingAtHead ( -1, 0 ) chain
 
             ArrowUp ->
-                moveHead ( 0, -1 ) chain
+                moveChainStartingAtHead ( 0, -1 ) chain
 
             ArrowRight ->
-                moveHead ( 1, 0 ) chain
+                moveChainStartingAtHead ( 1, 0 ) chain
 
             ArrowDown ->
-                moveHead ( 0, 1 ) chain
+                moveChainStartingAtHead ( 0, 1 ) chain
 
             Unknown ->
                 chain
 
 
-moveHead : Location -> Model -> Model
-moveHead delta chain =
+moveChainStartingAtHead : Location -> Model -> Model
+moveChainStartingAtHead delta chain =
     let
         doneChain =
             moveChain delta
