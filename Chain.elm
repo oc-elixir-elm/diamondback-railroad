@@ -80,23 +80,25 @@ keyDown keyCode chain =
 
 updateLoc : Location -> Model -> Model
 updateLoc delta chain =
-    updateLocForPiece delta (List.head chain) chain
+    updateLocForPiece delta
+        (List.head chain)
+        (List.tail chain)
 
 
 updateLocForPiece :
     Location
     -> Maybe Piece.Model
+    -> Maybe (List Piece.Model)
     -> Model
-    -> Model
-updateLocForPiece delta headPiece chain =
+updateLocForPiece delta headPiece tailChain =
     case headPiece of
         Nothing ->
-            chain
+            []
 
         Just headPiece ->
-            case List.tail chain of
+            case tailChain of
                 Nothing ->
-                    chain
+                    []
 
                 Just tailChain ->
                     changeLocForHead delta headPiece tailChain
