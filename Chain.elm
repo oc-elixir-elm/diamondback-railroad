@@ -101,33 +101,36 @@ updateLocForHead delta headPiece chain =
 changeLocForHead : Location -> Piece.Model -> Model -> Model
 changeLocForHead delta headPiece tailChain =
     let
-        msg = Move delta
-        (changedPiece, _) =
-          Piece.update msg headPiece
+        msg =
+            Move delta
+
+        ( changedPiece, _ ) =
+            Piece.update msg headPiece
     in
         changedPiece :: tailChain
 
 
+
 {-
-renderPiece : Piece.Model -> Html Msg
-renderPiece piece =
-    Html.App.map (ModifyPiece piece.location)
+   renderPiece : Piece.Model -> Html Msg
+   renderPiece piece =
+       Html.App.map (ModifyPiece piece.location)
 
 
-view : Model -> Html Msg
-view model =
-    svg
-        [ width "600"
-        , height "600"
-        ]
-        [ rect
-            [ stroke "blue"
-            , fill "white"
-            , width "600"
-            , height "600"
-            ]
-            []
-        , svg []
-            (List.map renderPiece model)
-        ]
+   view : Model -> Html Msg
+   view model =
+       svg
+           [ width "600"
+           , height "600"
+           ]
+           [ rect
+               [ stroke "blue"
+               , fill "white"
+               , width "600"
+               , height "600"
+               ]
+               []
+           , svg []
+               (List.map renderPiece model)
+           ]
 -}

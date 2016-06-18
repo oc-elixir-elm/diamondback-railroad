@@ -35,6 +35,7 @@ import Matrix exposing (Location)
 import Time exposing (Time, second, millisecond)
 import Style
 import Style.Properties exposing (..)
+import Debug exposing (log)
 
 
 -- MODEL
@@ -276,6 +277,9 @@ darkBrown =
 renderPiece : Model -> Html Msg
 renderPiece model =
     let
+        logPiece =
+            log "view piece" model
+
         sideSize =
             model.sideSize
 

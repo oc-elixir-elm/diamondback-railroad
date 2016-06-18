@@ -186,13 +186,19 @@ update msg model =
                 chainMsg =
                     Chain.KeyDown keyCode
 
+                logChain =
+                    model.chain
+
+--                logHeadPiece =
+--                    log "head" (List.head logChain)
+
                 ( chain, _ ) =
                     Chain.update chainMsg model.chain
 
                 updatedModel =
                     { model | chain = chain }
             in
-                ( log "board" updatedModel, Cmd.none )
+                ( updatedModel, Cmd.none )
 
 
 
@@ -281,8 +287,8 @@ view model =
                 []
             , svg []
                 (List.map renderPosition positions)
-           -- , svg []
-           --     (List.map renderPiece pieces)
+              -- , svg []
+              --     (List.map renderPiece pieces)
             , svg []
                 (List.map renderPiece chain)
             ]
