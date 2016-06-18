@@ -1,4 +1,10 @@
-module Board exposing (init, view, update, subscriptions)
+module Board
+    exposing
+        ( init
+        , view
+        , update
+        , subscriptions
+        )
 
 -- import Effects exposing (Effects)
 
@@ -17,14 +23,13 @@ import Svg.Attributes exposing (..)
 import Matrix exposing (Matrix)
 import Position
 import Piece
+import Chain
 import Maybe exposing (..)
-
-
--- import Maybe exposing (..)
-
 import Color exposing (Color, lightBrown, darkBrown)
 import Time exposing (Time, second)
 import Window
+import Keyboard exposing (KeyCode)
+import Debug exposing (log)
 
 
 -- MODEL
@@ -49,7 +54,8 @@ boardSideInPixels =
 
 
 sideSize =
-    (toFloat boardSideInPixels) / (toFloat maxPosLength)
+    (toFloat boardSideInPixels)
+        / (toFloat maxPosLength)
 
 
 squareType : Matrix.Location -> Position.PositionType
@@ -61,7 +67,12 @@ squareType location =
         maxPos =
             maxPosLength - 1
     in
-        if (x == 0) || (x == maxPos) || (y == 0) || (y == maxPos) then
+        if
+            (x == 0)
+                || (x == maxPos)
+                || (y == 0)
+                || (y == maxPos)
+        then
             Position.Perimeter
         else
             Position.Grid
@@ -81,11 +92,15 @@ positionFromInit location =
 
 createMatrix : PosCount -> Matrix Position.Model
 createMatrix posCount =
-    Matrix.square posCount (\location -> positionFromInit location)
+    Matrix.square posCount
+        (\location -> positionFromInit location)
 
 
 type alias Model =
-    { board : Matrix Position.Model, pieces : List Piece.Model }
+    { board : Matrix Position.Model
+    , pieces : List Piece.Model
+    , chain : Chain.Model
+    }
 
 
 type alias PositionLocator =
@@ -105,11 +120,21 @@ piecesInfo =
 
 initPiece : ( Int, Int, Int ) -> Piece.Model
 initPiece tuple =
-  let
-    ( pieceNumber, x, y ) = tuple
-    ( piece, _) = Piece.initWithInfo pieceNumber sideSize (x, y)
-  in
-    piece
+    let
+        ( pieceNumber, x, y ) =
+            tuple
+
+        ( piece, _ ) =
+            Piece.initWithInfo pieceNumber
+                sideSize
+                ( x, y )
+    in
+        piece
+
+
+initChain : List Piece.Model -> Chain.Model
+initChain pieces =
+    List.take 3 pieces
 
 
 init : ( Model, Cmd Msg )
@@ -118,9 +143,19 @@ init =
         board =
             createMatrix maxPosLength
 
-        pieces = List.map (\pieceInfo -> (initPiece pieceInfo)) piecesInfo
+        pieces =
+            List.map (\pieceInfo -> (initPiece pieceInfo))
+                piecesInfo
+
+        chain =
+            initChain pieces
     in
-        ( { board = board, pieces = pieces }, Cmd.none )
+        ( { board = board
+          , pieces = pieces
+          , chain = chain
+          }
+        , Cmd.none
+        )
 
 
 
@@ -128,14 +163,38 @@ init =
 
 
 type Msg
-    = Tick Time
-    | ModifyPosition Matrix.Location Position.Msg
+    = ModifyPosition Matrix.Location Position.Msg
     | ModifyPiece Matrix.Location Piece.Msg
+    | KeyDown KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        ModifyPosition location positionMsg ->
+            ( model, Cmd.none )
+
+        ModifyPiece location pieceMsg ->
+            ( model, Cmd.none )
+
+        KeyDown keyCode ->
+            let
+                chainMsg =
+                    Chain.KeyDown keyCode
+
+                logChain =
+                    model.chain
+
+--                logHeadPiece =
+--                    log "head" (List.head logChain)
+
+                ( chain, _ ) =
+                    Chain.update chainMsg model.chain
+
+                updatedModel =
+                    { model | chain = chain }
+            in
+                ( updatedModel, Cmd.none )
 
 
 
@@ -144,7 +203,9 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every second Tick
+    Sub.batch
+        [ Keyboard.downs KeyDown
+        ]
 
 
 
@@ -186,12 +247,14 @@ borderThickness =
 
 renderPosition : Position.Model -> Html Msg
 renderPosition position =
-    Html.App.map (ModifyPosition position.location) (Position.view position)
+    Html.App.map (ModifyPosition position.location)
+        (Position.view position)
 
 
 renderPiece : Piece.Model -> Html Msg
 renderPiece piece =
-    Html.App.map (ModifyPiece piece.location) (Piece.view piece)
+    Html.App.map (ModifyPiece piece.location)
+        (Piece.view piece)
 
 
 view : Model -> Html Msg
@@ -202,6 +265,9 @@ view model =
 
         pieces =
             model.pieces
+
+        chain =
+            model.chain
     in
         svg
             [ width "600"
@@ -216,6 +282,8 @@ view model =
                 []
             , svg []
                 (List.map renderPosition positions)
+              -- , svg []
+              --     (List.map renderPiece pieces)
             , svg []
-                (List.map renderPiece pieces)
+                (List.map renderPiece chain)
             ]

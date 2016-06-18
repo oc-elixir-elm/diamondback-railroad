@@ -1,7 +1,7 @@
 module Piece
     exposing
         ( Model
-        , Msg
+        , Msg(..)
         , init
         , initWithInfo
         , update
@@ -34,7 +34,8 @@ import AnimationFrame
 import Matrix exposing (Location)
 import Time exposing (Time, second, millisecond)
 import Style
-import Style.Properties
+import Style.Properties exposing (..)
+import Debug exposing (log)
 
 
 -- MODEL
@@ -52,6 +53,7 @@ type Role
     = Head
     | Middle
     | Tail
+    | Unassigned
 
 
 
@@ -73,7 +75,7 @@ type alias AnimationState =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { role = Head
+    ( { role = Unassigned
       , location = ( 1, 1 )
       , pieceNumber = 1
       , sideSize = 44
@@ -87,15 +89,19 @@ init =
 initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
 initWithInfo pieceNumber sideSize location =
     let
-        ( model, cmd ) =
-            init
-    in
-        ( { model
-            | pieceNumber = pieceNumber
-            , sideSize = sideSize
+        m =
+            { role = Unassigned
             , location = location
-          }
-        , cmd
+            , pieceNumber = pieceNumber
+            , sideSize = sideSize
+            , svgStyle = Style.init []
+            }
+
+        model =
+            { m | svgStyle = (setSvgStyle m) }
+    in
+        ( model
+        , Cmd.none
         )
 
 
@@ -119,6 +125,7 @@ duration =
 type Msg
     = Show
     | Animate Time
+    | Move Location
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -129,6 +136,44 @@ update msg model =
 
         Animate time ->
             ( model, Cmd.none )
+
+        Move location ->
+            ( moveLoc location model, Cmd.none )
+
+
+moveLoc : Location -> Model -> Model
+moveLoc delta model =
+    let
+        ( dx, dy ) =
+            delta
+
+        ( x, y ) =
+            model.location
+
+        newLocation =
+            ( x + dx, y + dy )
+    in
+        { model | location = newLocation }
+
+
+setSvgStyle model =
+    let
+        ( xloc, yloc ) =
+            model.location
+
+        pixelsX =
+            model.sideSize * (toFloat xloc)
+
+        pixelsY =
+            model.sideSize * (toFloat yloc)
+
+        svgInit =
+            Style.init
+                [ X pixelsX
+                , Y pixelsY
+                ]
+    in
+        svgInit
 
 
 {-|
@@ -240,17 +285,14 @@ darkBrown =
 renderPiece : Model -> Html Msg
 renderPiece model =
     let
+        logPiece =
+            log "view piece" model
+
         sideSize =
             model.sideSize
 
         ( locX, locY ) =
             model.location
-
-        pixelsX =
-            toString (sideSize * (toFloat locX))
-
-        pixelsY =
-            toString (sideSize * (toFloat locY))
 
         edgeRatio =
             (edgeThickness * sideSize) / 100
@@ -314,11 +356,7 @@ renderPiece model =
         -- into init and initwithinfo initializations.
         -- Gonna have to implmenet chains so that the Cx and Cy
         -- can be calculated.
-        Svg.svg(Style.renderAttr model.svgStyle)
-            -- [ version "1.1"
-            -- , x pixelsX
-            --, y pixelsY
-            -- ]
+        Svg.svg (Style.renderAttr (setSvgStyle model))
             [ polys
             , myText
             ]
