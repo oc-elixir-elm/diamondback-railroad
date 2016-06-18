@@ -63,23 +63,23 @@ keyDown keyCode chain =
     in
         case directionKey of
             ArrowLeft ->
-                updateLoc ( -1, 0 ) chain
+                moveHead ( -1, 0 ) chain
 
             ArrowUp ->
-                updateLoc ( 0, -1 ) chain
+                moveHead ( 0, -1 ) chain
 
             ArrowRight ->
-                updateLoc ( 1, 0 ) chain
+                moveHead ( 1, 0 ) chain
 
             ArrowDown ->
-                updateLoc ( 0, 1 ) chain
+                moveHead ( 0, 1 ) chain
 
             Unknown ->
                 chain
 
 
-updateLoc : Location -> Model -> Model
-updateLoc delta chain =
+moveHead : Location -> Model -> Model
+moveHead delta chain =
     updateLocForPiece delta
         (List.head chain)
         (List.tail chain)
