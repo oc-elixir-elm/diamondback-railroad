@@ -90,26 +90,10 @@ moveChainStartingAtHead startingDelta chain =
                     chain
 
                 Just tailChain ->
-                    let
-                        newLocation =
-                            calculateNewLoc firstPiece startingDelta
-                    in
-                        moveChain newLocation
-                            firstPiece
-                            tailChain
-                            []
-
-
-calculateNewLoc : Piece.Model -> Location -> Location
-calculateNewLoc piece delta =
-    let
-        ( oldX, oldY ) =
-            piece.location
-
-        ( dX, dY ) =
-            delta
-    in
-        ( oldX + dX, oldY + dY )
+                    moveChain startingDelta
+                        firstPiece
+                        tailChain
+                        []
 
 
 moveChain :
@@ -118,18 +102,14 @@ moveChain :
     -> List Piece.Model
     -> List Piece.Model
     -> Model
-moveChain newLocation headPiece tailChain doneChain =
-    moveCurrentPiece headPiece newLocation doneChain
+moveChain delta headPiece tailChain doneChain =
+    moveCurrentPiece headPiece delta doneChain
         |> moveNextPiece tailChain headPiece
 
 
 moveCurrentPiece : Piece.Model -> Location -> Model -> Model
-moveCurrentPiece piece newLocation doneChain =
+moveCurrentPiece piece delta doneChain =
     let
-        delta =
-            calculateDelta piece.location
-                newLocation
-
         updatedPiece =
             changeLocForPiece delta
                 piece
@@ -145,15 +125,15 @@ moveNextPiece tailChain headPiece doneChain =
 
         Just nextPiece ->
             let
-                nextLocation =
-                    headPiece.location
+                delta =
+                    calculateDelta nextPiece.location headPiece.location
             in
                 case (List.tail tailChain) of
                     Nothing ->
                         List.reverse doneChain
 
                     Just remnantChain ->
-                        moveChain nextLocation
+                        moveChain delta
                             nextPiece
                             remnantChain
                             doneChain
