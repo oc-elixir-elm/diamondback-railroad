@@ -219,11 +219,6 @@ update msg model =
                 chainMsg =
                     Chain.KeyDown keyCode
 
-                logChain =
-                    model.chain
-
-                --                logHeadPiece =
-                --                    log "head" (List.head logChain)
                 ( chain, _ ) =
                     Chain.update chainMsg model.chain
 
