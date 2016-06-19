@@ -109,7 +109,7 @@ calculateNewLoc piece delta =
         ( dX, dY ) =
             delta
     in
-        ( oldX + dX, oldY +  dY )
+        ( oldX + dX, oldY + dY )
 
 
 moveChain :
@@ -120,29 +120,28 @@ moveChain :
     -> Model
 moveChain newLocation headPiece tailChain doneChain =
     case (List.head tailChain) of
-      Nothing ->
-        List.reverse doneChain
-
-      Just nextPiece ->
-        let
-          delta =
-            calculateDelta headPiece.location
-                 newLocation
-
-          updatedPiece =
-            changeLocForPiece delta
-                headPiece
-
-        in
-         case (List.tail tailChain) of
-          Nothing ->
+        Nothing ->
             List.reverse doneChain
 
-          Just remnantChain ->
-            moveChain delta
-              updatedPiece
-              remnantChain
-              doneChain
+        Just nextPiece ->
+            let
+                delta =
+                    calculateDelta headPiece.location
+                        newLocation
+
+                updatedPiece =
+                    changeLocForPiece delta
+                        headPiece
+            in
+                case (List.tail tailChain) of
+                    Nothing ->
+                        List.reverse doneChain
+
+                    Just remnantChain ->
+                        moveChain delta
+                            updatedPiece
+                            remnantChain
+                            doneChain
 
 
 calculateDelta : Location -> Location -> Location
