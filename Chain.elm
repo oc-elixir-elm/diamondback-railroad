@@ -79,45 +79,100 @@ keyDown keyCode chain =
 
 
 moveChainStartingAtHead : Location -> Model -> Model
-moveChainStartingAtHead delta chain =
+moveChainStartingAtHead startingDelta chain =
+    case (List.head chain) of
+        Nothing ->
+            chain
+
+        Just firstPiece ->
+            case (List.tail chain) of
+                Nothing ->
+                    chain
+
+                Just tailChain ->
+                    let
+                        newLocation =
+                            calculateNewLoc firstPiece startingDelta
+                    in
+                        moveChain newLocation
+                            firstPiece
+                            tailChain
+                            []
+
+
+calculateNewLoc : Piece.Model -> Location -> Location
+calculateNewLoc piece delta =
     let
-        doneChain =
-            moveChain delta
-                (List.head chain)
-                (List.tail chain)
+        ( oldX, oldY ) =
+            piece.location
+
+        ( dX, dY ) =
+            delta
     in
-        doneChain
+        ( oldX + dX, oldY +  dY )
 
 
 moveChain :
     Location
-    -> Maybe Piece.Model
-    -> Maybe (List Piece.Model)
+    -> Piece.Model
+    -> List Piece.Model
+    -> List Piece.Model
     -> Model
-moveChain delta headPiece tailChain =
-    case headPiece of
-        Nothing ->
-            []
+moveChain newLocation headPiece tailChain doneChain =
+    case (List.head tailChain) of
+      Nothing ->
+        List.reverse doneChain
 
-        Just headPiece ->
-            case tailChain of
-                Nothing ->
-                    []
+      Just nextPiece ->
+        let
+          delta =
+            calculateDelta headPiece.location
+                 newLocation
 
-                Just tailChain ->
-                    changeLocForPiece delta headPiece tailChain
+          updatedPiece =
+            changeLocForPiece delta
+                headPiece
+
+        in
+         case (List.tail tailChain) of
+          Nothing ->
+            List.reverse doneChain
+
+          Just remnantChain ->
+            moveChain delta
+              updatedPiece
+              remnantChain
+              doneChain
 
 
-changeLocForPiece : Location -> Piece.Model -> Model -> Model
-changeLocForPiece delta headPiece tailChain =
+calculateDelta : Location -> Location -> Location
+calculateDelta thisLocation nextLocation =
+    let
+        ( thisX, thisY ) =
+            thisLocation
+
+        ( nextX, nextY ) =
+            nextLocation
+
+        dx =
+            thisX - nextX
+
+        dy =
+            thisY - nextY
+    in
+        ( dx, dy )
+
+
+changeLocForPiece : Location -> Piece.Model -> Piece.Model
+changeLocForPiece delta piece =
     let
         msg =
             Move delta
 
         ( changedPiece, _ ) =
-            Piece.update msg headPiece
+            Piece.update msg piece
     in
-        changedPiece :: tailChain
+        changedPiece
 
 
 
