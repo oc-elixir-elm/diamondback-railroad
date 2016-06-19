@@ -127,19 +127,25 @@ moveChain newLocation headPiece tailChain doneChain =
             let
                 delta =
                     calculateDelta headPiece.location
-                        newLocation
+                        (log "newLocation" newLocation)
+
+                nextLocation =
+                  calculateNewLoc nextPiece delta
 
                 updatedPiece =
                     changeLocForPiece delta
                         headPiece
+
+                doneChain =
+                    updatedPiece :: doneChain
             in
                 case (List.tail tailChain) of
                     Nothing ->
                         List.reverse doneChain
 
                     Just remnantChain ->
-                        moveChain delta
-                            updatedPiece
+                        moveChain nextLocation
+                            nextPiece
                             remnantChain
                             doneChain
 
