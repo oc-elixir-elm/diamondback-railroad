@@ -227,10 +227,43 @@ update msg model =
                 ( chain, _ ) =
                     Chain.update chainMsg model.chain
 
+                newMoveCount =
+                    updateMoveCount model chain
+
                 updatedModel =
-                    { model | chain = chain }
+                    { model
+                        | chain = chain
+                    }
+
+                anotherUpdatedModel =
+                    { updatedModel
+                        | moveCount = newMoveCount
+                    }
             in
-                ( updatedModel, Cmd.none )
+                ( anotherUpdatedModel, Cmd.none )
+
+
+updateMoveCount : Model -> List Piece.Model -> Int
+updateMoveCount model newChain =
+    case List.head newChain of
+        Nothing ->
+            model.moveCount
+
+        Just newHeadPiece ->
+          let
+            oldChain =
+              model.chain
+          in
+            case List.head oldChain of
+                Nothing ->
+                    model.moveCount
+
+                Just oldHeadPiece ->
+                    -- Argh: this should be in Chain
+                    if Chain.sameLocation newHeadPiece.location oldHeadPiece.location then
+                        model.moveCount
+                    else
+                        1 + model.moveCount
 
 
 
@@ -293,6 +326,11 @@ renderPiece piece =
         (Piece.view piece)
 
 
+renderMoveCount : Int -> String
+renderMoveCount moveCount =
+    "Moves thus far: " ++ (toString moveCount)
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -324,5 +362,7 @@ view model =
                 , svg []
                     (List.map renderPiece chain)
                 ]
-            , div [] [ text (toString model.moveCount) ]
+            , div []
+                [ text (renderMoveCount model.moveCount)
+                ]
             ]
