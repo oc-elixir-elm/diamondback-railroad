@@ -119,35 +119,36 @@ moveChain :
     -> List Piece.Model
     -> Model
 moveChain newLocation headPiece tailChain doneChain =
-    case (List.head tailChain) of
-        Nothing ->
-            List.reverse doneChain
+    let
+        delta =
+            calculateDelta headPiece.location
+                newLocation
 
-        Just nextPiece ->
-            let
-                delta =
-                    calculateDelta headPiece.location
-                        (log "newLocation" newLocation)
+        updatedPiece =
+            changeLocForPiece delta
+                headPiece
 
-                nextLocation =
-                  calculateNewLoc nextPiece delta
+        doneChain =
+            updatedPiece :: doneChain
+    in
+        case (List.head tailChain) of
+            Nothing ->
+                List.reverse doneChain
 
-                updatedPiece =
-                    changeLocForPiece delta
-                        headPiece
+            Just nextPiece ->
+                let
+                    nextLocation =
+                        calculateNewLoc nextPiece delta
+                in
+                    case (List.tail tailChain) of
+                        Nothing ->
+                            List.reverse doneChain
 
-                doneChain =
-                    updatedPiece :: doneChain
-            in
-                case (List.tail tailChain) of
-                    Nothing ->
-                        List.reverse doneChain
-
-                    Just remnantChain ->
-                        moveChain nextLocation
-                            nextPiece
-                            remnantChain
-                            doneChain
+                        Just remnantChain ->
+                            moveChain nextLocation
+                                nextPiece
+                                remnantChain
+                                doneChain
 
 
 calculateDelta : Location -> Location -> Location
@@ -160,12 +161,12 @@ calculateDelta thisLocation nextLocation =
             nextLocation
 
         dx =
-            thisX - nextX
+            nextX - thisX
 
         dy =
-            thisY - nextY
+            nextY - thisY
     in
-        ( dx, dy )
+        log "delta" ( dx, dy )
 
 
 changeLocForPiece : Location -> Piece.Model -> Piece.Model
