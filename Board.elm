@@ -8,7 +8,7 @@ module Board
 
 -- import Effects exposing (Effects)
 
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Html.App
 
 
@@ -100,6 +100,7 @@ type alias Model =
     { board : Matrix Position.Model
     , pieces : List Piece.Model
     , chain : Chain.Model
+    , moveCount : Int
     }
 
 
@@ -186,10 +187,14 @@ init =
         -- one chain includes all the pieces
         chain =
             pieces
+
+        moveCount =
+            0
     in
         ( { board = board
           , pieces = pieces
           , chain = chain
+          , moveCount = moveCount
           }
         , Cmd.none
         )
@@ -300,21 +305,24 @@ view model =
         chain =
             model.chain
     in
-        svg
-            [ width "600"
-            , height "600"
-            ]
-            [ rect
-                [ stroke "blue"
-                , fill "white"
-                , width "600"
+        div []
+            [ svg
+                [ width "600"
                 , height "600"
                 ]
-                []
-            , svg []
-                (List.map renderPosition positions)
-              -- , svg []
-              --     (List.map renderPiece pieces)
-            , svg []
-                (List.map renderPiece chain)
+                [ rect
+                    [ stroke "blue"
+                    , fill "white"
+                    , width "600"
+                    , height "600"
+                    ]
+                    []
+                , svg []
+                    (List.map renderPosition positions)
+                  -- , svg []
+                  --     (List.map renderPiece pieces)
+                , svg []
+                    (List.map renderPiece chain)
+                ]
+            , div [] [ text (toString model.moveCount) ]
             ]
