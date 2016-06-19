@@ -8,7 +8,7 @@ module Board
 
 -- import Effects exposing (Effects)
 
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Html.App
 
 
@@ -100,6 +100,7 @@ type alias Model =
     { board : Matrix Position.Model
     , pieces : List Piece.Model
     , chain : Chain.Model
+    , moveCount : Int
     }
 
 
@@ -186,10 +187,14 @@ init =
         -- one chain includes all the pieces
         chain =
             pieces
+
+        moveCount =
+            0
     in
         ( { board = board
           , pieces = pieces
           , chain = chain
+          , moveCount = moveCount
           }
         , Cmd.none
         )
@@ -222,10 +227,43 @@ update msg model =
                 ( chain, _ ) =
                     Chain.update chainMsg model.chain
 
+                newMoveCount =
+                    updateMoveCount model chain
+
                 updatedModel =
-                    { model | chain = chain }
+                    { model
+                        | chain = chain
+                    }
+
+                anotherUpdatedModel =
+                    { updatedModel
+                        | moveCount = newMoveCount
+                    }
             in
-                ( updatedModel, Cmd.none )
+                ( anotherUpdatedModel, Cmd.none )
+
+
+updateMoveCount : Model -> List Piece.Model -> Int
+updateMoveCount model newChain =
+    case List.head newChain of
+        Nothing ->
+            model.moveCount
+
+        Just newHeadPiece ->
+          let
+            oldChain =
+              model.chain
+          in
+            case List.head oldChain of
+                Nothing ->
+                    model.moveCount
+
+                Just oldHeadPiece ->
+                    -- Argh: this should be in Chain
+                    if Chain.sameLocation newHeadPiece.location oldHeadPiece.location then
+                        model.moveCount
+                    else
+                        1 + model.moveCount
 
 
 
@@ -288,6 +326,11 @@ renderPiece piece =
         (Piece.view piece)
 
 
+renderMoveCount : Int -> String
+renderMoveCount moveCount =
+    "Moves thus far: " ++ (toString moveCount)
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -300,21 +343,26 @@ view model =
         chain =
             model.chain
     in
-        svg
-            [ width "600"
-            , height "600"
-            ]
-            [ rect
-                [ stroke "blue"
-                , fill "white"
-                , width "600"
+        div []
+            [ svg
+                [ width "600"
                 , height "600"
                 ]
-                []
-            , svg []
-                (List.map renderPosition positions)
-              -- , svg []
-              --     (List.map renderPiece pieces)
-            , svg []
-                (List.map renderPiece chain)
+                [ rect
+                    [ stroke "blue"
+                    , fill "white"
+                    , width "600"
+                    , height "600"
+                    ]
+                    []
+                , svg []
+                    (List.map renderPosition positions)
+                  -- , svg []
+                  --     (List.map renderPiece pieces)
+                , svg []
+                    (List.map renderPiece chain)
+                ]
+            , div []
+                [ text (renderMoveCount model.moveCount)
+                ]
             ]

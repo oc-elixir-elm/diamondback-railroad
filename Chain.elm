@@ -4,6 +4,7 @@ module Chain
         , init
         , update
         , subscriptions
+        , sameLocation
         , Msg(KeyDown)
         )
 
@@ -176,6 +177,18 @@ newLocation delta headLocation =
             delta
     in
         ( x + dx, y + dy )
+
+
+sameLocation : Location -> Location -> Bool
+sameLocation oldLocation newLocation =
+    let
+        ( oldX, oldY ) =
+            oldLocation
+
+        ( newX, newY ) =
+            newLocation
+    in
+        (oldX == newX) && (oldY == newY)
 
 
 moveChain :
