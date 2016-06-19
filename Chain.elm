@@ -80,8 +80,8 @@ displacement either vertically (y) or horizontally (x).
 This is applied to the head piece of the chain.
 
 The next piece is then moved to where the head was,
-and this process (moveChain) recursively occurs until all pieces
-in the chain have moved.
+and this process (moveChain) recursively occurs
+until all pieces in the chain have moved.
 
 This has been tested down to a chain having only one piece.
 -}
@@ -114,7 +114,11 @@ moveChain delta headPiece tailChain doneChain =
         |> moveNextPiece tailChain headPiece
 
 
-moveCurrentPiece : Piece.Model -> Location -> Model -> Model
+moveCurrentPiece :
+    Piece.Model
+    -> Location
+    -> Model
+    -> Model
 moveCurrentPiece piece delta doneChain =
     let
         updatedPiece =
@@ -124,7 +128,11 @@ moveCurrentPiece piece delta doneChain =
         updatedPiece :: doneChain
 
 
-moveNextPiece : List Piece.Model -> Piece.Model -> Model -> Model
+moveNextPiece :
+    List Piece.Model
+    -> Piece.Model
+    -> Model
+    -> Model
 moveNextPiece tailChain headPiece doneChain =
     case (List.head tailChain) of
         Nothing ->
@@ -133,7 +141,8 @@ moveNextPiece tailChain headPiece doneChain =
         Just nextPiece ->
             let
                 delta =
-                    calculateDelta nextPiece.location headPiece.location
+                    calculateDelta nextPiece.location
+                        headPiece.location
             in
                 case (List.tail tailChain) of
                     Nothing ->
