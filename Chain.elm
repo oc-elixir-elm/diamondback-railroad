@@ -102,7 +102,11 @@ moveChainStartingAtHead headDelta chain =
                     chain
 
                 Just tailChain ->
-                    if illegalMove headDelta firstPiece chain then
+                    if
+                        illegalMove headDelta
+                            firstPiece
+                            chain
+                    then
                         chain
                     else
                         moveChain headDelta
@@ -118,7 +122,9 @@ illegalMove delta piece chain =
             newLocation delta piece.location
     in
         (illegalMoveOffBoard proposedLocation)
-            || (illegalCollideWithPiece proposedLocation chain)
+            || (illegalCollideWithPiece proposedLocation
+                    chain
+               )
 
 
 illegalMoveOffBoard : Location -> Bool
@@ -140,7 +146,11 @@ illegalCollideWithPiece proposedLocation chain =
             False
 
         Just tailChain ->
-            List.any (\piece -> collideWithPiece proposedLocation piece)
+            List.any
+                (\piece ->
+                    collideWithPiece proposedLocation
+                        piece
+                )
                 tailChain
 
 
