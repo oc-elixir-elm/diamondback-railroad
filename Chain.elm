@@ -119,36 +119,44 @@ moveChain :
     -> List Piece.Model
     -> Model
 moveChain newLocation headPiece tailChain doneChain =
+    moveCurrentPiece headPiece newLocation doneChain
+        |> moveNextPiece tailChain headPiece
+
+
+moveCurrentPiece : Piece.Model -> Location -> Model -> Model
+moveCurrentPiece piece newLocation doneChain =
     let
         delta =
-            calculateDelta headPiece.location
+            calculateDelta piece.location
                 newLocation
 
         updatedPiece =
             changeLocForPiece delta
-                headPiece
-
-        doneChain =
-            updatedPiece :: doneChain
+                piece
     in
-        case (List.head tailChain) of
-            Nothing ->
-                List.reverse doneChain
+        updatedPiece :: doneChain
 
-            Just nextPiece ->
-                let
-                    nextLocation =
-                        headPiece.location
-                in
-                    case (List.tail tailChain) of
-                        Nothing ->
-                            List.reverse doneChain
 
-                        Just remnantChain ->
-                            moveChain nextLocation
-                                nextPiece
-                                remnantChain
-                                doneChain
+moveNextPiece : List Piece.Model -> Piece.Model -> Model -> Model
+moveNextPiece tailChain headPiece doneChain =
+    case (List.head tailChain) of
+        Nothing ->
+            List.reverse doneChain
+
+        Just nextPiece ->
+            let
+                nextLocation =
+                    headPiece.location
+            in
+                case (List.tail tailChain) of
+                    Nothing ->
+                        List.reverse doneChain
+
+                    Just remnantChain ->
+                        moveChain nextLocation
+                            nextPiece
+                            remnantChain
+                            doneChain
 
 
 calculateDelta : Location -> Location -> Location
