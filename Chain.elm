@@ -57,25 +57,21 @@ update msg model =
 
 keyDown : KeyCode -> Model -> Model
 keyDown keyCode chain =
-    let
-        directionKey =
-            Key.fromCode keyCode
-    in
-        case directionKey of
-            ArrowLeft ->
-                moveChainStartingAtHead ( -1, 0 ) chain
+    case giKey.fromCode keyCode of
+        ArrowLeft ->
+            moveChainStartingAtHead ( -1, 0 ) chain
 
-            ArrowUp ->
-                moveChainStartingAtHead ( 0, -1 ) chain
+        ArrowUp ->
+            moveChainStartingAtHead ( 0, -1 ) chain
 
-            ArrowRight ->
-                moveChainStartingAtHead ( 1, 0 ) chain
+        ArrowRight ->
+            moveChainStartingAtHead ( 1, 0 ) chain
 
-            ArrowDown ->
-                moveChainStartingAtHead ( 0, 1 ) chain
+        ArrowDown ->
+            moveChainStartingAtHead ( 0, 1 ) chain
 
-            Unknown ->
-                chain
+        Unknown ->
+            chain
 
 
 {-| This is the command to "pull" the pieces in a
