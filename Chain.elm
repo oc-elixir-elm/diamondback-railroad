@@ -84,6 +84,11 @@ and this process (moveChain) recursively occurs
 until all pieces in the chain have moved.
 
 This has been tested down to a chain having only one piece.
+
+This will move the head piece if
+
+  1.  It doesn't move off the board.
+  2.  It doesn't move into another piece
 -}
 moveChainStartingAtHead : Location -> Model -> Model
 moveChainStartingAtHead headDelta chain =
@@ -97,10 +102,31 @@ moveChainStartingAtHead headDelta chain =
                     chain
 
                 Just tailChain ->
-                    moveChain headDelta
-                        firstPiece
-                        tailChain
-                        []
+                    if illegalMove headDelta firstPiece then
+                        chain
+                    else
+                        moveChain headDelta
+                            firstPiece
+                            tailChain
+                            []
+
+
+illegalMove : Location -> Piece.Model -> Bool
+illegalMove delta piece =
+    let
+        ( x, y ) =
+            piece.location
+
+        ( dx, dy ) =
+            delta
+
+        ( testX, testY ) =
+            ( x + dx, y + dy )
+    in
+        (testX < 0)
+            || (testY < 0)
+            || (testX >= 11 )
+            || (testY >= 11)
 
 
 moveChain :
