@@ -102,7 +102,7 @@ moveChainStartingAtHead headDelta chain =
                     chain
 
                 Just tailChain ->
-                    if illegalMove headDelta firstPiece then
+                    if illegalMove headDelta firstPiece chain then
                         chain
                     else
                         moveChain headDelta
@@ -111,22 +111,61 @@ moveChainStartingAtHead headDelta chain =
                             []
 
 
-illegalMove : Location -> Piece.Model -> Bool
-illegalMove delta piece =
+illegalMove : Location -> Piece.Model -> Model -> Bool
+illegalMove delta piece chain =
     let
-        ( x, y ) =
-            piece.location
+        proposedLocation =
+            newLocation delta piece.location
+    in
+        (illegalMoveOffBoard proposedLocation)
+            || (illegalCollideWithPiece proposedLocation chain)
 
-        ( dx, dy ) =
-            delta
 
+illegalMoveOffBoard : Location -> Bool
+illegalMoveOffBoard proposedLocation =
+    let
         ( testX, testY ) =
-            ( x + dx, y + dy )
+            proposedLocation
     in
         (testX < 0)
             || (testY < 0)
-            || (testX >= 11 )
+            || (testX >= 11)
             || (testY >= 11)
+
+
+illegalCollideWithPiece : Location -> Model -> Bool
+illegalCollideWithPiece proposedLocation chain =
+    case List.tail chain of
+        Nothing ->
+            False
+
+        Just tailChain ->
+            List.any (\piece -> collideWithPiece proposedLocation piece)
+                tailChain
+
+
+collideWithPiece : Location -> Piece.Model -> Bool
+collideWithPiece proposedLocation piece =
+    let
+        ( nx, ny ) =
+            proposedLocation
+
+        ( px, py ) =
+            piece.location
+    in
+        (nx == px) && (ny == py)
+
+
+newLocation : Location -> Location -> Location
+newLocation delta headLocation =
+    let
+        ( x, y ) =
+            headLocation
+
+        ( dx, dy ) =
+            delta
+    in
+        ( x + dx, y + dy )
 
 
 moveChain :
