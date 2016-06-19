@@ -120,16 +120,8 @@ moveChain :
     -> Model
 moveChain newLocation headPiece tailChain doneChain =
     let
-        delta =
-            calculateDelta headPiece.location
-                newLocation
-
-        updatedPiece =
-            changeLocForPiece delta
-                headPiece
-
         doneChain =
-            updatedPiece :: doneChain
+            moveCurrentPiece headPiece newLocation doneChain
     in
         case (List.head tailChain) of
             Nothing ->
@@ -149,6 +141,20 @@ moveChain newLocation headPiece tailChain doneChain =
                                 nextPiece
                                 remnantChain
                                 doneChain
+
+
+moveCurrentPiece : Piece.Model -> Location -> Model -> Model
+moveCurrentPiece piece newLocation doneChain =
+    let
+        delta =
+            calculateDelta piece.location
+                newLocation
+
+        updatedPiece =
+            changeLocForPiece delta
+                piece
+    in
+        updatedPiece :: doneChain
 
 
 calculateDelta : Location -> Location -> Location
