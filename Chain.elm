@@ -78,8 +78,19 @@ keyDown keyCode chain =
                 chain
 
 
+{-| This is the command to "pull" the pieces in a
+chain around.  The headDelta value indicates one
+displacement either vertically (y) or horizontally (x).
+This is applied to the head piece of the chain.
+
+The next piece is then moved to where the head was,
+and this process (moveChain) recursively occurs until all pieces
+in the chain have moved.
+
+This has been tested down to a chain having only one piece.
+-}
 moveChainStartingAtHead : Location -> Model -> Model
-moveChainStartingAtHead startingDelta chain =
+moveChainStartingAtHead headDelta chain =
     case (List.head chain) of
         Nothing ->
             chain
@@ -90,7 +101,7 @@ moveChainStartingAtHead startingDelta chain =
                     chain
 
                 Just tailChain ->
-                    moveChain startingDelta
+                    moveChain headDelta
                         firstPiece
                         tailChain
                         []
