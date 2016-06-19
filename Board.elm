@@ -174,11 +174,6 @@ initPiece tuple =
         piece
 
 
-initChain : List Piece.Model -> Chain.Model
-initChain pieces =
-    List.take 3 pieces
-
-
 init : ( Model, Cmd Msg )
 init =
     let
@@ -188,8 +183,8 @@ init =
         pieces =
             create81Pieces
 
+        -- one chain includes all the pieces
         chain =
-            --initChain pieces
             pieces
     in
         ( { board = board
@@ -224,11 +219,6 @@ update msg model =
                 chainMsg =
                     Chain.KeyDown keyCode
 
-                logChain =
-                    model.chain
-
-                --                logHeadPiece =
-                --                    log "head" (List.head logChain)
                 ( chain, _ ) =
                     Chain.update chainMsg model.chain
 

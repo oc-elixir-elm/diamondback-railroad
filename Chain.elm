@@ -84,6 +84,11 @@ and this process (moveChain) recursively occurs
 until all pieces in the chain have moved.
 
 This has been tested down to a chain having only one piece.
+
+This will move the head piece if
+
+  1.  It doesn't move off the board.
+  2.  It doesn't move into another piece
 -}
 moveChainStartingAtHead : Location -> Model -> Model
 moveChainStartingAtHead headDelta chain =
@@ -97,10 +102,80 @@ moveChainStartingAtHead headDelta chain =
                     chain
 
                 Just tailChain ->
-                    moveChain headDelta
-                        firstPiece
-                        tailChain
-                        []
+                    if
+                        illegalMove headDelta
+                            firstPiece
+                            chain
+                    then
+                        chain
+                    else
+                        moveChain headDelta
+                            firstPiece
+                            tailChain
+                            []
+
+
+illegalMove : Location -> Piece.Model -> Model -> Bool
+illegalMove delta piece chain =
+    let
+        proposedLocation =
+            newLocation delta piece.location
+    in
+        (illegalMoveOffBoard proposedLocation)
+            || (illegalCollideWithPiece proposedLocation
+                    chain
+               )
+
+
+illegalMoveOffBoard : Location -> Bool
+illegalMoveOffBoard proposedLocation =
+    let
+        ( testX, testY ) =
+            proposedLocation
+    in
+        (testX < 0)
+            || (testY < 0)
+            || (testX >= 11)
+            || (testY >= 11)
+
+
+illegalCollideWithPiece : Location -> Model -> Bool
+illegalCollideWithPiece proposedLocation chain =
+    case List.tail chain of
+        Nothing ->
+            False
+
+        Just tailChain ->
+            List.any
+                (\piece ->
+                    collideWithPiece proposedLocation
+                        piece
+                )
+                tailChain
+
+
+collideWithPiece : Location -> Piece.Model -> Bool
+collideWithPiece proposedLocation piece =
+    let
+        ( nx, ny ) =
+            proposedLocation
+
+        ( px, py ) =
+            piece.location
+    in
+        (nx == px) && (ny == py)
+
+
+newLocation : Location -> Location -> Location
+newLocation delta headLocation =
+    let
+        ( x, y ) =
+            headLocation
+
+        ( dx, dy ) =
+            delta
+    in
+        ( x + dx, y + dy )
 
 
 moveChain :
