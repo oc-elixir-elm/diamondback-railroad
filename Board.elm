@@ -233,14 +233,10 @@ update msg model =
                 updatedModel =
                     { model
                         | chain = chain
-                    }
-
-                anotherUpdatedModel =
-                    { updatedModel
-                        | moveCount = newMoveCount
+                        , moveCount = newMoveCount
                     }
             in
-                ( anotherUpdatedModel, Cmd.none )
+                ( updatedModel, Cmd.none )
 
 
 updateMoveCount : Model -> List Piece.Model -> Int
@@ -250,11 +246,7 @@ updateMoveCount model newChain =
             model.moveCount
 
         Just newHeadPiece ->
-          let
-            oldChain =
-              model.chain
-          in
-            case List.head oldChain of
+            case List.head model.chain of
                 Nothing ->
                     model.moveCount
 
