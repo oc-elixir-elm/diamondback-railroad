@@ -57,7 +57,7 @@ update msg model =
 
 keyDown : KeyCode -> Model -> Model
 keyDown keyCode chain =
-    case giKey.fromCode keyCode of
+    case Key.fromCode keyCode of
         ArrowLeft ->
             moveChainStartingAtHead ( -1, 0 ) chain
 
@@ -161,7 +161,7 @@ calculateDelta thisLocation nextLocation =
         dy =
             nextY - thisY
     in
-        log "delta" ( dx, dy )
+        ( dx, dy )
 
 
 changeLocForPiece : Location -> Piece.Model -> Piece.Model
