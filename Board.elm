@@ -233,14 +233,10 @@ update msg model =
                 updatedModel =
                     { model
                         | chain = chain
-                    }
-
-                anotherUpdatedModel =
-                    { updatedModel
-                        | moveCount = newMoveCount
+                        , moveCount = newMoveCount
                     }
             in
-                ( anotherUpdatedModel, Cmd.none )
+                ( updatedModel, Cmd.none )
 
 
 updateMoveCount : Model -> List Piece.Model -> Int
