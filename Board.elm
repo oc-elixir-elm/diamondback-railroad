@@ -109,15 +109,6 @@ type alias PositionLocator =
     }
 
 
-piecesInfo =
-    [ ( 47, 2, 2 )
-    , ( 48, 3, 2 )
-    , ( 49, 3, 3 )
-      --    , ( 4, 8, 6 )
-      --    , ( 5, 9, 9 )
-    ]
-
-
 create81Pieces : List Piece.Model
 create81Pieces =
     List.map (\pos -> createPieceForPos pos) [0..80]
@@ -195,8 +186,6 @@ init =
             createMatrix maxPosLength
 
         pieces =
-            -- List.map (\pieceInfo -> (initPiece pieceInfo))
-            --    piecesInfo
             create81Pieces
 
         chain =
