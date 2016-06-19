@@ -138,7 +138,7 @@ moveChain newLocation headPiece tailChain doneChain =
             Just nextPiece ->
                 let
                     nextLocation =
-                        calculateNewLoc nextPiece delta
+                        headPiece.location
                 in
                     case (List.tail tailChain) of
                         Nothing ->
