@@ -285,9 +285,6 @@ darkBrown =
 renderPiece : Model -> Html Msg
 renderPiece model =
     let
-        logPiece =
-            log "view piece" model
-
         sideSize =
             model.sideSize
 
