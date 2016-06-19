@@ -113,9 +113,60 @@ piecesInfo =
     [ ( 47, 2, 2 )
     , ( 48, 3, 2 )
     , ( 49, 3, 3 )
---    , ( 4, 8, 6 )
---    , ( 5, 9, 9 )
+      --    , ( 4, 8, 6 )
+      --    , ( 5, 9, 9 )
     ]
+
+
+create81Pieces : List Piece.Model
+create81Pieces =
+    List.map (\pos -> createPieceForPos pos) [0..80]
+
+
+createPieceForPos : Int -> Piece.Model
+createPieceForPos position =
+    let
+        x =
+            xForPos position
+
+        y =
+            yForPos position
+
+        tuple =
+            ( position + 1, x, y )
+    in
+        initPiece tuple
+
+
+xForPos : Int -> Int
+xForPos position =
+    let
+        roundTrip =
+            position % 18
+
+        leftToRight =
+            position % 9
+
+        rightToLeft =
+            8 - (position % 9)
+
+        twoRows =
+            roundTrip // 9
+    in
+        case twoRows of
+            0 ->
+                1 + leftToRight
+
+            1 ->
+                1 + rightToLeft
+
+            _ ->
+                1
+
+
+yForPos : Int -> Int
+yForPos position =
+    1 + (position // 9)
 
 
 initPiece : ( Int, Int, Int ) -> Piece.Model
@@ -144,11 +195,13 @@ init =
             createMatrix maxPosLength
 
         pieces =
-            List.map (\pieceInfo -> (initPiece pieceInfo))
-                piecesInfo
+            -- List.map (\pieceInfo -> (initPiece pieceInfo))
+            --    piecesInfo
+            create81Pieces
 
         chain =
-            initChain pieces
+            --initChain pieces
+            pieces
     in
         ( { board = board
           , pieces = pieces
@@ -185,9 +238,8 @@ update msg model =
                 logChain =
                     model.chain
 
---                logHeadPiece =
---                    log "head" (List.head logChain)
-
+                --                logHeadPiece =
+                --                    log "head" (List.head logChain)
                 ( chain, _ ) =
                     Chain.update chainMsg model.chain
 
