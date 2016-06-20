@@ -245,14 +245,16 @@ updateMoveCount model newChain =
         Nothing ->
             model.moveCount
 
-        Just newHeadPiece ->
+        Just newPiece ->
             case List.head model.chain of
                 Nothing ->
                     model.moveCount
 
-                Just oldHeadPiece ->
-                    -- Argh: this should be in Chain
-                    if Chain.sameLocation newHeadPiece.location oldHeadPiece.location then
+                Just oldPiece ->
+                    if
+                        Chain.sameLocation newPiece.location
+                            oldPiece.location
+                    then
                         model.moveCount
                     else
                         1 + model.moveCount
