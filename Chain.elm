@@ -98,34 +98,33 @@ moveChainStartingAtHead headDelta chain =
             chain
 
         Just firstPiece ->
-            case (List.tail chain) of
-                Nothing ->
-                    chain
-
-                Just tailChain ->
-                    if
-                        illegalMove headDelta
-                            firstPiece
-                            chain
-                    then
+            let
+                proposedLocation =
+                    newLocation headDelta firstPiece.location
+            in
+                if
+                    illegalMove proposedLocation
                         chain
-                    else
-                        moveChain headDelta
-                            firstPiece
-                            tailChain
-                            []
-
-
-illegalMove : Location -> Piece.Model -> Model -> Bool
-illegalMove delta piece chain =
-    let
-        proposedLocation =
-            newLocation delta piece.location
-    in
-        (illegalMoveOffBoard proposedLocation)
-            || (illegalCollideWithPiece proposedLocation
+                then
                     chain
-               )
+                else
+                    case (List.tail chain) of
+                        Nothing ->
+                            chain
+
+                        Just tailChain ->
+                            moveChain headDelta
+                                firstPiece
+                                tailChain
+                                []
+
+
+illegalMove : Location -> Model -> Bool
+illegalMove proposedLocation chain =
+    (illegalMoveOffBoard proposedLocation)
+        || (illegalCollideWithPiece proposedLocation
+                chain
+           )
 
 
 illegalMoveOffBoard : Location -> Bool
