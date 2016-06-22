@@ -20,7 +20,7 @@ import Svg.Attributes exposing (..)
 
 -- import Html.Events exposing (onClick)
 
-import Matrix exposing (Matrix)
+import Matrix exposing (Matrix, Location)
 import Position
 import Piece
 import Chain
@@ -58,7 +58,7 @@ sideSize =
         / (toFloat maxPosLength)
 
 
-squareType : Matrix.Location -> Position.PositionType
+squareType : Location -> Position.PositionType
 squareType location =
     let
         ( x, y ) =
@@ -78,7 +78,7 @@ squareType location =
             Position.Grid
 
 
-positionFromInit : Matrix.Location -> Position.Model
+positionFromInit : Location -> Position.Model
 positionFromInit location =
     let
         ( position, msg ) =
@@ -105,7 +105,7 @@ type alias Model =
 
 
 type alias PositionLocator =
-    { location : Matrix.Location
+    { location : Location
     , model : Position.Model
     }
 
@@ -205,8 +205,8 @@ init =
 
 
 type Msg
-    = ModifyPosition Matrix.Location Position.Msg
-    | ModifyPiece Matrix.Location Piece.Msg
+    = ModifyPosition Location Position.Msg
+    | ModifyPiece Location Piece.Msg
     | KeyDown KeyCode
 
 
@@ -227,37 +227,70 @@ update msg model =
                 ( chain, _ ) =
                     Chain.update chainMsg model.chain
 
-                newMoveCount =
-                    updateMoveCount model chain
-
-                updatedModel =
+                updatedModelForChain =
                     { model
                         | chain = chain
-                        , moveCount = newMoveCount
                     }
+
+                ( newMoveCount, newLocation ) =
+                    updateMoveCount updatedModelForChain chain
             in
-                ( updatedModel, Cmd.none )
+                case newLocation of
+                    Nothing ->
+                        ( updatedModelForChain, Cmd.none )
+
+                    Just newLocation ->
+                        let
+                            updatedModel =
+                                { updatedModelForChain
+                                    | moveCount =
+                                        newMoveCount
+                                    , modelboard =
+                                        addTraversal
+                                            ( model.board
+                                            , newLocation
+                                            )
+                                }
+                        in
+                            ( updatedModel, Cmd.none )
 
 
-updateMoveCount : Model -> List Piece.Model -> Int
+updateMoveCount : Model -> List Piece.Model -> ( Int, Maybe Location )
 updateMoveCount model newChain =
     case List.head newChain of
         Nothing ->
-            model.moveCount
+            noMove (model)
 
         Just newPiece ->
             case List.head model.chain of
                 Nothing ->
-                    model.moveCount
+                    noMove (model)
 
                 Just oldPiece ->
                     if
                         Chain.sameLocation newPiece.location
                             oldPiece.location
                     then
-                        model.moveCount
+                        noMove (model)
                     else
-                        1 + model.moveCount
+                        ( 1 + model.moveCount, Just newPiece.location )
+
+
+noMove : Model -> ( Int, Maybe Location )
+noMove model =
+    ( model.moveCount, Nothing )
+
+
+addTraversal : Location -> Matrix List.Position -> Matrix List.Position
+addTraversal location board =
+    let
+        position =
+            Matrix.get location board
+
+        newPosition =
+            Position.update Position.Msg.MarkTraversal position
+    in
+        Matrix.set location newPosition
 
 
 

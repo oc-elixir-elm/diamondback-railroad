@@ -1,7 +1,7 @@
 module Position
     exposing
         ( Model
-        , Msg
+        , Msg(..)
         , init
         , initWithInfo
         , subscriptions
@@ -54,11 +54,16 @@ darkBrown =
     "saddlebrown"
 
 
+
 -- MODEL
 
 
 type alias Pixels =
     Float
+
+
+type alias WalkedOn =
+    Bool
 
 
 type PositionType
@@ -71,6 +76,7 @@ type alias Model =
     , maxPosLength : Int
     , sideSize : Pixels
     , positionType : PositionType
+    , walkedOn : WalkedOn
     }
 
 
@@ -82,6 +88,7 @@ init =
             , maxPosLength = 11
             , location = ( 1, 1 )
             , sideSize = 50
+            , walkedOn = False
             }
     in
         ( model, Cmd.none )
@@ -108,14 +115,17 @@ initWithInfo positionType maxPosLength sideSize location =
 
 
 type Msg
-    = Tick Time
+    = MarkTraversal
+    | Tick Time
     | Nothing
-
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        MarkTraversal ->
+            ( model, Cmd.none )
+
         Tick newTime ->
             ( model, Cmd.none )
 
