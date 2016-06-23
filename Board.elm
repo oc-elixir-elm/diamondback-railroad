@@ -281,14 +281,17 @@ noMove model =
     ( model.moveCount, Nothing )
 
 
-addTraversal : Location -> Matrix List.Position -> Matrix List.Position
+addTraversal :
+    Location
+    -> Matrix Position.Model
+    -> Matrix Position.Model
 addTraversal location board =
     let
         position =
             Matrix.get location board
 
         newPosition =
-            Position.update Position.Msg.MarkTraversal position
+            Position.update Position.MarkTraversal position
     in
         Matrix.set location newPosition
 
