@@ -241,15 +241,16 @@ update msg model =
 
                     Just newLocation ->
                         let
+                            updatedBoard =
+                                addTraversal newLocation
+                                    model.board
+
                             updatedModel =
                                 { updatedModelForChain
                                     | moveCount =
                                         newMoveCount
-                                    , modelboard =
-                                        addTraversal
-                                            ( model.board
-                                            , newLocation
-                                            )
+                                    , board =
+                                        updatedBoard
                                 }
                         in
                             ( updatedModel, Cmd.none )
@@ -286,14 +287,17 @@ addTraversal :
     -> Matrix Position.Model
     -> Matrix Position.Model
 addTraversal location board =
-    let
-        position =
-            Matrix.get location board
+    case Matrix.get location board of
+        Nothing ->
+            board
 
-        newPosition =
-            Position.update Position.MarkTraversal position
-    in
-        Matrix.set location newPosition
+        Just position ->
+            let
+                ( newPosition, _ ) =
+                    Position.update Position.MarkTraversal
+                        position
+            in
+                Matrix.set newPosition.location newPosition board
 
 
 
