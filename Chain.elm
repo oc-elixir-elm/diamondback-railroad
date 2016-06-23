@@ -182,10 +182,10 @@ sameLocation : Location -> Location -> Bool
 sameLocation oldLocation newLocation =
     let
         ( oldX, oldY ) =
-            oldLocation
+            log "same oldLocation" oldLocation
 
         ( newX, newY ) =
-            newLocation
+            log "same newLocation" newLocation
     in
         (oldX == newX) && (oldY == newY)
 
