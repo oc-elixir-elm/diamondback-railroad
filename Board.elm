@@ -224,16 +224,18 @@ update msg model =
                 chainMsg =
                     Chain.KeyDown keyCode
 
-                ( chain, _ ) =
-                    Chain.update chainMsg model.chain
+                oldChain = model.chain
+
+                ( newChain, _ ) =
+                    Chain.update chainMsg oldChain
 
                 updatedModelForChain =
                     { model
-                        | chain = chain
+                        | chain = newChain
                     }
 
                 ( newMoveCount, newLocation ) =
-                    updateMoveCount updatedModelForChain chain
+                    updateMoveCount updatedModelForChain oldChain
 
                 dummy =
                   log "newLocation" newLocation
