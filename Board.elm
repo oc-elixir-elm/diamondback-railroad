@@ -319,9 +319,53 @@ addVisited location board =
                     board
 
 
-blinkUnvisitedPerimeterPositions : Model -> (Model, Cmd Msg)
+blinkUnvisitedPerimeterPositions : Model -> ( Model, Cmd Msg )
 blinkUnvisitedPerimeterPositions model =
-  ( model, Cmd.none )
+    let
+        newBlinkState =
+            not model.blinkState
+
+        perimeterPositions =
+            getPerimeterPositions model.board
+
+        updatedPositions =
+            List.map
+                (\position ->
+                    Position.blink newBlinkState
+                        position
+                )
+                perimeterPositions
+
+        updatedBoard =
+            List.map
+                (\position ->
+                    Matrix.set position.location
+                        position
+                        model.board
+                )
+
+        updatedModel =
+            { model
+                | board = updatedBoard
+                , blinkState = newBlinkState
+            }
+    in
+        ( updatedModel, Cmd.none )
+
+
+getPerimeterPositions :
+    Matrix Position.Model
+    -> List Position.Model
+getPerimeterPositions board =
+    let
+        positionsList =
+            board
+                |> Matrix.toList
+                |> List.concat
+    in
+        List.filter (\position -> Position.isPerimeter position)
+            positionsList
+
 
 
 -- SUBSCRIPTIONS

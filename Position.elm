@@ -2,8 +2,10 @@ module Position
     exposing
         ( Model
         , Msg(..)
+        , blink
         , init
         , initWithInfo
+        , isPerimeter
         , subscriptions
         , update
         , view
@@ -78,6 +80,7 @@ type alias Model =
     , sideSize : Pixels
     , positionType : PositionType
     , visited : WalkedOn
+    , blinkState : Bool
     }
 
 
@@ -90,6 +93,7 @@ init =
             , location = ( 1, 1 )
             , sideSize = 50
             , visited = False
+            , blinkState = False
             }
     in
         ( model, Cmd.none )
@@ -140,6 +144,16 @@ update msg model =
         Nothing ->
             ( model, Cmd.none )
 
+
+isPerimeter : Model -> Bool
+isPerimeter model =
+    model.positionType
+        == Perimeter
+
+
+blink : Bool -> Model -> Model
+blink newBlinkState model =
+    { model | blinkState = newBlinkState }
 
 
 -- SUBSCRIPTIONS
