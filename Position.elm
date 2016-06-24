@@ -39,6 +39,7 @@ import Svg.Attributes
 
 import Matrix exposing (Location)
 import Time exposing (Time, second)
+import Debug exposing (log)
 
 
 -- CONSTANTS
@@ -124,7 +125,14 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         MarkTraversal ->
-            ( model, Cmd.none )
+            let
+                newModel =
+                    { model
+                        | walkedOn =
+                            True
+                    }
+            in
+                ( newModel, Cmd.none )
 
         Tick newTime ->
             ( model, Cmd.none )
@@ -187,7 +195,7 @@ renderEmptySquare model =
                 [ width whole
                 , height whole
                 , fill fillColor
-                , stroke darkBrown
+                , stroke (borderColor model.walkedOn)
                 , strokeWidth myStrokeWidth
                 ]
                 []
@@ -199,6 +207,14 @@ renderEmptySquare model =
             ]
             [ rectangle
             ]
+
+
+borderColor : Bool -> String
+borderColor footPrint =
+    if footPrint then
+        "black"
+    else
+        darkBrown
 
 
 view : Model -> Html Msg
