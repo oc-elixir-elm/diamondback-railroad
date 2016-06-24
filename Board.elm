@@ -213,7 +213,7 @@ type Msg
     = ModifyPosition Location Position.Msg
     | ModifyPiece Location Piece.Msg
     | KeyDown KeyCode
-    | Tick Time
+    | Blink Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -228,8 +228,8 @@ update msg model =
         KeyDown keyCode ->
             manageKeyDown model keyCode
 
-        Tick time ->
-            ( model, Cmd.none )
+        Blink time ->
+            blinkUnvisitedPerimeterPositions model
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -319,6 +319,10 @@ addVisited location board =
                     board
 
 
+blinkUnvisitedPerimeterPositions : Model -> (Model, Cmd Msg)
+blinkUnvisitedPerimeterPositions model =
+  ( model, Cmd.none )
+
 
 -- SUBSCRIPTIONS
 
@@ -327,7 +331,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
-        , Time.every second Tick
+        , Time.every second Blink
         ]
 
 
