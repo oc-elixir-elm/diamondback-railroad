@@ -238,7 +238,7 @@ update msg model =
                     updateMoveCount updatedModelForChain oldChain
 
                 dummy =
-                  log "newLocation" newLocation
+                  newLocation
             in
                 case newLocation of
                     Nothing ->
@@ -275,11 +275,11 @@ updateMoveCount model newChain =
                 Just oldPiece ->
                     if
                         Chain.sameLocation newPiece.location
-                            (log "oldPiece" oldPiece.location)
+                            oldPiece.location
                     then
                         noMove (model)
                     else
-                        ( 1 + model.moveCount, Just (log "newPiece" newPiece.location) )
+                        ( 1 + model.moveCount, Just newPiece.location )
 
 
 noMove : Model -> ( Int, Maybe Location )
@@ -303,7 +303,7 @@ addTraversal location board =
                         position
             in
                 Matrix.set newPosition.location
-                    (log "addTraversal" newPosition)
+                    newPosition
                     board
 
 
