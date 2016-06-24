@@ -77,7 +77,7 @@ type alias Model =
     , maxPosLength : Int
     , sideSize : Pixels
     , positionType : PositionType
-    , walkedOn : WalkedOn
+    , visited : WalkedOn
     }
 
 
@@ -89,7 +89,7 @@ init =
             , maxPosLength = 11
             , location = ( 1, 1 )
             , sideSize = 50
-            , walkedOn = False
+            , visited = False
             }
     in
         ( model, Cmd.none )
@@ -116,7 +116,7 @@ initWithInfo positionType maxPosLength sideSize location =
 
 
 type Msg
-    = MarkTraversal
+    = MarkVisited
     | Tick Time
     | Nothing
 
@@ -124,11 +124,11 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        MarkTraversal ->
+        MarkVisited ->
             let
                 newModel =
                     { model
-                        | walkedOn =
+                        | visited =
                             True
                     }
             in
@@ -195,7 +195,7 @@ renderEmptySquare model =
                 [ width whole
                 , height whole
                 , fill fillColor
-                , stroke (borderColor model.walkedOn)
+                , stroke (borderColor model.visited)
                 , strokeWidth myStrokeWidth
                 ]
                 []

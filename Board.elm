@@ -237,8 +237,6 @@ update msg model =
                 ( newMoveCount, newLocation ) =
                     updateMoveCount updatedModelForChain oldChain
 
-                dummy =
-                  newLocation
             in
                 case newLocation of
                     Nothing ->
@@ -247,7 +245,7 @@ update msg model =
                     Just newLocation ->
                         let
                             updatedBoard =
-                                addTraversal newLocation
+                                addVisited newLocation
                                     model.board
 
                             updatedModel =
@@ -287,11 +285,11 @@ noMove model =
     ( model.moveCount, Nothing )
 
 
-addTraversal :
+addVisited :
     Location
     -> Matrix Position.Model
     -> Matrix Position.Model
-addTraversal location board =
+addVisited location board =
     case Matrix.get location board of
         Nothing ->
             board
@@ -299,7 +297,7 @@ addTraversal location board =
         Just position ->
             let
                 ( newPosition, _ ) =
-                    Position.update Position.MarkTraversal
+                    Position.update Position.MarkVisited
                         position
             in
                 Matrix.set newPosition.location
