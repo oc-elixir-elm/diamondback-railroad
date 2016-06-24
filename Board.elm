@@ -101,6 +101,7 @@ type alias Model =
     , pieces : List Piece.Model
     , chain : Chain.Model
     , moveCount : Int
+    , blinkState : Bool
     }
 
 
@@ -190,11 +191,15 @@ init =
 
         moveCount =
             0
+
+        blinkState =
+            False
     in
         ( { board = board
           , pieces = pieces
           , chain = chain
           , moveCount = moveCount
+          , blinkState = blinkState
           }
         , Cmd.none
         )
@@ -208,6 +213,7 @@ type Msg
     = ModifyPosition Location Position.Msg
     | ModifyPiece Location Piece.Msg
     | KeyDown KeyCode
+    | Tick Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -220,43 +226,51 @@ update msg model =
             ( model, Cmd.none )
 
         KeyDown keyCode ->
-            let
-                chainMsg =
-                    Chain.KeyDown keyCode
+            manageKeyDown model keyCode
 
-                oldChain = model.chain
+        Tick time ->
+            ( model, Cmd.none )
 
-                ( newChain, _ ) =
-                    Chain.update chainMsg oldChain
 
-                updatedModelForChain =
-                    { model
-                        | chain = newChain
-                    }
+manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
+manageKeyDown model keyCode =
+    let
+        chainMsg =
+            Chain.KeyDown keyCode
 
-                ( newMoveCount, newLocation ) =
-                    updateMoveCount updatedModelForChain oldChain
+        oldChain =
+            model.chain
 
-            in
-                case newLocation of
-                    Nothing ->
-                        ( updatedModelForChain, Cmd.none )
+        ( newChain, _ ) =
+            Chain.update chainMsg oldChain
 
-                    Just newLocation ->
-                        let
-                            updatedBoard =
-                                addVisited newLocation
-                                    model.board
+        updatedModelForChain =
+            { model
+                | chain = newChain
+            }
 
-                            updatedModel =
-                                { updatedModelForChain
-                                    | moveCount =
-                                        newMoveCount
-                                    , board =
-                                        updatedBoard
-                                }
-                        in
-                            ( updatedModel, Cmd.none )
+        ( newMoveCount, newLocation ) =
+            updateMoveCount updatedModelForChain oldChain
+    in
+        case newLocation of
+            Nothing ->
+                ( updatedModelForChain, Cmd.none )
+
+            Just newLocation ->
+                let
+                    updatedBoard =
+                        addVisited newLocation
+                            model.board
+
+                    updatedModel =
+                        { updatedModelForChain
+                            | moveCount =
+                                newMoveCount
+                            , board =
+                                updatedBoard
+                        }
+                in
+                    ( updatedModel, Cmd.none )
 
 
 updateMoveCount : Model -> List Piece.Model -> ( Int, Maybe Location )
@@ -313,6 +327,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
+        , Time.every second Tick
         ]
 
 
