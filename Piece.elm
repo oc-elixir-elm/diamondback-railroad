@@ -135,10 +135,26 @@ update msg model =
             ( model, Cmd.none )
 
         Animate time ->
-            ( model, Cmd.none )
+            ( { model
+                | svgStyle = Style.tick time model.svgStyle
+              }
+            , Cmd.none
+            )
 
         Move location ->
-            ( moveLoc location model, Cmd.none )
+            let
+                newModel =
+                    moveLoc location model
+
+                newModel2 =
+                    { newModel
+                        | svgStyle =
+                            Style.animate
+                                |> Style.to (getSvgValues newModel)
+                                |> Style.on (setSvgStyle model)
+                    }
+            in
+                ( newModel, Cmd.none )
 
 
 moveLoc : Location -> Model -> Model
@@ -156,7 +172,8 @@ moveLoc delta model =
         { model | location = newLocation }
 
 
-setSvgStyle model =
+getSvgValues : Model -> List (Property Float a)
+getSvgValues model =
     let
         ( xloc, yloc ) =
             model.location
@@ -166,14 +183,15 @@ setSvgStyle model =
 
         pixelsY =
             model.sideSize * (toFloat yloc)
-
-        svgInit =
-            Style.init
-                [ X pixelsX
-                , Y pixelsY
-                ]
     in
-        svgInit
+        [ X pixelsX
+        , Y pixelsY
+        ]
+
+
+setSvgStyle : Model -> Style.Animation
+setSvgStyle model =
+    Style.init (getSvgValues model)
 
 
 {-|
