@@ -52,14 +52,29 @@ lightBrown =
     "peru"
 
 
+gridFillColor : String
+gridFillColor =
+    "peru"
+
+
 darkBrown : String
 darkBrown =
     "saddlebrown"
 
 
-lightGreen : String
-lightGreen =
-    "lightGreen"
+blinkColor : String
+blinkColor =
+  "navajowhite"
+
+
+perimeterFillColor : String
+perimeterFillColor =
+    "moccasin"
+
+
+borderColor : String
+borderColor =
+    darkBrown
 
 
 
@@ -210,7 +225,7 @@ renderEmptySquare model =
                 [ width whole
                 , height whole
                 , fill fillColor
-                , stroke (borderColor model.visited)
+                , stroke borderColor
                 , strokeWidth myStrokeWidth
                 ]
                 []
@@ -224,22 +239,14 @@ renderEmptySquare model =
             ]
 
 
-borderColor : Bool -> String
-borderColor footPrint =
-    if footPrint then
-        "black"
-    else
-        darkBrown
-
-
 calcFillColor : Model -> String
 calcFillColor model =
     if model.positionType == Grid then
-        "wheat"
+        gridFillColor
     else if model.blinkState then
-        lightGreen
+        blinkColor
     else
-        "white"
+        perimeterFillColor
 
 
 view : Model -> Html Msg
