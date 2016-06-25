@@ -274,17 +274,17 @@ manageKeyDown model keyCode =
 
 
 updateMoveCount : Model -> List Piece.Model -> ( Int, Maybe Location )
-updateMoveCount model newChain =
-    case List.head newChain of
+updateMoveCount model oldChain =
+    case List.head oldChain of
         Nothing ->
             noMove (model)
 
-        Just newPiece ->
+        Just oldPiece ->
             case List.head model.chain of
                 Nothing ->
                     noMove (model)
 
-                Just oldPiece ->
+                Just newPiece ->
                     if
                         Chain.sameLocation newPiece.location
                             oldPiece.location

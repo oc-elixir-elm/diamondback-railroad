@@ -64,12 +64,12 @@ darkBrown =
 
 blinkColor : String
 blinkColor =
-  "navajowhite"
+    "navajowhite"
 
 
 perimeterFillColor : String
 perimeterFillColor =
-    "moccasin"
+    "lightcyan"
 
 
 borderColor : String
@@ -243,7 +243,7 @@ calcFillColor : Model -> String
 calcFillColor model =
     if model.positionType == Grid then
         gridFillColor
-    else if model.blinkState then
+    else if model.visited || model.blinkState then
         blinkColor
     else
         perimeterFillColor
