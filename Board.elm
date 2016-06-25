@@ -325,46 +325,33 @@ blinkUnvisitedPerimeterPositions model =
         newBlinkState =
             not model.blinkState
 
-        perimeterPositions =
-            getPerimeterPositions model.board
+        newBoard =
+            blinkPerimeterPositions newBlinkState model.board
 
-        updatedPositions =
-            List.map
-                (\position ->
-                    Position.blink newBlinkState
-                        position
-                )
-                perimeterPositions
-
-        updatedBoard =
-            List.map
-                (\position ->
-                    Matrix.set position.location
-                        position
-                        model.board
-                )
-
-        updatedModel =
+        newModel =
             { model
-                | board = updatedBoard
-                , blinkState = newBlinkState
+                | blinkState = newBlinkState
+                , board = newBoard
             }
     in
-        ( updatedModel, Cmd.none )
+        ( newModel, Cmd.none )
 
 
-getPerimeterPositions :
-    Matrix Position.Model
-    -> List Position.Model
-getPerimeterPositions board =
-    let
-        positionsList =
-            board
-                |> Matrix.toList
-                |> List.concat
-    in
-        List.filter (\position -> Position.isPerimeter position)
-            positionsList
+blinkPerimeterPositions :
+    Bool
+    -> Matrix Position.Model
+    -> Matrix Position.Model
+blinkPerimeterPositions newBlinkState board =
+    Matrix.map (\position -> blinkPosition newBlinkState position) board
+
+
+blinkPosition : Bool -> Position.Model -> Position.Model
+blinkPosition newBlinkState position =
+    if Position.isPerimeter position then
+        Position.blink newBlinkState
+            position
+    else
+        position
 
 
 
