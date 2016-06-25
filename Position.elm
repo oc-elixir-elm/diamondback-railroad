@@ -52,19 +52,19 @@ gridFillColor =
     "peru"
 
 
-blinkColor : String
-blinkColor =
-  "lightgoldenrodyellow"
+blinkFalseColor : String
+blinkFalseColor =
+    "lightgoldenrodyellow"
 
 
-perimeterFillColor : String
-perimeterFillColor =
+blinkTrueColor : String
+blinkTrueColor =
     "lightcyan"
 
 
 visitedColor : String
 visitedColor =
-  "navajowhite"
+    "navajowhite"
 
 
 borderColor : String
@@ -240,10 +240,10 @@ calcFillColor model =
         gridFillColor
     else if model.visited then
         visitedColor
-    else if  model.blinkState then
-        blinkColor
+    else if model.blinkState then
+        blinkTrueColor
     else
-        perimeterFillColor
+        blinkFalseColor
 
 
 view : Model -> Html Msg
