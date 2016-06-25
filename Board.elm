@@ -112,9 +112,13 @@ type alias PositionLocator =
     }
 
 
+{-|
+   For debugging animation, keep only one piece
+   instead of 81.
+-}
 create81Pieces : List Piece.Model
 create81Pieces =
-    List.map (\pos -> createPieceForPos pos) [0..80]
+    List.map (\pos -> createPieceForPos pos) [0..0]
 
 
 createPieceForPos : Int -> Piece.Model
