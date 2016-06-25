@@ -107,7 +107,11 @@ initWithInfo pieceNumber sideSize location =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    AnimationFrame.times Animate
+    let
+        dummy =
+            log "subscriptions" model.location
+    in
+        AnimationFrame.times Animate
 
 
 xTranslation =
@@ -150,11 +154,14 @@ update msg model =
                     { newModel
                         | svgStyle =
                             Style.animate
+                                |> Style.easing (\x -> x)
+                                |> Style.duration (1.0 * second)
+                                |> Style.delay (1.0 * second)
                                 |> Style.to (getSvgValues newModel)
                                 |> Style.on (setSvgStyle model)
                     }
             in
-                ( newModel, Cmd.none )
+                ( newModel2, Cmd.none )
 
 
 moveLoc : Location -> Model -> Model
