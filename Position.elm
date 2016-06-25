@@ -47,24 +47,14 @@ import Debug exposing (log)
 -- CONSTANTS
 
 
-lightBrown : String
-lightBrown =
-    "peru"
-
-
 gridFillColor : String
 gridFillColor =
     "peru"
 
 
-darkBrown : String
-darkBrown =
-    "saddlebrown"
-
-
 blinkColor : String
 blinkColor =
-    "navajowhite"
+  "lightgoldenrodyellow"
 
 
 perimeterFillColor : String
@@ -72,9 +62,14 @@ perimeterFillColor =
     "lightcyan"
 
 
+visitedColor : String
+visitedColor =
+  "navajowhite"
+
+
 borderColor : String
 borderColor =
-    darkBrown
+    "saddlebrown"
 
 
 
@@ -85,7 +80,7 @@ type alias Pixels =
     Float
 
 
-type alias WalkedOn =
+type alias Visited =
     Bool
 
 
@@ -99,7 +94,7 @@ type alias Model =
     , maxPosLength : Int
     , sideSize : Pixels
     , positionType : PositionType
-    , visited : WalkedOn
+    , visited : Visited
     , blinkState : Bool
     }
 
@@ -243,7 +238,9 @@ calcFillColor : Model -> String
 calcFillColor model =
     if model.positionType == Grid then
         gridFillColor
-    else if model.visited || model.blinkState then
+    else if model.visited then
+        visitedColor
+    else if  model.blinkState then
         blinkColor
     else
         perimeterFillColor
