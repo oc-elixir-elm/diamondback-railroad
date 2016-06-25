@@ -57,6 +57,11 @@ darkBrown =
     "saddlebrown"
 
 
+lightGreen : String
+lightGreen =
+    "lightGreen"
+
+
 
 -- MODEL
 
@@ -156,6 +161,7 @@ blink newBlinkState model =
     { model | blinkState = newBlinkState }
 
 
+
 -- SUBSCRIPTIONS
 
 
@@ -178,12 +184,7 @@ renderEmptySquare model =
             Nothing
 
         fillColor =
-            case model.positionType of
-                Grid ->
-                    "wheat"
-
-                Perimeter ->
-                    "white"
+            calcFillColor model
 
         -- doesn't matter
         myStrokeWidth =
@@ -229,6 +230,16 @@ borderColor footPrint =
         "black"
     else
         darkBrown
+
+
+calcFillColor : Model -> String
+calcFillColor model =
+    if model.positionType == Grid then
+        "wheat"
+    else if model.blinkState then
+        lightGreen
+    else
+        "white"
 
 
 view : Model -> Html Msg
