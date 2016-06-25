@@ -20,7 +20,7 @@ import Svg.Attributes exposing (..)
 
 -- import Html.Events exposing (onClick)
 
-import Matrix exposing (Matrix)
+import Matrix exposing (Matrix, Location)
 import Position
 import Piece
 import Chain
@@ -58,7 +58,7 @@ sideSize =
         / (toFloat maxPosLength)
 
 
-squareType : Matrix.Location -> Position.PositionType
+squareType : Location -> Position.PositionType
 squareType location =
     let
         ( x, y ) =
@@ -78,7 +78,7 @@ squareType location =
             Position.Grid
 
 
-positionFromInit : Matrix.Location -> Position.Model
+positionFromInit : Location -> Position.Model
 positionFromInit location =
     let
         ( position, msg ) =
@@ -101,11 +101,12 @@ type alias Model =
     , pieces : List Piece.Model
     , chain : Chain.Model
     , moveCount : Int
+    , blinkState : Bool
     }
 
 
 type alias PositionLocator =
-    { location : Matrix.Location
+    { location : Location
     , model : Position.Model
     }
 
@@ -190,11 +191,15 @@ init =
 
         moveCount =
             0
+
+        blinkState =
+            False
     in
         ( { board = board
           , pieces = pieces
           , chain = chain
           , moveCount = moveCount
+          , blinkState = blinkState
           }
         , Cmd.none
         )
@@ -205,9 +210,10 @@ init =
 
 
 type Msg
-    = ModifyPosition Matrix.Location Position.Msg
-    | ModifyPiece Matrix.Location Piece.Msg
+    = ModifyPosition Location Position.Msg
+    | ModifyPiece Location Piece.Msg
     | KeyDown KeyCode
+    | Blink Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -220,44 +226,132 @@ update msg model =
             ( model, Cmd.none )
 
         KeyDown keyCode ->
-            let
-                chainMsg =
-                    Chain.KeyDown keyCode
+            manageKeyDown model keyCode
 
-                ( chain, _ ) =
-                    Chain.update chainMsg model.chain
-
-                newMoveCount =
-                    updateMoveCount model chain
-
-                updatedModel =
-                    { model
-                        | chain = chain
-                        , moveCount = newMoveCount
-                    }
-            in
-                ( updatedModel, Cmd.none )
+        Blink time ->
+            blinkUnvisitedPerimeterPositions model
 
 
-updateMoveCount : Model -> List Piece.Model -> Int
-updateMoveCount model newChain =
-    case List.head newChain of
+manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
+manageKeyDown model keyCode =
+    let
+        chainMsg =
+            Chain.KeyDown keyCode
+
+        oldChain =
+            model.chain
+
+        ( newChain, _ ) =
+            Chain.update chainMsg oldChain
+
+        updatedModelForChain =
+            { model
+                | chain = newChain
+            }
+
+        ( newMoveCount, newLocation ) =
+            updateMoveCount updatedModelForChain oldChain
+    in
+        case newLocation of
+            Nothing ->
+                ( updatedModelForChain, Cmd.none )
+
+            Just newLocation ->
+                let
+                    updatedBoard =
+                        addVisited newLocation
+                            model.board
+
+                    updatedModel =
+                        { updatedModelForChain
+                            | moveCount =
+                                newMoveCount
+                            , board =
+                                updatedBoard
+                        }
+                in
+                    ( updatedModel, Cmd.none )
+
+
+updateMoveCount : Model -> List Piece.Model -> ( Int, Maybe Location )
+updateMoveCount model oldChain =
+    case List.head oldChain of
         Nothing ->
-            model.moveCount
+            noMove (model)
 
-        Just newPiece ->
+        Just oldPiece ->
             case List.head model.chain of
                 Nothing ->
-                    model.moveCount
+                    noMove (model)
 
-                Just oldPiece ->
+                Just newPiece ->
                     if
                         Chain.sameLocation newPiece.location
                             oldPiece.location
                     then
-                        model.moveCount
+                        noMove (model)
                     else
-                        1 + model.moveCount
+                        ( 1 + model.moveCount, Just newPiece.location )
+
+
+noMove : Model -> ( Int, Maybe Location )
+noMove model =
+    ( model.moveCount, Nothing )
+
+
+addVisited :
+    Location
+    -> Matrix Position.Model
+    -> Matrix Position.Model
+addVisited location board =
+    case Matrix.get location board of
+        Nothing ->
+            board
+
+        Just position ->
+            let
+                ( newPosition, _ ) =
+                    Position.update Position.MarkVisited
+                        position
+            in
+                Matrix.set newPosition.location
+                    newPosition
+                    board
+
+
+blinkUnvisitedPerimeterPositions : Model -> ( Model, Cmd Msg )
+blinkUnvisitedPerimeterPositions model =
+    let
+        newBlinkState =
+            not model.blinkState
+
+        newBoard =
+            blinkPerimeterPositions newBlinkState model.board
+
+        newModel =
+            { model
+                | blinkState = newBlinkState
+                , board = newBoard
+            }
+    in
+        ( newModel, Cmd.none )
+
+
+blinkPerimeterPositions :
+    Bool
+    -> Matrix Position.Model
+    -> Matrix Position.Model
+blinkPerimeterPositions newBlinkState board =
+    Matrix.map (\position -> blinkPosition newBlinkState position) board
+
+
+blinkPosition : Bool -> Position.Model -> Position.Model
+blinkPosition newBlinkState position =
+    if Position.isPerimeter position then
+        Position.blink newBlinkState
+            position
+    else
+        position
 
 
 
@@ -268,6 +362,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
+        , Time.every (700 * Time.millisecond) Blink
         ]
 
 

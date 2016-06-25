@@ -1,9 +1,11 @@
 module Position
     exposing
         ( Model
-        , Msg
+        , Msg(..)
+        , blink
         , init
         , initWithInfo
+        , isPerimeter
         , subscriptions
         , update
         , view
@@ -39,6 +41,7 @@ import Svg.Attributes
 
 import Matrix exposing (Location)
 import Time exposing (Time, second)
+import Debug exposing (log)
 
 
 -- CONSTANTS
@@ -49,9 +52,30 @@ lightBrown =
     "peru"
 
 
+gridFillColor : String
+gridFillColor =
+    "peru"
+
+
 darkBrown : String
 darkBrown =
     "saddlebrown"
+
+
+blinkColor : String
+blinkColor =
+    "navajowhite"
+
+
+perimeterFillColor : String
+perimeterFillColor =
+    "lightcyan"
+
+
+borderColor : String
+borderColor =
+    darkBrown
+
 
 
 -- MODEL
@@ -59,6 +83,10 @@ darkBrown =
 
 type alias Pixels =
     Float
+
+
+type alias WalkedOn =
+    Bool
 
 
 type PositionType
@@ -71,6 +99,8 @@ type alias Model =
     , maxPosLength : Int
     , sideSize : Pixels
     , positionType : PositionType
+    , visited : WalkedOn
+    , blinkState : Bool
     }
 
 
@@ -82,6 +112,8 @@ init =
             , maxPosLength = 11
             , location = ( 1, 1 )
             , sideSize = 50
+            , visited = False
+            , blinkState = False
             }
     in
         ( model, Cmd.none )
@@ -108,19 +140,40 @@ initWithInfo positionType maxPosLength sideSize location =
 
 
 type Msg
-    = Tick Time
+    = MarkVisited
+    | Tick Time
     | Nothing
-
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        MarkVisited ->
+            let
+                newModel =
+                    { model
+                        | visited =
+                            True
+                    }
+            in
+                ( newModel, Cmd.none )
+
         Tick newTime ->
             ( model, Cmd.none )
 
         Nothing ->
             ( model, Cmd.none )
+
+
+isPerimeter : Model -> Bool
+isPerimeter model =
+    model.positionType
+        == Perimeter
+
+
+blink : Bool -> Model -> Model
+blink newBlinkState model =
+    { model | blinkState = newBlinkState }
 
 
 
@@ -146,12 +199,7 @@ renderEmptySquare model =
             Nothing
 
         fillColor =
-            case model.positionType of
-                Grid ->
-                    "wheat"
-
-                Perimeter ->
-                    "white"
+            calcFillColor model
 
         -- doesn't matter
         myStrokeWidth =
@@ -177,7 +225,7 @@ renderEmptySquare model =
                 [ width whole
                 , height whole
                 , fill fillColor
-                , stroke darkBrown
+                , stroke borderColor
                 , strokeWidth myStrokeWidth
                 ]
                 []
@@ -189,6 +237,16 @@ renderEmptySquare model =
             ]
             [ rectangle
             ]
+
+
+calcFillColor : Model -> String
+calcFillColor model =
+    if model.positionType == Grid then
+        gridFillColor
+    else if model.visited || model.blinkState then
+        blinkColor
+    else
+        perimeterFillColor
 
 
 view : Model -> Html Msg
