@@ -69,10 +69,6 @@ type alias Model =
     }
 
 
-type alias AnimationState =
-    Maybe { prevClockTime : Time, elapsedTime : Time }
-
-
 init : ( Model, Cmd Msg )
 init =
     ( { role = Unassigned
