@@ -154,9 +154,6 @@ update msg model =
                     { newModel
                         | svgStyle =
                             Style.animate
-                                |> Style.easing (\x -> x)
-                                |> Style.duration (1.0 * second)
-                                |> Style.delay (1.0 * second)
                                 |> Style.to (getSvgValues newModel)
                                 |> Style.on (setSvgStyle model)
                     }
