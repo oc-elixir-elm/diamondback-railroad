@@ -56,10 +56,6 @@ type Role
     | Unassigned
 
 
-
---  | Piece Role PieceNumber
-
-
 type alias Model =
     { role : Role
     , location : Location
