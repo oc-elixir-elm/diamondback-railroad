@@ -370,7 +370,11 @@ blinkPerimeterPositions :
     -> Matrix Position.Model
     -> Matrix Position.Model
 blinkPerimeterPositions newBlinkState board =
-    Matrix.map (\position -> blinkPosition newBlinkState position) board
+    Matrix.map
+        (\position ->
+            blinkPosition newBlinkState position
+        )
+        board
 
 
 blinkPosition : Bool -> Position.Model -> Position.Model
@@ -463,14 +467,14 @@ view model =
     in
         div []
             [ svg
-                [ width "600"
-                , height "600"
+                [ width "400"
+                , height "400"
                 ]
                 [ rect
                     [ stroke "blue"
                     , fill "white"
-                    , width "600"
-                    , height "600"
+                    , width "400"
+                    , height "400"
                     ]
                     []
                 , svg []
