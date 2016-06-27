@@ -262,9 +262,6 @@ renderPiece model =
                 , textAnchor "middle"
                 ]
                 [ text (toString model.pieceNumber) ]
-
-        svgStyle =
-            setSvgStyle model
     in
         Svg.svg (Style.renderAttr model.svgStyle)
                 [ polys
