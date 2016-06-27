@@ -106,14 +106,6 @@ subscriptions model =
         AnimationFrame.times Animate
 
 
-xTranslation =
-    100
-
-
-duration =
-    (500 * millisecond)
-
-
 
 -- UPDATE
 
@@ -188,6 +180,7 @@ getSvgValues model =
 setSvgStyle : Model -> Style.Animation
 setSvgStyle model =
     Style.init (getSvgValues model)
+
 
 
 -- VIEW
@@ -269,14 +262,26 @@ renderPiece model =
                 , textAnchor "middle"
                 ]
                 [ text (toString model.pieceNumber) ]
+
+        svgStyle =
+            setSvgStyle model
+
+        svgAttributes =
+            List.append
+                [ width half
+                , height half
+                ]
+                (Style.renderAttr model.svgStyle)
     in
         -- This will work; must put calculation of pixelsx and pixelsy
         -- into init and initwithinfo initializations.
         -- Gonna have to implmenet chains so that the Cx and Cy
         -- can be calculated.
-        Svg.svg (Style.renderAttr (setSvgStyle model))
-            [ polys
-            , myText
+        Svg.svg []
+            [ rect svgAttributes
+                [ polys
+                , myText
+                ]
             ]
 
 
