@@ -268,8 +268,8 @@ renderPiece model =
 
         svgAttributes =
             List.append
-                [ width half
-                , height half
+                [ width whole
+                , height whole
                 ]
                 (Style.renderAttr model.svgStyle)
     in
