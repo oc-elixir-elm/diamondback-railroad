@@ -20,6 +20,7 @@ import Svg.Attributes exposing (..)
 
 -- import Html.Events exposing (onClick)
 
+import AnimationFrame
 import Matrix exposing (Matrix, Location)
 import Position
 import Piece
@@ -111,6 +112,10 @@ type alias PositionLocator =
     }
 
 
+{-|
+   For debugging animation, keep only one piece
+   instead of 81.
+-}
 create81Pieces : List Piece.Model
 create81Pieces =
     List.map (\pos -> createPieceForPos pos) [0..80]
@@ -213,6 +218,7 @@ type Msg
     = ModifyPosition Location Position.Msg
     | ModifyPiece Location Piece.Msg
     | KeyDown KeyCode
+    | Animate Time
     | Blink Time
 
 
@@ -230,6 +236,28 @@ update msg model =
 
         Blink time ->
             blinkUnvisitedPerimeterPositions model
+
+        Animate time ->
+            ( { model
+                | chain =
+                    (List.map (\piece -> animatePiece piece time)
+                        model.chain
+                    )
+              }
+            , Cmd.none
+            )
+
+
+animatePiece : Piece.Model -> Time -> Piece.Model
+animatePiece piece time =
+    let
+        msg =
+            Piece.Animate time
+
+        ( newPiece, _ ) =
+            Piece.update msg piece
+    in
+        newPiece
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -342,7 +370,11 @@ blinkPerimeterPositions :
     -> Matrix Position.Model
     -> Matrix Position.Model
 blinkPerimeterPositions newBlinkState board =
-    Matrix.map (\position -> blinkPosition newBlinkState position) board
+    Matrix.map
+        (\position ->
+            blinkPosition newBlinkState position
+        )
+        board
 
 
 blinkPosition : Bool -> Position.Model -> Position.Model
@@ -362,6 +394,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
+        , AnimationFrame.times Animate
         , Time.every (700 * Time.millisecond) Blink
         ]
 
@@ -434,14 +467,14 @@ view model =
     in
         div []
             [ svg
-                [ width "600"
-                , height "600"
+                [ width "400"
+                , height "400"
                 ]
                 [ rect
                     [ stroke "blue"
                     , fill "white"
-                    , width "600"
-                    , height "600"
+                    , width "400"
+                    , height "400"
                     ]
                     []
                 , svg []
