@@ -118,7 +118,7 @@ type alias PositionLocator =
 -}
 create81Pieces : List Piece.Model
 create81Pieces =
-    List.map (\pos -> createPieceForPos pos) [0..0]
+    List.map (\pos -> createPieceForPos pos) [0..80]
 
 
 createPieceForPos : Int -> Piece.Model
