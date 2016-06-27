@@ -265,24 +265,12 @@ renderPiece model =
 
         svgStyle =
             setSvgStyle model
-
-        svgAttributes =
-            List.append
-                [ width whole
-                , height whole
-                ]
-                (Style.renderAttr model.svgStyle)
     in
-        -- This will work; must put calculation of pixelsx and pixelsy
-        -- into init and initwithinfo initializations.
-        -- Gonna have to implmenet chains so that the Cx and Cy
-        -- can be calculated.
-        Svg.svg []
-            [ rect svgAttributes
+        Svg.svg (Style.renderAttr model.svgStyle)
                 [ polys
                 , myText
                 ]
-            ]
+
 
 
 view : Model -> Html Msg
