@@ -2,9 +2,8 @@
 
 ## What Just Happened?
 
-I've recently opened up this Elm game I'm developing the the Orange County
-(Calif) Elixir/Elm group as we've recently been working on this in a weekly
-hackfest.
+This branch explores an autosizing set of SVG graphics for the board, position,
+and piece modules.
 
 ## Purpose
 
