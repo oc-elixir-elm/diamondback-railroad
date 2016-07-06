@@ -412,15 +412,6 @@ type alias Height =
     Int
 
 
-type alias Dimensions =
-    ( Width, Height )
-
-
-dimensions : Dimensions
-dimensions =
-    ( 1200, 700 )
-
-
 borderColor : Color
 borderColor =
     darkBrown
@@ -470,7 +461,7 @@ view model =
             [ version "1.1"
             , x "0"
             , y "0"
-            , viewBox "0 0 400 400"
+            , viewBox "0 0 750 410"
             ]
             [ rect
                 [ stroke "blue"
