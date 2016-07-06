@@ -465,7 +465,8 @@ view model =
         chain =
             model.chain
     in
-        svg
+      div []
+        [svg
             [ version "1.1"
             , x "0"
             , y "0"
@@ -485,3 +486,7 @@ view model =
             , svg []
                 (List.map renderPiece chain)
             ]
+        , div []
+              [ text (renderMoveCount model.moveCount)
+              ]
+        ]
