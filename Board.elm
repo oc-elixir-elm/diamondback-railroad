@@ -465,26 +465,23 @@ view model =
         chain =
             model.chain
     in
-        div []
-            [ svg
-                [ width "400"
+        svg
+            [ version "1.1"
+            , x "0"
+            , y "0"
+            , viewBox "0 0 400 400"
+            ]
+            [ rect
+                [ stroke "blue"
+                , fill "white"
+                , width "400"
                 , height "400"
                 ]
-                [ rect
-                    [ stroke "blue"
-                    , fill "white"
-                    , width "400"
-                    , height "400"
-                    ]
-                    []
-                , svg []
-                    (List.map renderPosition positions)
-                  -- , svg []
-                  --     (List.map renderPiece pieces)
-                , svg []
-                    (List.map renderPiece chain)
-                ]
-            , div []
-                [ text (renderMoveCount model.moveCount)
-                ]
+                []
+            , svg []
+                (List.map renderPosition positions)
+              -- , svg []
+              --     (List.map renderPiece pieces)
+            , svg []
+                (List.map renderPiece chain)
             ]
