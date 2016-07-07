@@ -11,6 +11,10 @@ have evolved to a specific purpose for this game:
 > Implement a non-trivial 2-D board game to develop our skills in
 > using Elm to drive **svg** and interact w/ HTML in general.
 
+## To Run the Game
+
+**[http://oc-elixir-elm.github.io](http://oc-elixir-elm.github.io)**
+
 ## Installation Assumption
 
 1.  **Mac OSX** (Modify installation instructions for Windows and Linux)
