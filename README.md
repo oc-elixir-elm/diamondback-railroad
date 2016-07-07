@@ -100,3 +100,9 @@ Come learn Elm with us and contribute your code and ideas.  Until we develop our
 guidelines, we're loosely following the
 **[Contributin to Elm](https://github.com/elm-lang/elm-compiler/blob/master/CONTRIBUTING.md)**
 document.
+
+## Credits
+
+* To the Elm team -- Elm rocks!
+* To Matthew Griffith for **[elm-style-animation](https://github.com/mdgriffith/elm-style-animation)**;
+  vastly eased animation efforts.
