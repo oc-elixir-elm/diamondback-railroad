@@ -45,6 +45,10 @@ have nowhere to go but backwards.  Guess what?  You can't go backwards.
 1.  If you trap yourself, you have to reload the game by refreshing the page.
 1.  Your score is the number of move counts.  A lower score is better.
 
+> Hint: you cannot tranverse all of the permeter squares in one try because
+> you will trap yourself.  You have to "dodge" the tail of the chain you
+> dragging behind.
+
 Have fun!
 
 
@@ -72,7 +76,6 @@ with the lagging part of the chain itself.
 * Mac Firefox
 * iPhone Safari (display only since no keyboard)
 
-
 There is lots still not done:
 
 * No actual game yet.
@@ -80,3 +83,16 @@ There is lots still not done:
 * No levels of increaing difficulty.
 * Single-player
 * No interaction with a web application backend.
+
+## The Wiki
+
+We're slowing growing the
+**[wiki](https://github.com/oc-elixir-elm/diamondback-railroad/wiki)**;
+feel free to take a look.
+
+## Contributing
+
+Come learn Elm with us and contribute your code and ideas.  Until we develop our own
+guidelines, we're loosely following the
+**[Contributin to Elm](https://github.com/elm-lang/elm-compiler/blob/master/CONTRIBUTING.md)**
+document.
