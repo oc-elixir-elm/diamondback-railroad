@@ -456,28 +456,28 @@ view model =
         chain =
             model.chain
     in
-      div []
-        [svg
-            [ version "1.1"
-            , x "0"
-            , y "0"
-            , viewBox "0 0 750 410"
-            ]
-            [ rect
-                [ stroke "blue"
-                , fill "white"
-                , width "400"
-                , height "400"
+        div []
+            [ svg
+                [ version "1.1"
+                , x "0"
+                , y "0"
+                , viewBox "0 0 750 410"
                 ]
-                []
-            , svg []
-                (List.map renderPosition positions)
-              -- , svg []
-              --     (List.map renderPiece pieces)
-            , svg []
-                (List.map renderPiece chain)
+                [ rect
+                    [ stroke "blue"
+                    , fill "white"
+                    , width "400"
+                    , height "400"
+                    ]
+                    []
+                , svg []
+                    (List.map renderPosition positions)
+                  -- , svg []
+                  --     (List.map renderPiece pieces)
+                , svg []
+                    (List.map renderPiece chain)
+                ]
+            , div []
+                [ text (renderMoveCount model.moveCount)
+                ]
             ]
-        , div []
-              [ text (renderMoveCount model.moveCount)
-              ]
-        ]
