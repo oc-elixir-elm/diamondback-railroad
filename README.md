@@ -84,13 +84,13 @@ There is lots still not done:
 
 * No actual game yet.
 * No rules
-* No levels of increaing difficulty.
+* No levels of increasing difficulty.
 * Single-player
 * No interaction with a web application backend.
 
 ## The Wiki
 
-We're slowing growing the
+We're slowly growing the
 **[wiki](https://github.com/oc-elixir-elm/diamondback-railroad/wiki)**;
 feel free to take a look.
 
