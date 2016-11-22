@@ -6,9 +6,9 @@ import Window
 
 main : Signal Element
 main =
-  Signal.map view Window.dimensions
+    Signal.map view Window.dimensions
 
 
 view : ( Int, Int ) -> Element
 view ( w, h ) =
-  container w h middle (show (toString ( w, h )))
+    container w h middle (show (toString ( w, h )))

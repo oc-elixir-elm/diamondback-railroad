@@ -30,11 +30,9 @@ import Svg.Attributes
         , y
         )
 import Color
-import AnimationFrame
+import Animation
 import Matrix exposing (Location)
 import Time exposing (Time, second, millisecond)
-import Style
-import Style.Properties exposing (..)
 import Debug exposing (log)
 
 
@@ -61,7 +59,7 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , svgStyle : Style.Animation
+    , svgStyle : Animation.State
     }
 
 
@@ -72,7 +70,8 @@ init =
       , pieceNumber = 1
       , sideSize = 44
       , svgStyle =
-            Style.init []
+            Animation.style
+            	[]
       }
     , Cmd.none
     )
@@ -86,7 +85,9 @@ initWithInfo pieceNumber sideSize location =
             , location = location
             , pieceNumber = pieceNumber
             , sideSize = sideSize
-            , svgStyle = Style.init []
+            , svgStyle =
+                        Animation.style
+                        	[]
             }
 
         model =
@@ -103,7 +104,8 @@ subscriptions model =
         dummy =
             log "subscriptions" model.location
     in
-        AnimationFrame.times Animate
+        Animation.subscription
+        	Animate [ model.svgStyle ]
 
 
 
@@ -253,7 +255,7 @@ renderPiece model =
                 []
 
         myText =
-            text'
+            text_
                 [ x half
                 , y textDownMore
                 , fill "black"
@@ -264,10 +266,9 @@ renderPiece model =
                 [ text (toString model.pieceNumber) ]
     in
         Svg.svg (Style.renderAttr model.svgStyle)
-                [ polys
-                , myText
-                ]
-
+            [ polys
+            , myText
+            ]
 
 
 view : Model -> Html Msg

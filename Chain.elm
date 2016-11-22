@@ -9,11 +9,9 @@ module Chain
         )
 
 import Html exposing (Html)
-import Html.App
 import Piece exposing (Msg(..))
 import AnimationFrame
 import Time exposing (Time)
-import Style
 import Keyboard exposing (KeyCode)
 import Key exposing (..)
 import Matrix exposing (Location)

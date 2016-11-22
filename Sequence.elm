@@ -4,9 +4,9 @@ import Piece exposing (Piece)
 
 
 type alias Model =
-  List Piece
+    List Piece
 
 
 init : List Piece
 init =
-  []
+    []

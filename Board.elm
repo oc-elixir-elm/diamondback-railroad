@@ -9,7 +9,6 @@ module Board
 -- import Effects exposing (Effects)
 
 import Html exposing (Html, div)
-import Html.App
 
 
 -- import Html.Attributes exposing (..)
@@ -118,7 +117,7 @@ type alias PositionLocator =
 -}
 create81Pieces : List Piece.Model
 create81Pieces =
-    List.map (\pos -> createPieceForPos pos) [0..80]
+    List.map (\pos -> createPieceForPos pos) (List.range 0 80)
 
 
 createPieceForPos : Int -> Piece.Model

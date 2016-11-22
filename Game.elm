@@ -11,15 +11,15 @@ import Sequence
 
 
 type alias WindowWidth =
-  Int
+    Int
 
 
 type alias WindowHeight =
-  Int
+    Int
 
 
 type alias Model =
-  ( WindowWidth, WindowHeight, Board, Sequence )
+    ( WindowWidth, WindowHeight, Board, Sequence )
 
 
 
@@ -28,7 +28,7 @@ type alias Model =
 
 init : ( Model, Effects Action )
 init =
-  ( Window.width
-  , Window.height
-  , Sequence.init
-  )
+    ( Window.width
+    , Window.height
+    , Sequence.init
+    )

@@ -13,15 +13,15 @@ import Maybe exposing (..)
 
 
 type alias BoardWidth =
-  Int
+    Int
 
 
 type alias BoardHeight =
-  Int
+    Int
 
 
 type alias Model =
-  ( BoardWidth, BoardHeight, Matrix Position, Sequence )
+    ( BoardWidth, BoardHeight, Matrix Position, Sequence )
 
 
 
@@ -42,20 +42,20 @@ type alias Model =
 
 
 pixelsAcross =
-  50
+    50
 
 
 init : Model
 init =
-  let
-    ( boardWidth, boardHeight ) =
-      Window.dimensions
-  in
-    ( boardWidth
-    , boardHeight
-    , Matrix.square 5 (\location -> Position.createGrid location.col location.row)
-    , Sequence.init
-    )
+    let
+        ( boardWidth, boardHeight ) =
+            Window.dimensions
+    in
+        ( boardWidth
+        , boardHeight
+        , Matrix.square 5 (\location -> Position.createGrid location.col location.row)
+        , Sequence.init
+        )
 
 
 
@@ -63,46 +63,46 @@ init =
 
 
 type Action
-  = Left Square.Action
-  | Right Square.Action
-  | MoveBoth
+    = Left Square.Action
+    | Right Square.Action
+    | MoveBoth
 
 
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
-  case action of
-    Left act ->
-      let
-        ( left, fx ) =
-          Square.update act model.left
-      in
-        ( Model left model.right
-        , Effects.map Left fx
-        )
+    case action of
+        Left act ->
+            let
+                ( left, fx ) =
+                    Square.update act model.left
+            in
+                ( Model left model.right
+                , Effects.map Left fx
+                )
 
-    Right act ->
-      let
-        ( right, fx ) =
-          Square.update act model.right
-      in
-        ( Model model.left right
-        , Effects.map Right fx
-        )
+        Right act ->
+            let
+                ( right, fx ) =
+                    Square.update act model.right
+            in
+                ( Model model.left right
+                , Effects.map Right fx
+                )
 
-    MoveBoth ->
-      let
-        ( left, leftFx ) =
-          Square.startTranslate model.left
+        MoveBoth ->
+            let
+                ( left, leftFx ) =
+                    Square.startTranslate model.left
 
-        ( right, rightFx ) =
-          Square.startTranslate model.right
-      in
-        ( Model left right
-        , Effects.batch
-            [ Effects.map Left leftFx
-            , Effects.map Right rightFx
-            ]
-        )
+                ( right, rightFx ) =
+                    Square.startTranslate model.right
+            in
+                ( Model left right
+                , Effects.batch
+                    [ Effects.map Left leftFx
+                    , Effects.map Right rightFx
+                    ]
+                )
 
 
 
@@ -110,7 +110,7 @@ update action model =
 
 
 (=>) =
-  (,)
+    (,)
 
 
 
@@ -124,8 +124,8 @@ update action model =
 
 view : Signal.Address Action -> Model -> Html
 view address model =
-  div [ style [ "display" => "flex" ] ]
-    [ Square.view (Signal.forwardTo address Left) model.left
-    , Square.view (Signal.forwardTo address Right) model.right
-    , button [ onClick address MoveBoth ] [ text "Right" ]
-    ]
+    div [ style [ "display" => "flex" ] ]
+        [ Square.view (Signal.forwardTo address Left) model.left
+        , Square.view (Signal.forwardTo address Right) model.right
+        , button [ onClick address MoveBoth ] [ text "Right" ]
+        ]
