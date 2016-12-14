@@ -69,9 +69,8 @@ init =
       , location = ( 1, 1 )
       , pieceNumber = 1
       , sideSize = 44
-      , svgStyle =
-            Animation.style
-            	[]
+      , svgStyle = Animation.style
+            []
       }
     , Cmd.none
     )
@@ -85,9 +84,7 @@ initWithInfo pieceNumber sideSize location =
             , location = location
             , pieceNumber = pieceNumber
             , sideSize = sideSize
-            , svgStyle =
-                        Animation.style
-                        	[]
+            , svgStyle = Animation.style []
             }
 
         model =
@@ -100,13 +97,8 @@ initWithInfo pieceNumber sideSize location =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    let
-        dummy =
-            log "subscriptions" model.location
-    in
-        Animation.subscription
-        	Animate [ model.svgStyle ]
-
+    Animation.subscription Animate <|
+        [ model.svgStyle]
 
 
 -- UPDATE
@@ -118,6 +110,11 @@ type Msg
     | Move Location
 
 
+onStyle : Model -> (Animation.State -> Animation.State) -> Model
+onStyle model styleFn =
+    { model | svgStyle = styleFn <| model.svgStyle }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -125,26 +122,19 @@ update msg model =
             ( model, Cmd.none )
 
         Animate time ->
-            ( { model
-                | svgStyle = Style.tick time model.svgStyle
-              }
+            ( onStyle model <|
+                Animation.update time
             , Cmd.none
             )
 
         Move location ->
-            let
-                newModel =
-                    moveLoc location model
-
-                newModel2 =
-                    { newModel
-                        | svgStyle =
-                            Style.animate
-                                |> Style.to (getSvgValues newModel)
-                                |> Style.on (setSvgStyle model)
-                    }
-            in
-                ( newModel2, Cmd.none )
+            ( onStyle model <|
+                 Animation.interrupt
+                    [ Animation.to
+                        [ Animation.translate ]
+                    ]
+            , Cmd.none
+            )
 
 
 moveLoc : Location -> Model -> Model
@@ -266,9 +256,10 @@ renderPiece model =
                 [ text (toString model.pieceNumber) ]
     in
         Svg.svg (Style.renderAttr model.svgStyle)
-            [ polys
-            , myText
-            ]
+                [ polys
+                , myText
+                ]
+
 
 
 view : Model -> Html Msg
