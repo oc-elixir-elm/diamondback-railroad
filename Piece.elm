@@ -30,9 +30,8 @@ import Svg.Attributes
         , y
         )
 import Color
-import Animation
+import Animation exposing (px)
 import Matrix exposing (Location)
-import Time exposing (Time, second, millisecond)
 import Debug exposing (log)
 
 
@@ -59,18 +58,17 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , svgStyle : Animation.State
+    , style : List Animation.Property
     }
 
 
 init : ( Model, Cmd Msg )
 init =
     ( { role = Unassigned
-      , location = ( 1, 1 )
+      , location = (1, 1)
       , pieceNumber = 1
-      , sideSize = 44
-      , svgStyle = Animation.style
-            []
+      , sideSize = 44.0
+      , style = (getSvgValues (1, 1) 44.0)
       }
     , Cmd.none
     )
@@ -79,16 +77,14 @@ init =
 initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
 initWithInfo pieceNumber sideSize location =
     let
-        m =
+        model =
             { role = Unassigned
             , location = location
             , pieceNumber = pieceNumber
             , sideSize = sideSize
-            , svgStyle = Animation.style []
+            , style =
+                Animation.style (getSvgValues location sideSize)
             }
-
-        model =
-            { m | svgStyle = (setSvgStyle m) }
     in
         ( model
         , Cmd.none
@@ -98,7 +94,7 @@ initWithInfo pieceNumber sideSize location =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Animation.subscription Animate <|
-        [ model.svgStyle]
+        [ model.style]
 
 
 -- UPDATE
@@ -106,13 +102,13 @@ subscriptions model =
 
 type Msg
     = Show
-    | Animate Time
+    | Animate Animation.Msg
     | Move Location
 
 
 onStyle : Model -> (Animation.State -> Animation.State) -> Model
 onStyle model styleFn =
-    { model | svgStyle = styleFn <| model.svgStyle }
+    { model | style = styleFn <| model.style }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -121,20 +117,28 @@ update msg model =
         Show ->
             ( model, Cmd.none )
 
-        Animate time ->
-            ( onStyle model <|
-                Animation.update time
+        Animate animMsg ->
+            ( { model
+                | style = Animation.update animMsg model.style
+              }
             , Cmd.none
             )
 
         Move location ->
-            ( onStyle model <|
-                 Animation.interrupt
-                    [ Animation.to
-                        [ Animation.translate ]
-                    ]
-            , Cmd.none
-            )
+            let
+                newStyle =
+                     Animation.interrupt
+                        [ Animation.to
+                            [ Animation.translate ]
+                        ]
+                        model.style
+            in
+                (
+                    { model
+                        | style = newStyle
+                    }
+                , Cmd.none
+                )
 
 
 moveLoc : Location -> Model -> Model
@@ -152,27 +156,21 @@ moveLoc delta model =
         { model | location = newLocation }
 
 
-getSvgValues : Model -> List (Property Float a)
-getSvgValues model =
+getSvgValues : Location -> Float -> List Animation.Property
+getSvgValues location sideSize =
     let
         ( xloc, yloc ) =
-            model.location
+            location
 
         pixelsX =
-            model.sideSize * (toFloat xloc)
+            sideSize * (toFloat xloc)
 
         pixelsY =
-            model.sideSize * (toFloat yloc)
+            sideSize * (toFloat yloc)
     in
-        [ X pixelsX
-        , Y pixelsY
+        [ Animation.left (px pixelsX)
+        , Animation.top  (px pixelsY)
         ]
-
-
-setSvgStyle : Model -> Style.Animation
-setSvgStyle model =
-    Style.init (getSvgValues model)
-
 
 
 -- VIEW
@@ -255,7 +253,7 @@ renderPiece model =
                 ]
                 [ text (toString model.pieceNumber) ]
     in
-        Svg.svg (Style.renderAttr model.svgStyle)
+        Svg.svg ( Animation.render model.style)
                 [ polys
                 , myText
                 ]
