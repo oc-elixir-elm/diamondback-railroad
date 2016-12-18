@@ -217,7 +217,7 @@ type Msg
     = ModifyPosition Location Position.Msg
     | ModifyPiece Location Piece.Msg
     | KeyDown KeyCode
-    | Animate Time
+--    | Animate Time
     | Blink Time
 
 
@@ -236,27 +236,27 @@ update msg model =
         Blink time ->
             blinkUnvisitedPerimeterPositions model
 
-        Animate time ->
-            ( { model
-                | chain =
-                    (List.map (\piece -> animatePiece piece time)
-                        model.chain
-                    )
-              }
-            , Cmd.none
-            )
+--        Animate time ->
+--            ( { model
+--                | chain =
+--                    (List.map (\piece -> animatePiece piece time)
+--                        model.chain
+--                    )
+--              }
+--            , Cmd.none
+--            )
 
 
-animatePiece : Piece.Model -> Time -> Piece.Model
-animatePiece piece time =
-    let
-        msg =
-            Piece.Animate time
-
-        ( newPiece, _ ) =
-            Piece.update msg piece
-    in
-        newPiece
+--ƒ : Piece.Model -> Time -> Piece.Model
+--animatePiece piece time =
+--    let
+--        msg =
+--            Piece.Animate time
+--
+--        ( newPiece, _ ) =
+--            Piece.update msg piece
+--    in
+--        newPiece
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -393,7 +393,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
-        , AnimationFrame.times Animate
+          --        , AnimationFrame.times Animate
         , Time.every (700 * Time.millisecond) Blink
         ]
 
@@ -428,13 +428,13 @@ borderThickness =
 
 renderPosition : Position.Model -> Html Msg
 renderPosition position =
-    Html.App.map (ModifyPosition position.location)
+    Html.map (ModifyPosition position.location)
         (Position.view position)
 
 
 renderPiece : Piece.Model -> Html Msg
 renderPiece piece =
-    Html.App.map (ModifyPiece piece.location)
+    Html.map (ModifyPiece piece.location)
         (Piece.view piece)
 
 
