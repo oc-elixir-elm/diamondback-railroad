@@ -50,7 +50,7 @@ type alias BoardSideInPixels =
 
 boardSideInPixels : BoardSideInPixels
 boardSideInPixels =
-    400
+    660
 
 
 sideSize =
@@ -117,7 +117,7 @@ type alias PositionLocator =
 -}
 create81Pieces : List Piece.Model
 create81Pieces =
-    List.map (\pos -> createPieceForPos pos) (List.range 0 80)
+    List.map (\pos -> createPieceForPos pos) (List.range 0 0) --80
 
 
 createPieceForPos : Int -> Piece.Model
@@ -460,7 +460,7 @@ view model =
                 [ version "1.1"
                 , x "0"
                 , y "0"
-                , viewBox "0 0 750 410"
+                , viewBox "0 0 750 750"
                 ]
                 [ rect
                     [ stroke "blue"

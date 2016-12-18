@@ -1,7 +1,7 @@
 module MainBoard exposing (..)
 
 import Board exposing (..)
-import Html exposing(Html)
+import Html exposing (Html)
 
 
 main =
