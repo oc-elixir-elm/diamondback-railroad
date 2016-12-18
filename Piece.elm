@@ -58,38 +58,45 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , styles : List Animation.Property
+    , style : Animation.State
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { role = Unassigned
-      , location = (1, 1)
-      , pieceNumber = 1
-      , sideSize = 44.0
-      , styles = getSvgValues (1, 1) 44.0
-      }
-    , Cmd.none
-    )
+    initWithInfo 1 44.0 (1, 1)
 
 
 initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
 initWithInfo pieceNumber_ sideSize_ location_ =
-    ( { role = Unassigned
-      , location = location_
-      , pieceNumber = pieceNumber_
-      , sideSize = sideSize_
-      , styles =
-          getSvgValues location_ sideSize_
-      }
-    , Cmd.none
-    )
+    let
+        (pixelsX, pixelsY)
+            = locToPixels location_ sideSize_
+
+        initialStyle =
+            Animation.style
+                [ Animation.display Animation.inlineBlock
+                , Animation.width (px sideSize_)
+                , Animation.height (px sideSize_)
+                , Animation.left (px pixelsX)
+                , Animation.top (px pixelsY)
+                , Animation.scale 1.0
+                ]
+    in
+        (   { role = Unassigned
+            , location = location_
+            , pieceNumber = pieceNumber_
+            , sideSize = sideSize_
+            , style = initialStyle
+            }
+        , Cmd.none
+        )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Animation.subscription Animate model.styles
+    Animation.subscription Animate <|
+        [ model.style ]
 
 
 -- UPDATE
@@ -103,7 +110,7 @@ type Msg
 
 onStyle : Model -> (Animation.State -> Animation.State) -> Model
 onStyle model styleFn =
-    { model | styles = styleFn <| model.styles }
+    { model | style = styleFn <| model.style }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -114,24 +121,30 @@ update msg model =
 
         Animate animMsg ->
             ( { model
-                | styles = Animation.update animMsg model.styles
+                | style = Animation.update animMsg model.style
               }
             , Cmd.none
             )
 
         Move location ->
             let
-                newStyles =
-                     Animation.interrupt
-                        [ Animation.to
-                            [ Animation.translate ]
-                        ]
-                        model.styles
+                newModel =
+                    moveLoc location model
+
+                (newPixelsX, newPixelsY) =
+                    locToPixels
+                        newModel.location
+                        newModel.sideSize
             in
-                (
-                    { model
-                        | styles = newStyles
-                    }
+                ( onStyle newModel <|
+                    (Animation.interrupt
+                        [ Animation.to
+                            [ Animation.translate
+                                (px newPixelsX)
+                                (px newPixelsY)
+                            ]
+                        ]
+                    )
                 , Cmd.none
                 )
 
@@ -151,8 +164,8 @@ moveLoc delta model =
         { model | location = newLocation }
 
 
-getSvgValues : Location -> Float -> List Animation.Property
-getSvgValues location sideSize =
+locToPixels : Location -> Float -> (Pixels, Pixels)
+locToPixels location sideSize =
     let
         ( xloc, yloc ) =
             location
@@ -163,9 +176,7 @@ getSvgValues location sideSize =
         pixelsY =
             sideSize * (toFloat yloc)
     in
-        [ Animation.left (px pixelsX)
-        , Animation.top  (px pixelsY)
-        ]
+        (pixelsX, pixelsY)
 
 
 -- VIEW
@@ -248,7 +259,7 @@ renderPiece model =
                 ]
                 [ text (toString model.pieceNumber) ]
     in
-        Svg.svg ( Animation.render model.styles)
+        Svg.svg ( Animation.render model.style)
                 [ polys
                 , myText
                 ]
