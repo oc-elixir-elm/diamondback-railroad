@@ -58,7 +58,7 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , style : List Animation.Property
+    , styles : List Animation.Property
     }
 
 
@@ -68,33 +68,28 @@ init =
       , location = (1, 1)
       , pieceNumber = 1
       , sideSize = 44.0
-      , style = (getSvgValues (1, 1) 44.0)
+      , styles = getSvgValues (1, 1) 44.0
       }
     , Cmd.none
     )
 
 
 initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
-initWithInfo pieceNumber sideSize location =
-    let
-        model =
-            { role = Unassigned
-            , location = location
-            , pieceNumber = pieceNumber
-            , sideSize = sideSize
-            , style =
-                Animation.style (getSvgValues location sideSize)
-            }
-    in
-        ( model
-        , Cmd.none
-        )
+initWithInfo pieceNumber_ sideSize_ location_ =
+    ( { role = Unassigned
+      , location = location_
+      , pieceNumber = pieceNumber_
+      , sideSize = sideSize_
+      , styles =
+          getSvgValues location_ sideSize_
+      }
+    , Cmd.none
+    )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Animation.subscription Animate <|
-        [ model.style]
+    Animation.subscription Animate model.styles
 
 
 -- UPDATE
@@ -108,7 +103,7 @@ type Msg
 
 onStyle : Model -> (Animation.State -> Animation.State) -> Model
 onStyle model styleFn =
-    { model | style = styleFn <| model.style }
+    { model | styles = styleFn <| model.styles }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -119,23 +114,23 @@ update msg model =
 
         Animate animMsg ->
             ( { model
-                | style = Animation.update animMsg model.style
+                | styles = Animation.update animMsg model.styles
               }
             , Cmd.none
             )
 
         Move location ->
             let
-                newStyle =
+                newStyles =
                      Animation.interrupt
                         [ Animation.to
                             [ Animation.translate ]
                         ]
-                        model.style
+                        model.styles
             in
                 (
                     { model
-                        | style = newStyle
+                        | styles = newStyles
                     }
                 , Cmd.none
                 )
@@ -253,7 +248,7 @@ renderPiece model =
                 ]
                 [ text (toString model.pieceNumber) ]
     in
-        Svg.svg ( Animation.render model.style)
+        Svg.svg ( Animation.render model.styles)
                 [ polys
                 , myText
                 ]
