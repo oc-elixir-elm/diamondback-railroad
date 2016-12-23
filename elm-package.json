@@ -1,7 +1,7 @@
 {
     "version": "0.0.1",
     "summary": "A game where you pull chains of pieces in a grid",
-    "repository": "https://github.com/user/project.git",
+    "repository": "https://github.com/oc-elixir-elm/diamondback-railroad.git",
     "license": "BSD3",
     "source-directories": [
         "."

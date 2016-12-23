@@ -92,11 +92,22 @@ initWithInfo pieceNumber_ sideSize_ location_ =
         , Cmd.none
         )
 
+--
+--animatePiece : Model -> Animation.Msg -> Model.Animation.State
+--animatePiece piece time =
+--    let
+--        msg =
+--            Piece.Animate time
+--
+--        ( newPiece, _ ) =
+--            Piece.update msg piece
+--    in
+--        newPiece
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Animation.subscription Animate <|
-        [ model.style ]
+    Animation.subscription Animate [ model.style]
 
 
 -- UPDATE
@@ -119,9 +130,9 @@ update msg model =
         Show ->
             ( model, Cmd.none )
 
-        Animate animMsg ->
+        Animate time ->
             ( { model
-                | style = Animation.update animMsg model.style
+                | style = Animation.update time model.style
               }
             , Cmd.none
             )

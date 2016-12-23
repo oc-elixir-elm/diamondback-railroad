@@ -10,16 +10,14 @@ module Board
 
 import Html exposing (Html, div)
 
-
 -- import Html.Attributes exposing (..)
 
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-
+import Animation
 
 -- import Html.Events exposing (onClick)
 
-import AnimationFrame
 import Matrix exposing (Matrix, Location)
 import Position
 import Piece
@@ -117,7 +115,11 @@ type alias PositionLocator =
 -}
 create81Pieces : List Piece.Model
 create81Pieces =
-    List.map (\pos -> createPieceForPos pos) (List.range 0 0) --80
+    List.map (\pos -> createPieceForPos pos) (List.range 0 0)
+
+
+
+--80
 
 
 createPieceForPos : Int -> Piece.Model
@@ -217,7 +219,6 @@ type Msg
     = ModifyPosition Location Position.Msg
     | ModifyPiece Location Piece.Msg
     | KeyDown KeyCode
---    | Animate Time
     | Blink Time
 
 
@@ -235,28 +236,6 @@ update msg model =
 
         Blink time ->
             blinkUnvisitedPerimeterPositions model
-
---        Animate time ->
---            ( { model
---                | chain =
---                    (List.map (\piece -> animatePiece piece time)
---                        model.chain
---                    )
---              }
---            , Cmd.none
---            )
-
-
---ƒ : Piece.Model -> Time -> Piece.Model
---animatePiece piece time =
---    let
---        msg =
---            Piece.Animate time
---
---        ( newPiece, _ ) =
---            Piece.update msg piece
---    in
---        newPiece
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -393,22 +372,10 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
-          --        , AnimationFrame.times Animate
         , Time.every (700 * Time.millisecond) Blink
         ]
 
-
-
 -- VIEW
--- Number of positions on the side of the boafd
-
-
-type alias Width =
-    Int
-
-
-type alias Height =
-    Int
 
 
 borderColor : Color
@@ -471,8 +438,6 @@ view model =
                     []
                 , svg []
                     (List.map renderPosition positions)
-                  -- , svg []
-                  --     (List.map renderPiece pieces)
                 , svg []
                     (List.map renderPiece chain)
                 ]

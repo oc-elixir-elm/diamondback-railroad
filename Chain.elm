@@ -10,12 +10,11 @@ module Chain
 
 import Html exposing (Html)
 import Piece exposing (Msg(..))
-import AnimationFrame
-import Time exposing (Time)
 import Keyboard exposing (KeyCode)
 import Key exposing (..)
 import Matrix exposing (Location)
 import Debug exposing (log)
+import Time exposing (Time)
 
 
 type alias Model =
@@ -30,14 +29,12 @@ init =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ AnimationFrame.times Animate
-        , Keyboard.downs KeyDown
+        [ Keyboard.downs KeyDown
         ]
 
 
 type Msg
-    = Animate Time
-    | KeyDown KeyCode
+    = KeyDown KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -47,9 +44,6 @@ update msg model =
             case msg of
                 KeyDown keyCode ->
                     keyDown keyCode model
-
-                Animate time ->
-                    model
     in
         ( updatedModel, Cmd.none )
 
