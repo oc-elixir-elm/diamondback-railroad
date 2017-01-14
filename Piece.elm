@@ -30,7 +30,7 @@ import Svg.Attributes
         , y
         )
 import Color
-import Animation exposing (px)
+--import Animation exposing (px)
 import Matrix exposing (Location)
 import Debug exposing (log)
 
@@ -58,7 +58,7 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , style : Animation.State
+--    , style : Animation.State
     }
 
 
@@ -73,21 +73,21 @@ initWithInfo pieceNumber_ sideSize_ location_ =
         (pixelsX, pixelsY)
             = locToPixels location_ sideSize_
 
-        initialStyle =
-            Animation.style
-                [ Animation.display Animation.inlineBlock
-                , Animation.width (px sideSize_)
-                , Animation.height (px sideSize_)
-                , Animation.left (px pixelsX)
-                , Animation.top (px pixelsY)
-                , Animation.scale 1.0
-                ]
+--        initialStyle =
+--            Animation.style
+--                [ Animation.display Animation.inlineBlock
+--                , Animation.width (px sideSize_)
+--                , Animation.height (px sideSize_)
+--                , Animation.left (px pixelsX)
+--                , Animation.top (px pixelsY)
+--                , Animation.scale 1.0
+--                ]
     in
         (   { role = Unassigned
             , location = location_
             , pieceNumber = pieceNumber_
             , sideSize = sideSize_
-            , style = initialStyle
+--            , style = initialStyle
             }
         , Cmd.none
         )
@@ -105,37 +105,40 @@ initWithInfo pieceNumber_ sideSize_ location_ =
 --        newPiece
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Animation.subscription Animate [ model.style]
+--subscriptions : Model -> Sub Msg
+--subscriptions model =
+--    Animation.subscription Animate [ model.style]
 
 
 -- UPDATE
 
 
 type Msg
-    = Show
-    | Animate Animation.Msg
-    | Move Location
+    = Move Location
+--    | Show
+--    | Animate Animation.Msg
 
 
-onStyle : Model -> (Animation.State -> Animation.State) -> Model
-onStyle model styleFn =
-    { model | style = styleFn <| model.style }
+--onStyle : Model -> (Animation.State -> Animation.State) -> Model
+--onStyle model styleFn =
+--    { model | style = styleFn <| model.style }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Show ->
-            ( model, Cmd.none )
-
-        Animate time ->
-            ( { model
-                | style = Animation.update time model.style
-              }
-            , Cmd.none
-            )
+--        Show ->
+--            ( model, Cmd.none )
+--
+--        Animate time ->
+--            ( { model
+--                | style = Animation.update time model.style
+--              }
+--            , Cmd.none
+--            )
+--            ( model
+--            , Cmd.none
+--            )
 
         Move location ->
             let
@@ -147,15 +150,18 @@ update msg model =
                         newModel.location
                         newModel.sideSize
             in
-                ( onStyle newModel <|
-                    (Animation.interrupt
-                        [ Animation.to
-                            [ Animation.translate
-                                (px newPixelsX)
-                                (px newPixelsY)
-                            ]
-                        ]
-                    )
+--                ( onStyle newModel <|
+--                    (Animation.interrupt
+--                        [ Animation.to
+--                            [ Animation.translate
+--                                (px newPixelsX)
+--                                (px newPixelsY)
+--                            ]
+--                        ]
+--                    )
+--                , Cmd.none
+--                )
+                ( newModel
                 , Cmd.none
                 )
 
@@ -210,7 +216,7 @@ renderPiece model =
             model.sideSize
 
         ( locX, locY ) =
-            model.location
+            log "view location" model.location
 
         edgeRatio =
             (edgeThickness * sideSize) / 100
@@ -270,7 +276,8 @@ renderPiece model =
                 ]
                 [ text (toString model.pieceNumber) ]
     in
-        Svg.svg ( Animation.render model.style)
+--        Svg.svg ( Animation.render model.style)
+        Svg.svg []
                 [ polys
                 , myText
                 ]
