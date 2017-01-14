@@ -218,6 +218,12 @@ renderPiece model =
         ( locX, locY ) =
             log "view location" model.location
 
+        pixelsX =
+            toString (sideSize * (toFloat locX))
+
+        pixelsY =
+            toString (sideSize * (toFloat locY))
+
         edgeRatio =
             (edgeThickness * sideSize) / 100
 
@@ -277,10 +283,14 @@ renderPiece model =
                 [ text (toString model.pieceNumber) ]
     in
 --        Svg.svg ( Animation.render model.style)
-        Svg.svg []
-                [ polys
-                , myText
-                ]
+        Svg.svg
+            [ version "1.1"
+            , x pixelsX
+            , y pixelsY
+            ]
+            [ polys
+            , myText
+            ]
 
 
 
