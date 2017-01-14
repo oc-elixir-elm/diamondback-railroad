@@ -216,7 +216,7 @@ renderPiece model =
             model.sideSize
 
         ( locX, locY ) =
-            log "view location" model.location
+            model.location
 
         pixelsX =
             toString (sideSize * (toFloat locX))
