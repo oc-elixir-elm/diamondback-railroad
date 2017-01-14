@@ -30,7 +30,7 @@ import Svg.Attributes
         , y
         )
 import Color
---import Animation exposing (px)
+import Animation exposing (px)
 import Matrix exposing (Location)
 import Debug exposing (log)
 
@@ -58,56 +58,58 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
---    , style : Animation.State
+    , style : Animation.State
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    initWithInfo 1 44.0 (1, 1)
+    initWithInfo 1 44.0 ( 1, 1 )
 
 
 initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
 initWithInfo pieceNumber_ sideSize_ location_ =
     let
-        (pixelsX, pixelsY)
-            = locToPixels location_ sideSize_
+        ( pixelsX, pixelsY ) =
+            locToPixels location_ sideSize_
 
---        initialStyle =
---            Animation.style
---                [ Animation.display Animation.inlineBlock
---                , Animation.width (px sideSize_)
---                , Animation.height (px sideSize_)
---                , Animation.left (px pixelsX)
---                , Animation.top (px pixelsY)
---                , Animation.scale 1.0
---                ]
+        initialStyle =
+            Animation.style
+                [ Animation.display Animation.inlineBlock
+                , Animation.width (px sideSize_)
+                , Animation.height (px sideSize_)
+                , Animation.left (px pixelsX)
+                , Animation.top (px pixelsY)
+                , Animation.scale 1.0
+                ]
     in
-        (   { role = Unassigned
-            , location = location_
-            , pieceNumber = pieceNumber_
-            , sideSize = sideSize_
---            , style = initialStyle
-            }
+        ( { role = Unassigned
+          , location = location_
+          , pieceNumber = pieceNumber_
+          , sideSize = sideSize_
+          , style = initialStyle
+          }
         , Cmd.none
         )
 
---
---animatePiece : Model -> Animation.Msg -> Model.Animation.State
+
+
+--animatePiece : Model -> Animation.Msg -> Animation.State
 --animatePiece piece time =
 --    let
 --        msg =
---            Piece.Animate time
+--            Animate time
 --
 --        ( newPiece, _ ) =
---            Piece.update msg piece
+--            update msg piece
 --    in
 --        newPiece
 
 
---subscriptions : Model -> Sub Msg
---subscriptions model =
---    Animation.subscription Animate [ model.style]
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Animation.subscription Animate [ model.style ]
+
 
 
 -- UPDATE
@@ -115,53 +117,47 @@ initWithInfo pieceNumber_ sideSize_ location_ =
 
 type Msg
     = Move Location
---    | Show
---    | Animate Animation.Msg
+    | Show
+    | Animate Animation.Msg
 
 
---onStyle : Model -> (Animation.State -> Animation.State) -> Model
---onStyle model styleFn =
---    { model | style = styleFn <| model.style }
+onStyle : Model -> (Animation.State -> Animation.State) -> Model
+onStyle model styleFn =
+    { model | style = styleFn <| model.style }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
---        Show ->
---            ( model, Cmd.none )
---
---        Animate time ->
---            ( { model
---                | style = Animation.update time model.style
---              }
---            , Cmd.none
---            )
---            ( model
---            , Cmd.none
---            )
+        Show ->
+            ( model, Cmd.none )
+
+        Animate time ->
+            ( { model
+                | style = Animation.update time model.style
+              }
+            , Cmd.none
+            )
 
         Move location ->
             let
                 newModel =
                     moveLoc location model
 
-                (newPixelsX, newPixelsY) =
+                ( newPixelsX, newPixelsY ) =
                     locToPixels
                         newModel.location
                         newModel.sideSize
             in
---                ( onStyle newModel <|
---                    (Animation.interrupt
---                        [ Animation.to
---                            [ Animation.translate
---                                (px newPixelsX)
---                                (px newPixelsY)
---                            ]
---                        ]
---                    )
---                , Cmd.none
---                )
-                ( newModel
+                ( onStyle newModel <|
+                    (Animation.interrupt
+                        [ Animation.to
+                            [ Animation.translate
+                                (px newPixelsX)
+                                (px newPixelsY)
+                            ]
+                        ]
+                    )
                 , Cmd.none
                 )
 
@@ -181,7 +177,7 @@ moveLoc delta model =
         { model | location = newLocation }
 
 
-locToPixels : Location -> Float -> (Pixels, Pixels)
+locToPixels : Location -> Float -> ( Pixels, Pixels )
 locToPixels location sideSize =
     let
         ( xloc, yloc ) =
@@ -193,7 +189,8 @@ locToPixels location sideSize =
         pixelsY =
             sideSize * (toFloat yloc)
     in
-        (pixelsX, pixelsY)
+        ( pixelsX, pixelsY )
+
 
 
 -- VIEW
@@ -282,16 +279,17 @@ renderPiece model =
                 ]
                 [ text (toString model.pieceNumber) ]
     in
---        Svg.svg ( Animation.render model.style)
         Svg.svg
             [ version "1.1"
             , x pixelsX
             , y pixelsY
             ]
-            [ polys
-            , myText
+        <|
+            [ Svg.svg (Animation.render model.style)
+                    [ polys
+                    , myText
+                    ]
             ]
-
 
 
 view : Model -> Html Msg

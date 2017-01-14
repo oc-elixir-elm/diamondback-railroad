@@ -14,7 +14,7 @@ import Html exposing (Html, div)
 
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
---import Animation
+import Animation
 
 -- import Html.Events exposing (onClick)
 
