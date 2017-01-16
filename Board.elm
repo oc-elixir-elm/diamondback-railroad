@@ -6,15 +6,15 @@ module Board
         , subscriptions
         )
 
--- import Effects exposing (Effects)
-
 import Html exposing (Html, div)
+
 
 -- import Html.Attributes exposing (..)
 
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Animation
+
 
 -- import Html.Events exposing (onClick)
 
@@ -100,6 +100,7 @@ type alias Model =
     , chain : Chain.Model
     , moveCount : Int
     , blinkState : Bool
+    , styles : List Animation.State
     }
 
 
@@ -116,8 +117,6 @@ type alias PositionLocator =
 create81Pieces : List Piece.Model
 create81Pieces =
     List.map (\pos -> createPieceForPos pos) (List.range 0 0)
-
-
 
 --80
 
@@ -206,6 +205,7 @@ init =
           , chain = chain
           , moveCount = moveCount
           , blinkState = blinkState
+          , styles = []
           }
         , Cmd.none
         )
@@ -220,6 +220,7 @@ type Msg
     | ModifyPiece Location Piece.Msg
     | KeyDown KeyCode
     | Blink Time
+    | Animate Animation.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -236,6 +237,10 @@ update msg model =
 
         Blink time ->
             blinkUnvisitedPerimeterPositions model
+
+        Animate chain ->
+--            Chain.update Animate chain
+            ( model, Cmd.none )
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -373,7 +378,13 @@ subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
         , Time.every (700 * Time.millisecond) Blink
+        , Animation.subscription
+            Animate
+--            (List.map (\piece -> piece.styles) model.pieces)
+            []
         ]
+
+
 
 -- VIEW
 

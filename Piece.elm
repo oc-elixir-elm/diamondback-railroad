@@ -58,7 +58,7 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , style : Animation.State
+    , styles : List Animation.State
     }
 
 
@@ -74,20 +74,17 @@ initWithInfo pieceNumber_ sideSize_ location_ =
             locToPixels location_ sideSize_
 
         initialStyle =
-            Animation.style
-                [ Animation.display Animation.inlineBlock
-                , Animation.width (px sideSize_)
-                , Animation.height (px sideSize_)
-                , Animation.left (px pixelsX)
+            [ Animation.style
+                [ Animation.left (px pixelsX)
                 , Animation.top (px pixelsY)
-                , Animation.scale 1.0
                 ]
+            ]
     in
         ( { role = Unassigned
           , location = location_
           , pieceNumber = pieceNumber_
           , sideSize = sideSize_
-          , style = initialStyle
+          , styles = initialStyle
           }
         , Cmd.none
         )
@@ -104,14 +101,6 @@ initWithInfo pieceNumber_ sideSize_ location_ =
 --            update msg piece
 --    in
 --        newPiece
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Animation.subscription Animate [ model.style ]
-
-
-
 -- UPDATE
 
 
@@ -121,9 +110,9 @@ type Msg
     | Animate Animation.Msg
 
 
-onStyle : Model -> (Animation.State -> Animation.State) -> Model
-onStyle model styleFn =
-    { model | style = styleFn <| model.style }
+--onStyle : Model -> (Animation.State -> Animation.State) -> Model
+--onStyle model styleFn =
+--    { model | styles = styleFn <| model.styles }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -134,7 +123,7 @@ update msg model =
 
         Animate time ->
             ( { model
-                | style = Animation.update time model.style
+                | styles = List.map (Animation.update time) model.styles
               }
             , Cmd.none
             )
@@ -149,17 +138,23 @@ update msg model =
                         newModel.location
                         newModel.sideSize
             in
-                ( onStyle newModel <|
-                    (Animation.interrupt
-                        [ Animation.to
-                            [ Animation.translate
-                                (px newPixelsX)
-                                (px newPixelsY)
-                            ]
-                        ]
-                    )
-                , Cmd.none
+                ( { model
+                    | styles =
+                        model.styles
+                  }
+                  , Cmd.none
                 )
+--                ( onStyle newModel <|
+--                    (Animation.interrupt
+--                        [ Animation.to
+--                            [ Animation.translate
+--                                (px newPixelsX)
+--                                (px newPixelsY)
+--                            ]
+--                        ]
+--                    )
+--                , Cmd.none
+--                )
 
 
 moveLoc : Location -> Model -> Model
@@ -285,10 +280,11 @@ renderPiece model =
             , y pixelsY
             ]
         <|
-            [ Svg.svg (Animation.render model.style)
-                    [ polys
-                    , myText
-                    ]
+--            [ Svg.svg (Animation.render model.styles)
+            [ Svg.svg []
+                [ polys
+                , myText
+                ]
             ]
 
 
