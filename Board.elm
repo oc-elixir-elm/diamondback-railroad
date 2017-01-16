@@ -100,7 +100,6 @@ type alias Model =
     , chain : Chain.Model
     , moveCount : Int
     , blinkState : Bool
-    , styles : List Animation.State
     }
 
 
@@ -205,7 +204,6 @@ init =
           , chain = chain
           , moveCount = moveCount
           , blinkState = blinkState
-          , styles = []
           }
         , Cmd.none
         )
@@ -380,10 +378,14 @@ subscriptions model =
         , Time.every (700 * Time.millisecond) Blink
         , Animation.subscription
             Animate
---            (List.map (\piece -> piece.styles) model.pieces)
-            []
+            (listAnimationState model)
         ]
 
+
+-- Figuring out what Animate argument needs to be
+listAnimationState : Model -> List Animation.State
+listAnimationState model =
+    List.concat (List.map .styles model.pieces)
 
 
 -- VIEW
