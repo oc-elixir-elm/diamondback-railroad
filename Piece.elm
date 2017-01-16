@@ -280,9 +280,7 @@ renderPiece model =
             , x pixelsX
             , y pixelsY
             ]
-        <|
             [ Svg.svg (Animation.render model.style)
---            [ Svg.svg []
                 [ polys
                 , myText
                 ]
