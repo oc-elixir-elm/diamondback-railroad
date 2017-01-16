@@ -30,6 +30,7 @@ import Svg.Attributes
         , y
         )
 import Color
+import Time exposing (second)
 import Animation exposing (px)
 import Matrix exposing (Location)
 import Debug exposing (log)
@@ -100,6 +101,8 @@ initWithInfo pieceNumber_ sideSize_ location_ =
 --            update msg piece
 --    in
 --        newPiece
+
+
 -- UPDATE
 
 
@@ -129,17 +132,20 @@ update msg model =
 
         Move location ->
             let
-                newModel =
-                    moveLoc location model
+                newLocation =
+                    newLoc location model
 
                 ( newPixelsX, newPixelsY ) =
                     locToPixels
-                        newModel.location
-                        newModel.sideSize
+                        newLocation
+                        model.sideSize
 
             in
-                (   { newModel
-                        | style =
+                (   { model
+                        | location =
+                            newLocation
+
+                        , style =
                             (Animation.interrupt
                                 [ Animation.to
                                     [ Animation.left
@@ -148,26 +154,23 @@ update msg model =
                                         (px newPixelsY)
                                     ]
                                 ]
-                                newModel.style
+                                model.style
                             )
                     }
                 , Cmd.none
                 )
 
 
-moveLoc : Location -> Model -> Model
-moveLoc delta model =
+newLoc : Location -> Model -> Location
+newLoc delta model =
     let
         ( dx, dy ) =
             delta
 
         ( x, y ) =
             model.location
-
-        newLocation =
-            ( x + dx, y + dy )
     in
-        { model | location = newLocation }
+        ( x + dx, y + dy )
 
 
 locToPixels : Location -> Float -> ( Pixels, Pixels )
@@ -278,8 +281,8 @@ renderPiece model =
             , y pixelsY
             ]
         <|
---            [ Svg.svg (Animation.render model.styles)
-            [ Svg.svg []
+            [ Svg.svg (Animation.render model.style)
+--            [ Svg.svg []
                 [ polys
                 , myText
                 ]
