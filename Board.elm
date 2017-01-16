@@ -385,7 +385,7 @@ subscriptions model =
 -- Figuring out what Animate argument needs to be
 listAnimationState : Model -> List Animation.State
 listAnimationState model =
-    List.concat (List.map .styles model.pieces)
+    List.map .style model.pieces
 
 
 -- VIEW

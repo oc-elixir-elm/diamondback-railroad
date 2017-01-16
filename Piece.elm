@@ -58,7 +58,7 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , styles : List Animation.State
+    , style : Animation.State
     }
 
 
@@ -74,17 +74,16 @@ initWithInfo pieceNumber_ sideSize_ location_ =
             locToPixels location_ sideSize_
 
         initialStyle =
-            [ Animation.style
+            Animation.style
                 [ Animation.left (px pixelsX)
                 , Animation.top (px pixelsY)
                 ]
-            ]
     in
         ( { role = Unassigned
           , location = location_
           , pieceNumber = pieceNumber_
           , sideSize = sideSize_
-          , styles = initialStyle
+          , style = initialStyle
           }
         , Cmd.none
         )
@@ -123,7 +122,7 @@ update msg model =
 
         Animate time ->
             ( { model
-                | styles = List.map (Animation.update time) model.styles
+                | style = Animation.update time model.style
               }
             , Cmd.none
             )
@@ -137,24 +136,23 @@ update msg model =
                     locToPixels
                         newModel.location
                         newModel.sideSize
+
             in
-                ( { model
-                    | styles =
-                        model.styles
-                  }
-                  , Cmd.none
+                (   { newModel
+                        | style =
+                            (Animation.interrupt
+                                [ Animation.to
+                                    [ Animation.left
+                                        (px newPixelsX)
+                                    , Animation.top
+                                        (px newPixelsY)
+                                    ]
+                                ]
+                                newModel.style
+                            )
+                    }
+                , Cmd.none
                 )
---                ( onStyle newModel <|
---                    (Animation.interrupt
---                        [ Animation.to
---                            [ Animation.translate
---                                (px newPixelsX)
---                                (px newPixelsY)
---                            ]
---                        ]
---                    )
---                , Cmd.none
---                )
 
 
 moveLoc : Location -> Model -> Model
