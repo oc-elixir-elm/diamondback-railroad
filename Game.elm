@@ -1,6 +1,5 @@
 module Game exposing (..)
 
-import Effects exposing (Effects)
 import Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -19,16 +18,22 @@ type alias WindowHeight =
 
 
 type alias Model =
-    ( WindowWidth, WindowHeight, Board, Sequence )
+    ( WindowWidth, WindowHeight, Board.Model, Sequence.Model )
 
+
+-- Don't know what messages we're going to have yet
+type Msg
+    = PlaceHolder
 
 
 -- Will have to add Board below
 
 
-init : ( Model, Effects Action )
+init : ( Model, Cmd Msg )
 init =
     ( Window.width
     , Window.height
+    , Board.init
     , Sequence.init
     )
+

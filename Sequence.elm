@@ -4,9 +4,9 @@ import Piece
 
 
 type alias Model =
-    List Piece
+    List Piece.Model
 
 
-init : List Piece
+init : Model
 init =
     []

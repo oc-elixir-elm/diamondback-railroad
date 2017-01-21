@@ -1,6 +1,7 @@
 module Board
     exposing
-        ( init
+        ( Model
+        , init
         , view
         , update
         , subscriptions
