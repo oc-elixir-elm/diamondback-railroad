@@ -65,7 +65,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    initWithInfo 1 44.0 ( 1, 1 )
+    initWithInfo 1 0.0 ( 1, 1 )
 
 
 initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
@@ -110,6 +110,7 @@ type Msg
     = Move Location
     | Show
     | Animate Animation.Msg
+    | Resize Float
 
 
 --onStyle : Model -> (Animation.State -> Animation.State) -> Model
@@ -159,6 +160,13 @@ update msg model =
                     }
                 , Cmd.none
                 )
+
+        Resize sideSize ->
+            ( { model |
+                    sideSize = sideSize
+              }
+            , Cmd.none
+            )
 
 
 newLoc : Location -> Model -> Location

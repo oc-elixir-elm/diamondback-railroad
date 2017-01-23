@@ -22,12 +22,13 @@ import Animation
 import Matrix exposing (Matrix, Location)
 import Position
 import Piece
-import Chain
+import Chain exposing (Msg(..))
 import Maybe exposing (..)
 import Color exposing (Color, lightBrown, darkBrown)
 import Time exposing (Time, second)
 import Window
 import Keyboard exposing (KeyCode)
+import Task
 import Debug exposing (log)
 
 
@@ -38,27 +39,12 @@ type alias PosCount =
     Int
 
 
-maxPosLength : PosCount
-maxPosLength =
-    11
-
-
 type alias BoardSideInPixels =
     Int
 
 
-boardSideInPixels : BoardSideInPixels
-boardSideInPixels =
-    660
-
-
-sideSize =
-    (toFloat boardSideInPixels)
-        / (toFloat maxPosLength)
-
-
-squareType : Location -> Position.PositionType
-squareType location =
+squareType : Location -> PosCount -> Position.PositionType
+squareType location maxPosLength =
     let
         ( x, y ) =
             location
@@ -77,30 +63,15 @@ squareType location =
             Position.Grid
 
 
-positionFromInit : Location -> Position.Model
-positionFromInit location =
-    let
-        ( position, msg ) =
-            Position.initWithInfo (squareType location)
-                maxPosLength
-                sideSize
-                location
-    in
-        position
-
-
-createMatrix : PosCount -> Matrix Position.Model
-createMatrix posCount =
-    Matrix.square posCount
-        (\location -> positionFromInit location)
-
-
 type alias Model =
     { board : Matrix Position.Model
     , pieces : List Piece.Model
     , chain : Chain.Model
     , moveCount : Int
     , blinkState : Bool
+    , boardSideInPixels : BoardSideInPixels
+    , maxPosLength : PosCount
+    , sideSize : Float
     }
 
 
@@ -117,6 +88,8 @@ type alias PositionLocator =
 create81Pieces : List Piece.Model
 create81Pieces =
     List.map (\pos -> createPieceForPos pos) (List.range 0 0)
+
+
 
 --80
 
@@ -175,7 +148,7 @@ initPiece tuple =
 
         ( piece, _ ) =
             Piece.initWithInfo pieceNumber
-                sideSize
+                0.0
                 ( x, y )
     in
         piece
@@ -184,11 +157,15 @@ initPiece tuple =
 init : ( Model, Cmd Msg )
 init =
     let
+        maxPosLength =
+            3
+            -- 11
+
         board =
-            createMatrix maxPosLength
+            Matrix.fromList []
 
         pieces =
-            create81Pieces
+            []
 
         -- one chain includes all the pieces
         chain =
@@ -205,8 +182,11 @@ init =
           , chain = chain
           , moveCount = moveCount
           , blinkState = blinkState
+          , maxPosLength = maxPosLength
+          , sizeSize = 0.0
+          , boardSideInPixels = 0 -- Updated immediately by Task below
           }
-        , Cmd.none
+        , Task.perform BoardResize Window.size
         )
 
 
@@ -220,11 +200,17 @@ type Msg
     | KeyDown KeyCode
     | Blink Time
     | Animate Animation.Msg
+    | BoardResize Window.Size
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        BoardResize windowSize ->
+            ( adjustBoard model windowSize
+            , Cmd.none
+            )
+
         ModifyPosition location positionMsg ->
             ( model, Cmd.none )
 
@@ -238,8 +224,41 @@ update msg model =
             blinkUnvisitedPerimeterPositions model
 
         Animate chain ->
---            Chain.update Animate chain
+            --            Chain.update Animate chain
             ( model, Cmd.none )
+
+
+adjustBoard : Model -> Window.Size -> Model
+adjustBoard model windowSize =
+    let
+        boardSideInPixels =
+            Basics.min
+                windowSize.width
+                windowSize.height
+
+        sideSize =
+            (toFloat boardSideInPixels)
+                / (toFloat model.maxPosLength)
+
+        newModel =
+            { model
+                | boardSizeInPixels =
+                    boardSideInPixels
+                , sideSize =
+                    sideSize
+                , board =
+                    resizeBoard model sideSize
+                , chain =
+                    Chain.update (Chain.Resize sideSize) model.chain
+
+            }
+    in
+        newModel
+
+
+resizeBoard : Model -> Float -> Matrix
+resizeBoard model sideSize =
+    
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -368,7 +387,6 @@ blinkPosition newBlinkState position =
         position
 
 
-
 -- SUBSCRIPTIONS
 
 
@@ -380,13 +398,18 @@ subscriptions model =
         , Animation.subscription
             Animate
             (listAnimationState model)
+        , Window.resizes BoardResize
         ]
 
 
+
 -- Figuring out what Animate argument needs to be
+
+
 listAnimationState : Model -> List Animation.State
 listAnimationState model =
     List.map .style model.pieces
+
 
 
 -- VIEW

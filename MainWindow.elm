@@ -24,8 +24,7 @@ init =
     ( { windowSize =
             Window.Size 0 0
       }
-    , Task.perform Resize Window.size
-      -- update size for initial display
+    , Task.perform Resize Window.size -- update size for initial display
     )
 
 
