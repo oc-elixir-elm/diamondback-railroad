@@ -39,8 +39,41 @@ type alias PosCount =
     Int
 
 
-type alias BoardSideInPixels =
+type alias BoardSideDimension =
     Int
+
+
+type alias SideSize =
+    Float
+
+
+-- VIEWPORT SETTINGS
+
+
+type alias PaneDimension =
+    Int
+
+
+-- Arbitrary square viewport width and height
+paneDimension : PaneDimension
+paneDimension =
+    1000
+
+
+paneWidth : PaneDimension
+paneWidth =
+    paneDimension
+
+
+paneHeight : PaneDimension
+paneHeight =
+    paneDimension
+
+
+viewBoxSetting : String
+viewBoxSetting =
+    "0 0 " ++ (toString paneWidth) ++ " " ++ (toString paneHeight)
+
 
 
 squareType : Location -> PosCount -> Position.PositionType
@@ -63,7 +96,7 @@ squareType location maxPosLength =
             Position.Grid
 
 
-positionFromInit : Location -> PosCount -> Float -> Position.Model
+positionFromInit : Location -> PosCount -> SideSize -> Position.Model
 positionFromInit location maxPosLength sideSize =
     let
         ( position, msg ) =
@@ -75,13 +108,13 @@ positionFromInit location maxPosLength sideSize =
         position
 
 
-createMatrix : Model -> Matrix Position.Model
-createMatrix model =
-    Matrix.square model.maxPosLength
+createMatrix : PosCount -> SideSize -> Matrix Position.Model
+createMatrix maxPosLength sideSize =
+    Matrix.square maxPosLength
         (\location ->
             positionFromInit location
-                model.maxPosLength
-                model.sideSize
+                maxPosLength
+                sideSize
         )
 
 
@@ -91,9 +124,9 @@ type alias Model =
     , chain : Chain.Model
     , moveCount : Int
     , blinkState : Bool
-    , boardSideInPixels : BoardSideInPixels
+    , boardSideDimension : BoardSideDimension
     , maxPosLength : PosCount
-    , sideSize : Float
+    , sideSize : SideSize
     }
 
 
@@ -178,17 +211,31 @@ initPiece tuple =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { board = Matrix.fromList []
-      , pieces = []
-      , chain = []
-      , moveCount = 0
-      , blinkState = False
-      , maxPosLength = 2
-      , sideSize = 0.0
-      , boardSideInPixels = 0
-      }
-    , Task.perform BoardResize Window.size
-    )
+    let
+        maxPosLength =
+            2
+
+        boardSideDimension =
+            paneDimension -- temporary: no accomodation for move count
+
+        sideSize =
+            (toFloat boardSideDimension)
+                / (toFloat maxPosLength)
+    in
+        ( { moveCount = 0
+          , blinkState = False
+          , maxPosLength = 2
+          , boardSideDimension = boardSideDimension
+          , sideSize = sideSize
+          , board =
+                createMatrix
+                    maxPosLength
+                    sideSize
+          , pieces = []
+          , chain = []
+          }
+        , Cmd.none
+        )
 
 
 initFromPosCount : PosCount -> ( Model, Cmd Msg )
@@ -215,17 +262,11 @@ type Msg
     | KeyDown KeyCode
     | Blink Time
     | Animate Animation.Msg
-    | BoardResize Window.Size
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        BoardResize windowSize ->
-            ( adjustBoard model windowSize
-            , Cmd.none
-            )
-
         ModifyPosition location positionMsg ->
             ( model, Cmd.none )
 
@@ -241,37 +282,6 @@ update msg model =
         Animate chain ->
             --            Chain.update Animate chain
             ( model, Cmd.none )
-
-
-adjustBoard : Model -> Window.Size -> Model
-adjustBoard model windowSize =
-    let
-        boardSideInPixels =
-            Basics.min
-                windowSize.width
-                windowSize.height
-
-        sideSize =
-            (toFloat boardSideInPixels)
-                / (toFloat model.maxPosLength)
-
-        newModel =
-            { model
-                | boardSideInPixels =
-                    boardSideInPixels
-                , sideSize =
-                    sideSize
-            }
-
-        ( newChain, _ ) =
-            Chain.update (Chain.Resize sideSize) newModel.chain
-    in
-        { newModel
-            | board =
-                createMatrix newModel
-            , chain =
-                newChain
-        }
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -412,7 +422,6 @@ subscriptions model =
         , Animation.subscription
             Animate
             (listAnimationState model)
-        , Window.resizes BoardResize
         ]
 
 
@@ -473,26 +482,14 @@ view model =
         chain =
             model.chain
     in
-        div []
-            [ svg
-                [ version "1.1"
-                , x "0"
-                , y "0"
-                , viewBox "0 0 750 750"
-                ]
-                [ rect
-                    [ stroke "blue"
-                    , fill "white"
-                    , width "400"
-                    , height "400"
-                    ]
-                    []
-                , svg []
-                    (List.map renderPosition positions)
-                , svg []
-                    (List.map renderPiece chain)
-                ]
-            , div []
-                [ text (renderMoveCount model.moveCount)
-                ]
+        svg
+            [ version "1.1"
+            , x "0"
+            , y "0"
+            , viewBox viewBoxSetting
+            ]
+            [ svg []
+                (List.map renderPosition positions)
+            , svg []
+                (List.map renderPiece chain)
             ]
