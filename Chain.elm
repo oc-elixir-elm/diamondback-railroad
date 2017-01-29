@@ -5,7 +5,7 @@ module Chain
         , update
         , subscriptions
         , sameLocation
-        , Msg(KeyDown)
+        , Msg(KeyDown, Resize)
         )
 
 import Html exposing (Html)
@@ -83,7 +83,7 @@ resizePiece piece sideSize =
             Piece.Resize sideSize
 
         (updatedPiece, _) =
-            Piece.update piece pieceMsg
+            Piece.update pieceMsg piece
     in
         updatedPiece
 

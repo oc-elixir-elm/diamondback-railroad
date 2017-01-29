@@ -63,6 +63,28 @@ squareType location maxPosLength =
             Position.Grid
 
 
+positionFromInit : Location -> PosCount -> Float -> Position.Model
+positionFromInit location maxPosLength sideSize =
+    let
+        ( position, msg ) =
+            Position.initWithInfo (squareType location maxPosLength)
+                maxPosLength
+                sideSize
+                location
+    in
+        position
+
+
+createMatrix : Model -> Matrix Position.Model
+createMatrix model =
+    Matrix.square model.maxPosLength
+        (\location ->
+            positionFromInit location
+                model.maxPosLength
+                model.sideSize
+        )
+
+
 type alias Model =
     { board : Matrix Position.Model
     , pieces : List Piece.Model
@@ -156,38 +178,31 @@ initPiece tuple =
 
 init : ( Model, Cmd Msg )
 init =
+    ( { board = Matrix.fromList []
+      , pieces = []
+      , chain = []
+      , moveCount = 0
+      , blinkState = False
+      , maxPosLength = 2
+      , sideSize = 0.0
+      , boardSideInPixels = 0
+      }
+    , Task.perform BoardResize Window.size
+    )
+
+
+initFromPosCount : PosCount -> ( Model, Cmd Msg )
+initFromPosCount posCount =
     let
-        maxPosLength =
-            3
-            -- 11
+        ( model, msg ) =
+            init
 
-        board =
-            Matrix.fromList []
-
-        pieces =
-            []
-
-        -- one chain includes all the pieces
-        chain =
-            pieces
-
-        moveCount =
-            0
-
-        blinkState =
-            False
+        newModel =
+            { model
+                | maxPosLength = posCount
+            }
     in
-        ( { board = board
-          , pieces = pieces
-          , chain = chain
-          , moveCount = moveCount
-          , blinkState = blinkState
-          , maxPosLength = maxPosLength
-          , sizeSize = 0.0
-          , boardSideInPixels = 0 -- Updated immediately by Task below
-          }
-        , Task.perform BoardResize Window.size
-        )
+        ( newModel, msg )
 
 
 
@@ -242,23 +257,21 @@ adjustBoard model windowSize =
 
         newModel =
             { model
-                | boardSizeInPixels =
+                | boardSideInPixels =
                     boardSideInPixels
                 , sideSize =
                     sideSize
-                , board =
-                    resizeBoard model sideSize
-                , chain =
-                    Chain.update (Chain.Resize sideSize) model.chain
-
             }
+
+        ( newChain, _ ) =
+            Chain.update (Chain.Resize sideSize) newModel.chain
     in
-        newModel
-
-
-resizeBoard : Model -> Float -> Matrix
-resizeBoard model sideSize =
-    
+        { newModel
+            | board =
+                createMatrix newModel
+            , chain =
+                newChain
+        }
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -385,6 +398,7 @@ blinkPosition newBlinkState position =
             position
     else
         position
+
 
 
 -- SUBSCRIPTIONS
