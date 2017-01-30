@@ -261,6 +261,22 @@ update msg model =
             ( model, Cmd.none )
 
 
+{--
+Tactic: don't change board dimension parameters when window resized, instead
+update viewport appropriately.
+In beginning, at first window.size, remember reference width and height.  This
+is because at the beginning is where the board fits.
+If height didn't change and width >= height
+    then don't change viewport
+If width didn't change and width >= height
+    then don't change viewport
+If height didn't change and width < height
+    then make viewport proportionately larger.
+If width didn't change and width < height
+    then make viewport proportionately larger.
+IF both changed and width < height
+    then make viewport proportionately larger.
+--}
 adjustBoard : Model -> Window.Size -> Model
 adjustBoard model windowSize =
     let
