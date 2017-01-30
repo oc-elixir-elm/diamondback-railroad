@@ -47,35 +47,6 @@ type alias SideSize =
     Float
 
 
--- VIEWPORT SETTINGS
-
-
-type alias PaneDimension =
-    Int
-
-
--- Arbitrary square viewport width and height
-paneDimension : PaneDimension
-paneDimension =
-    1000
-
-
-paneWidth : PaneDimension
-paneWidth =
-    paneDimension
-
-
-paneHeight : PaneDimension
-paneHeight =
-    paneDimension
-
-
-viewBoxSetting : String
-viewBoxSetting =
-    "0 0 " ++ (toString paneWidth) ++ " " ++ (toString paneHeight)
-
-
-
 squareType : Location -> PosCount -> Position.PositionType
 squareType location maxPosLength =
     let
@@ -234,7 +205,7 @@ init =
           , pieces = []
           , chain = []
           }
-        , Cmd.none
+        , Task.perform BoardResize Window.size
         )
 
 
@@ -262,11 +233,17 @@ type Msg
     | KeyDown KeyCode
     | Blink Time
     | Animate Animation.Msg
+    | BoardResize Window.Size
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        BoardResize windowSize ->
+            ( adjustBoard model windowSize
+            , Cmd.none
+            )
+
         ModifyPosition location positionMsg ->
             ( model, Cmd.none )
 
@@ -282,6 +259,39 @@ update msg model =
         Animate chain ->
             --            Chain.update Animate chain
             ( model, Cmd.none )
+
+
+adjustBoard : Model -> Window.Size -> Model
+adjustBoard model windowSize =
+    let
+        fitsRatio =
+            (toFloat windowSize.height)
+                / (toFloat windowSize.width)
+
+        boardSideDimension =
+            Basics.round (fitsRatio * (toFloat paneDimension))
+
+        sideSize =
+            (toFloat boardSideDimension)
+                / (toFloat model.maxPosLength)
+
+        newModel =
+            { model
+                | boardSideDimension =
+                    boardSideDimension
+                , sideSize =
+                    sideSize
+            }
+
+        ( newChain, _ ) =
+            Chain.update (Chain.Resize sideSize) newModel.chain
+    in
+        { newModel
+            | board =
+                createMatrix model.maxPosLength sideSize
+            , chain =
+                newChain
+        }
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -493,3 +503,31 @@ view model =
             , svg []
                 (List.map renderPiece chain)
             ]
+
+
+-- VIEWPORT SETTINGS
+
+
+type alias PaneDimension =
+    Int
+
+
+-- Arbitrary square viewport width and height
+paneDimension : PaneDimension
+paneDimension =
+    1000
+
+
+paneWidth : PaneDimension
+paneWidth =
+    paneDimension
+
+
+paneHeight : PaneDimension
+paneHeight =
+    paneDimension
+
+
+viewBoxSetting : String
+viewBoxSetting =
+    "0 0 " ++ (toString paneWidth) ++ " " ++ (toString paneHeight)
