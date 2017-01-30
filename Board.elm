@@ -432,6 +432,7 @@ subscriptions model =
         , Animation.subscription
             Animate
             (listAnimationState model)
+        , Window.resizes BoardResize
         ]
 
 
@@ -497,7 +498,7 @@ view model =
             , x "0"
             , y "0"
             , viewBox viewBoxSetting
-            ]
+            , preserveAspectRatio "xMinYMin meet"            ]
             [ svg []
                 (List.map renderPosition positions)
             , svg []
