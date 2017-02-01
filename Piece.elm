@@ -110,7 +110,6 @@ type Msg
     = Move Location
     | Show
     | Animate Animation.Msg
-    | Resize Float
 
 
 --onStyle : Model -> (Animation.State -> Animation.State) -> Model
@@ -160,13 +159,6 @@ update msg model =
                     }
                 , Cmd.none
                 )
-
-        Resize sideSize ->
-            ( { model |
-                    sideSize = sideSize
-              }
-            , Cmd.none
-            )
 
 
 newLoc : Location -> Model -> Location
