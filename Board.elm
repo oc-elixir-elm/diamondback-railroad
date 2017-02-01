@@ -39,10 +39,6 @@ type alias PosCount =
     Int
 
 
-type alias BoardSideDimension =
-    Int
-
-
 type alias SideSize =
     Float
 
@@ -113,7 +109,6 @@ type alias PositionLocator =
 create81Pieces : List Piece.Model
 create81Pieces =
     List.map (\pos -> createPieceForPos pos) (List.range 0 0)
-
 
 
 --80
@@ -377,14 +372,25 @@ blinkPosition newBlinkState position =
         position
 
 
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Keyboard.downs KeyDown
+        , Time.every (700 * Time.millisecond) Blink
+        , Animation.subscription
+            Animate
+            (listAnimationState model)
+        ]
+
+
 
 -- Figuring out what Animate argument needs to be
-
-
 listAnimationState : Model -> List Animation.State
 listAnimationState model =
     List.map .style model.pieces
-
 
 
 -- VIEW
@@ -451,45 +457,3 @@ view model =
             , svg []
                 (List.map renderPiece chain)
             ]
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Keyboard.downs KeyDown
-        , Time.every (700 * Time.millisecond) Blink
-        , Animation.subscription
-            Animate
-            (listAnimationState model)
-        ]
-
-
--- VIEWPORT SETTINGS
-
-
-type alias PaneDimension =
-    Int
-
-
--- Arbitrary square viewport width and height
-paneDimension : PaneDimension
-paneDimension =
-    1000
-
-
-paneWidth : PaneDimension
-paneWidth =
-    paneDimension
-
-
-paneHeight : PaneDimension
-paneHeight =
-    paneDimension
-
-
-viewBoxSetting : String
-viewBoxSetting =
-    "0 0 " ++ (toString paneWidth) ++ " " ++ (toString paneHeight)
