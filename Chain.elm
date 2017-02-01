@@ -5,7 +5,7 @@ module Chain
         , update
         , subscriptions
         , sameLocation
-        , Msg(KeyDown, Resize)
+        , Msg(KeyDown)
         )
 
 import Html exposing (Html)
@@ -35,7 +35,6 @@ subscriptions model =
 
 type Msg
     = KeyDown KeyCode
-    | Resize Float
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -45,9 +44,6 @@ update msg model =
             case msg of
                 KeyDown keyCode ->
                     keyDown keyCode model
-
-                Resize sideSize ->
-                    resizePieces model sideSize
     in
         ( updatedModel, Cmd.none )
 
@@ -70,22 +66,6 @@ keyDown keyCode chain =
         Unknown ->
             chain
 
-
-resizePieces : Model -> Float -> Model
-resizePieces model sideSize =
-    List.map (\piece -> resizePiece piece sideSize) model
-
-
-resizePiece : Piece.Model -> Float -> Piece.Model
-resizePiece piece sideSize =
-    let
-        pieceMsg =
-            Piece.Resize sideSize
-
-        (updatedPiece, _) =
-            Piece.update pieceMsg piece
-    in
-        updatedPiece
 
 {-| This is the command to "pull" the pieces in a
 chain around.  The headDelta value indicates one
