@@ -95,7 +95,6 @@ type alias Model =
     , chain : Chain.Model
     , moveCount : Int
     , blinkState : Bool
-    , boardSideDimension : BoardSideDimension
     , maxPosLength : PosCount
     , sideSize : SideSize
     }
@@ -184,19 +183,15 @@ init : ( Model, Cmd Msg )
 init =
     let
         maxPosLength =
-            2
-
-        boardSideDimension =
-            paneDimension -- temporary: no accomodation for move count
+            11
 
         sideSize =
-            (toFloat boardSideDimension)
+            boardSide
                 / (toFloat maxPosLength)
     in
         ( { moveCount = 0
           , blinkState = False
-          , maxPosLength = 2
-          , boardSideDimension = boardSideDimension
+          , maxPosLength = maxPosLength
           , sideSize = sideSize
           , board =
                 createMatrix
@@ -205,7 +200,8 @@ init =
           , pieces = []
           , chain = []
           }
-        , Task.perform BoardResize Window.size
+--        , Task.perform BoardResize Window.size
+        , Cmd.none
         )
 
 
@@ -233,17 +229,11 @@ type Msg
     | KeyDown KeyCode
     | Blink Time
     | Animate Animation.Msg
-    | BoardResize Window.Size
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        BoardResize windowSize ->
-            ( adjustBoard model windowSize
-            , Cmd.none
-            )
-
         ModifyPosition location positionMsg ->
             ( model, Cmd.none )
 
@@ -259,55 +249,6 @@ update msg model =
         Animate chain ->
             --            Chain.update Animate chain
             ( model, Cmd.none )
-
-
-{--
-Tactic: don't change board dimension parameters when window resized, instead
-update viewport appropriately.
-In beginning, at first window.size, remember reference width and height.  This
-is because at the beginning is where the board fits.
-If height didn't change and width >= height
-    then don't change viewport
-If width didn't change and width >= height
-    then don't change viewport
-If height didn't change and width < height
-    then make viewport proportionately larger.
-If width didn't change and width < height
-    then make viewport proportionately larger.
-IF both changed and width < height
-    then make viewport proportionately larger.
---}
-adjustBoard : Model -> Window.Size -> Model
-adjustBoard model windowSize =
-    let
-        fitsRatio =
-            (toFloat windowSize.height)
-                / (toFloat windowSize.width)
-
-        boardSideDimension =
-            Basics.round (fitsRatio * (toFloat paneDimension))
-
-        sideSize =
-            (toFloat boardSideDimension)
-                / (toFloat model.maxPosLength)
-
-        newModel =
-            { model
-                | boardSideDimension =
-                    boardSideDimension
-                , sideSize =
-                    sideSize
-            }
-
-        ( newChain, _ ) =
-            Chain.update (Chain.Resize sideSize) newModel.chain
-    in
-        { newModel
-            | board =
-                createMatrix model.maxPosLength sideSize
-            , chain =
-                newChain
-        }
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -437,22 +378,6 @@ blinkPosition newBlinkState position =
 
 
 
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Keyboard.downs KeyDown
-        , Time.every (700 * Time.millisecond) Blink
-        , Animation.subscription
-            Animate
-            (listAnimationState model)
-        , Window.resizes BoardResize
-        ]
-
-
-
 -- Figuring out what Animate argument needs to be
 
 
@@ -463,6 +388,11 @@ listAnimationState model =
 
 
 -- VIEW
+
+
+boardSide : Float
+boardSide =
+    1.0
 
 
 borderColor : Color
@@ -511,15 +441,30 @@ view model =
     in
         svg
             [ version "1.1"
-            , x "0"
-            , y "0"
-            , viewBox viewBoxSetting
-            , preserveAspectRatio "xMinYMin meet"            ]
+            , width "100%"
+            , height "100%"
+            , viewBox "0 0 10 10"
+            , preserveAspectRatio "xMidYMid meet"
+            ]
             [ svg []
                 (List.map renderPosition positions)
             , svg []
                 (List.map renderPiece chain)
             ]
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Keyboard.downs KeyDown
+        , Time.every (700 * Time.millisecond) Blink
+        , Animation.subscription
+            Animate
+            (listAnimationState model)
+        ]
 
 
 -- VIEWPORT SETTINGS

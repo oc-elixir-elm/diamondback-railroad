@@ -196,24 +196,20 @@ renderEmptySquare model =
         fillColor =
             calcFillColor model
 
-        -- doesn't matter
         myStrokeWidth =
-            toString (model.sideSize / 10)
-
-        boardSize =
-            (toFloat model.maxPosLength) * model.sideSize
+            (toString (model.sideSize * 10.0)) ++ "%"
 
         ( locX, locY ) =
             model.location
 
         pixelsX =
-            toString (sideSize * (toFloat locX))
+            (toString (100.0 * sideSize * (toFloat locX))) ++ "%"
 
         pixelsY =
-            toString (sideSize * (toFloat locY))
+            (toString (100.0 * sideSize * (toFloat locY))) ++ "%"
 
         whole =
-            toString model.sideSize
+            (toString (100.0 * model.sideSize)) ++ "%"
 
         rectangle =
             rect
