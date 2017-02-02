@@ -87,7 +87,6 @@ createMatrix maxPosLength sideSize =
 
 type alias Model =
     { board : Matrix Position.Model
-    , pieces : List Piece.Model
     , chain : Chain.Model
     , moveCount : Int
     , blinkState : Bool
@@ -192,8 +191,7 @@ init =
                 createMatrix
                     maxPosLength
                     sideSize
-          , pieces = []
-          , chain = []
+          , chain = create81Pieces
           }
 --        , Task.perform BoardResize Window.size
         , Cmd.none
@@ -390,7 +388,7 @@ subscriptions model =
 -- Figuring out what Animate argument needs to be
 listAnimationState : Model -> List Animation.State
 listAnimationState model =
-    List.map .style model.pieces
+    List.map .style model.chain
 
 
 -- VIEW
@@ -438,9 +436,6 @@ view model =
     let
         positions =
             Matrix.flatten model.board
-
-        pieces =
-            model.pieces
 
         chain =
             model.chain
