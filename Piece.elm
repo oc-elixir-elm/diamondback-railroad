@@ -192,9 +192,9 @@ locToPixels location sideSize =
 -- VIEW
 
 
-edgeThickness : number
+edgeThickness : Float
 edgeThickness =
-    3
+    3.0
 
 
 darkBrown : String
@@ -218,7 +218,7 @@ renderPiece model =
             toString (sideSize * (toFloat locY))
 
         edgeRatio =
-            (edgeThickness * sideSize) / 100
+            (edgeThickness * sideSize) / 100.0
 
         plusIndent =
             toString edgeRatio
