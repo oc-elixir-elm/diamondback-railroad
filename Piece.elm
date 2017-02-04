@@ -202,6 +202,20 @@ darkBrown =
     "saddlebrown"
 
 
+toStringPercentFloat1 : Float -> String
+toStringPercentFloat1 dim =
+    (toString (100.0 * dim)) ++ "%"
+
+
+toStringPercentInt2 : Int -> Pixels -> String
+toStringPercentInt2 dim sideSize =
+    (toString (100.0 * sideSize * (toFloat dim))) ++ "%"
+
+
+toStringPercentFloat2 : Float -> Pixels -> String
+toStringPercentFloat2 dim sideSize =
+    (toString (100.0 * sideSize * dim)) ++ "%"
+
 renderPiece : Model -> Html Msg
 renderPiece model =
     let
@@ -209,34 +223,35 @@ renderPiece model =
             model.sideSize
 
         ( locX, locY ) =
-            model.location
+            (5, 5)
+--            model.location
 
         pixelsX =
-            toString (sideSize * (toFloat locX))
+            toStringPercentInt2 locX sideSize
 
         pixelsY =
-            toString (sideSize * (toFloat locY))
+            toStringPercentInt2 locY sideSize
 
         edgeRatio =
-            (edgeThickness * sideSize) / 100.0
+            edgeThickness * sideSize
 
         plusIndent =
-            toString edgeRatio
+            toStringPercentFloat1 edgeRatio
 
         minusIndent =
-            toString (sideSize - edgeRatio)
+            toStringPercentFloat2 edgeRatio sideSize
 
         whole =
-            toString sideSize
+            toStringPercentFloat1 sideSize
 
         half =
-            toString (sideSize / 2.0)
+            toStringPercentFloat1 (sideSize / 2.0)
 
         narrow =
-            toString (sideSize / 10.0)
+            toStringPercentFloat1 (sideSize / 10.0)
 
         textDownMore =
-            toString (sideSize / 1.8)
+            toStringPercentFloat1 (sideSize / 1.8)
 
         polyPoints =
             half
@@ -269,7 +284,7 @@ renderPiece model =
                 [ x half
                 , y textDownMore
                 , fill "black"
-                , fontSize "20"
+                , fontSize "4"
                 , alignmentBaseline "middle"
                 , textAnchor "middle"
                 ]
@@ -280,10 +295,8 @@ renderPiece model =
             , x pixelsX
             , y pixelsY
             ]
-            [ Svg.svg (Animation.render model.style)
-                [ polys
-                , myText
-                ]
+            [ polys
+--            , myText
             ]
 
 

@@ -377,7 +377,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
-        , Time.every (700 * Time.millisecond) Blink
+--        , Time.every (700 * Time.millisecond) Blink
         , Animation.subscription
             Animate
             (listAnimationState model)
