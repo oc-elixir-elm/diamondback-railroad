@@ -244,6 +244,9 @@ renderPiece model =
         narrow =
             toStringFloat1 (sideSize / 10.0)
 
+        fontSize_ =
+            toStringFloat1 (sideSize * 0.5)
+
         textDownMore =
             toStringFloat1 (sideSize / 1.8)
 
@@ -266,7 +269,7 @@ renderPiece model =
 
         polys =
             polygon
-                [ fill "green"
+                [ fill "white"
                 , points polyPoints
                 , stroke "indianred"
                 , strokeWidth (toString edgeRatio)
@@ -278,7 +281,7 @@ renderPiece model =
                 [ x half
                 , y textDownMore
                 , fill "black"
-                , fontSize "4"
+                , fontSize fontSize_
                 , alignmentBaseline "middle"
                 , textAnchor "middle"
                 ]
@@ -290,7 +293,7 @@ renderPiece model =
             , y pixelsY
             ]
             [ polys
---            , myText
+            , myText
             ]
 
 

@@ -107,10 +107,7 @@ type alias PositionLocator =
 -}
 create81Pieces : Float -> List Piece.Model
 create81Pieces sideSize =
-    List.map (\pos -> createPieceForPos pos sideSize) (List.range 0 0)
-
-
---80
+    List.map (\pos -> createPieceForPos pos sideSize) (List.range 0 80)
 
 
 createPieceForPos : Int -> Float -> Piece.Model
@@ -448,11 +445,11 @@ view model =
             , viewBox "0 0 1 1"
             , preserveAspectRatio "xMidYMid meet"
             ]
---            [ svg []
---                (List.map renderPosition positions)
---            , svg []
---                (List.map renderPiece chain)
---            ]
             [ svg []
+                (List.map renderPosition positions)
+            , svg []
                 (List.map renderPiece chain)
             ]
+--            [ svg []
+--                (List.map renderPiece chain)
+--            ]
