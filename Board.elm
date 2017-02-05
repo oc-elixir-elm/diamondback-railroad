@@ -105,16 +105,16 @@ type alias PositionLocator =
    For debugging animation, keep only one piece
    instead of 81.
 -}
-create81Pieces : List Piece.Model
-create81Pieces =
-    List.map (\pos -> createPieceForPos pos) (List.range 0 0)
+create81Pieces : Float -> List Piece.Model
+create81Pieces sideSize =
+    List.map (\pos -> createPieceForPos pos sideSize) (List.range 0 0)
 
 
 --80
 
 
-createPieceForPos : Int -> Piece.Model
-createPieceForPos position =
+createPieceForPos : Int -> Float -> Piece.Model
+createPieceForPos position sideSize =
     let
         x =
             xForPos position
@@ -123,7 +123,7 @@ createPieceForPos position =
             yForPos position
 
         tuple =
-            ( position + 1, x, y )
+            ( position + 1, x, y, sideSize )
     in
         initPiece tuple
 
@@ -159,16 +159,17 @@ yForPos position =
     1 + (position // 9)
 
 
-initPiece : ( Int, Int, Int ) -> Piece.Model
+initPiece : ( Int, Int, Int, Float ) -> Piece.Model
 initPiece tuple =
     let
-        ( pieceNumber, x, y ) =
+        ( pieceNumber, x, y, sideSize) =
             tuple
 
         ( piece, _ ) =
             Piece.initWithInfo pieceNumber
-                0.0
+                sideSize
                 ( x, y )
+
     in
         piece
 
@@ -191,7 +192,7 @@ init =
                 createMatrix
                     maxPosLength
                     sideSize
-          , chain = create81Pieces
+          , chain = create81Pieces sideSize
           }
 --        , Task.perform BoardResize Window.size
         , Cmd.none
@@ -444,11 +445,14 @@ view model =
             [ version "1.1"
             , width "100%"
             , height "100%"
-            , viewBox "0 0 10 10"
+            , viewBox "0 0 1 1"
             , preserveAspectRatio "xMidYMid meet"
             ]
+--            [ svg []
+--                (List.map renderPosition positions)
+--            , svg []
+--                (List.map renderPiece chain)
+--            ]
             [ svg []
-                (List.map renderPosition positions)
-            , svg []
                 (List.map renderPiece chain)
             ]

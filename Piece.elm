@@ -194,27 +194,22 @@ locToPixels location sideSize =
 
 edgeThickness : Float
 edgeThickness =
-    3.0
-
+    0.0454545455
 
 darkBrown : String
 darkBrown =
     "saddlebrown"
 
 
-toStringPercentFloat1 : Float -> String
-toStringPercentFloat1 dim =
-    (toString (100.0 * dim)) ++ "%"
+toStringFloat1 : Float -> String
+toStringFloat1 dim =
+    toString dim
 
 
-toStringPercentInt2 : Int -> Pixels -> String
-toStringPercentInt2 dim sideSize =
-    (toString (100.0 * sideSize * (toFloat dim))) ++ "%"
+toStringInt2 : Int -> Pixels -> String
+toStringInt2 dim sideSize =
+    toString (sideSize * (toFloat dim))
 
-
-toStringPercentFloat2 : Float -> Pixels -> String
-toStringPercentFloat2 dim sideSize =
-    (toString (100.0 * sideSize * dim)) ++ "%"
 
 renderPiece : Model -> Html Msg
 renderPiece model =
@@ -223,56 +218,55 @@ renderPiece model =
             model.sideSize
 
         ( locX, locY ) =
-            (5, 5)
---            model.location
+            model.location
 
         pixelsX =
-            toStringPercentInt2 locX sideSize
+            toStringInt2 locX sideSize
 
         pixelsY =
-            toStringPercentInt2 locY sideSize
+            toStringInt2 locY sideSize
 
         edgeRatio =
             edgeThickness * sideSize
 
         plusIndent =
-            toStringPercentFloat1 edgeRatio
+            toStringFloat1 edgeRatio
 
         minusIndent =
-            toStringPercentFloat2 edgeRatio sideSize
+            toStringFloat1 (sideSize - edgeRatio)
 
         whole =
-            toStringPercentFloat1 sideSize
+            toStringFloat1 sideSize
 
         half =
-            toStringPercentFloat1 (sideSize / 2.0)
+            toStringFloat1 (sideSize / 2.0)
 
         narrow =
-            toStringPercentFloat1 (sideSize / 10.0)
+            toStringFloat1 (sideSize / 10.0)
 
         textDownMore =
-            toStringPercentFloat1 (sideSize / 1.8)
+            toStringFloat1 (sideSize / 1.8)
 
         polyPoints =
             half
-                ++ " "
-                ++ plusIndent
-                ++ ", "
-                ++ minusIndent
-                ++ " "
-                ++ half
-                ++ ", "
-                ++ half
-                ++ " "
-                ++ minusIndent
-                ++ ", "
+                ++ ","
                 ++ plusIndent
                 ++ " "
+                ++ minusIndent
+                ++ ","
+                ++ half
+                ++ " "
+                ++ half
+                ++ ","
+                ++ minusIndent
+                ++ " "
+                ++ plusIndent
+                ++ ","
                 ++ half
 
         polys =
             polygon
-                [ fill "white"
+                [ fill "green"
                 , points polyPoints
                 , stroke "indianred"
                 , strokeWidth (toString edgeRatio)
