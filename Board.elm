@@ -375,7 +375,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
---        , Time.every (700 * Time.millisecond) Blink
+        , Time.every (700 * Time.millisecond) Blink
         , Animation.subscription
             Animate
             (listAnimationState model)
@@ -450,6 +450,3 @@ view model =
             , svg []
                 (List.map renderPiece chain)
             ]
---            [ svg []
---                (List.map renderPiece chain)
---            ]
