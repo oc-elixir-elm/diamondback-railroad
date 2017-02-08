@@ -159,14 +159,13 @@ yForPos position =
 initPiece : ( Int, Int, Int, Float ) -> Piece.Model
 initPiece tuple =
     let
-        ( pieceNumber, x, y, sideSize) =
+        ( pieceNumber, x, y, sideSize ) =
             tuple
 
         ( piece, _ ) =
             Piece.initWithInfo pieceNumber
                 sideSize
                 ( x, y )
-
     in
         piece
 
@@ -191,7 +190,7 @@ init =
                     sideSize
           , chain = create81Pieces sideSize
           }
---        , Task.perform BoardResize Window.size
+          --        , Task.perform BoardResize Window.size
         , Cmd.none
         )
 
@@ -237,9 +236,16 @@ update msg model =
         Blink time ->
             blinkUnvisitedPerimeterPositions model
 
-        Animate chain ->
-            --            Chain.update Animate chain
-            ( model, Cmd.none )
+        Animate animMsg ->
+            let
+                ( chain, msg ) =
+                    Chain.update (Chain.Animate animMsg) model.chain
+            in
+                ( { model
+                    | chain = chain
+                  }
+                , Cmd.none
+                )
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -368,6 +374,7 @@ blinkPosition newBlinkState position =
         position
 
 
+
 -- SUBSCRIPTIONS
 
 
@@ -375,7 +382,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
-        , Time.every (700 * Time.millisecond) Blink
+--        , Time.every (700 * Time.millisecond) Blink
         , Animation.subscription
             Animate
             (listAnimationState model)
@@ -384,9 +391,12 @@ subscriptions model =
 
 
 -- Figuring out what Animate argument needs to be
+
+
 listAnimationState : Model -> List Animation.State
 listAnimationState model =
     List.map .style model.chain
+
 
 
 -- VIEW

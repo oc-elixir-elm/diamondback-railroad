@@ -8,9 +8,6 @@ module Piece
         , view
         )
 
--- import Easing exposing (ease, easeOutQuint, float)
--- import Effects exposing (Effects)
-
 import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes
@@ -75,9 +72,12 @@ initWithInfo pieceNumber_ sideSize_ location_ =
             locToPixels location_ sideSize_
 
         initialStyle =
-            Animation.style
-                [ Animation.left (px pixelsX)
-                , Animation.top (px pixelsY)
+            Animation.styleWith (Animation.easing
+                { duration = 0.1 * Time.second
+                , ease = (\x -> sqrt x)
+                })
+                [ Animation.x pixelsX
+                , Animation.y pixelsY
                 ]
     in
         ( { role = Unassigned
@@ -100,32 +100,27 @@ initWithInfo pieceNumber_ sideSize_ location_ =
 --        ( newPiece, _ ) =
 --            update msg piece
 --    in
---        newPiece
-
-
+--        newPiece.style
 -- UPDATE
 
 
 type Msg
     = Move Location
-    | Show
     | Animate Animation.Msg
+
 
 
 --onStyle : Model -> (Animation.State -> Animation.State) -> Model
 --onStyle model styleFn =
---    { model | styles = styleFn <| model.styles }
+--    { model | style = styleFn <| model.style }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Show ->
-            ( model, Cmd.none )
-
         Animate time ->
             ( { model
-                | style = Animation.update time model.style
+                | style = log "style" (Animation.update time model.style)
               }
             , Cmd.none
             )
@@ -139,24 +134,22 @@ update msg model =
                     locToPixels
                         newLocation
                         model.sideSize
-
             in
-                (   { model
-                        | location =
-                            newLocation
-
-                        , style =
-                            (Animation.interrupt
-                                [ Animation.to
-                                    [ Animation.left
-                                        (px newPixelsX)
-                                    , Animation.top
-                                        (px newPixelsY)
-                                    ]
+                ( { model
+                    | location =
+                        newLocation
+                    , style =
+                        (Animation.interrupt
+                            [ Animation.to
+                                [ Animation.x
+                                    newPixelsX
+                                , Animation.y
+                                    newPixelsY
                                 ]
-                                model.style
-                            )
-                    }
+                            ]
+                            model.style
+                        )
+                  }
                 , Cmd.none
                 )
 
@@ -196,6 +189,7 @@ edgeThickness : Float
 edgeThickness =
     0.0454545455
 
+
 darkBrown : String
 darkBrown =
     "saddlebrown"
@@ -220,12 +214,11 @@ renderPiece model =
         ( locX, locY ) =
             model.location
 
-        pixelsX =
-            toStringInt2 locX sideSize
-
-        pixelsY =
-            toStringInt2 locY sideSize
-
+        --        pixelsX =
+        --            toStringInt2 locX sideSize
+        --
+        --        pixelsY =
+        --            toStringInt2 locY sideSize
         edgeRatio =
             edgeThickness * sideSize
 
@@ -288,10 +281,12 @@ renderPiece model =
                 [ text (toString model.pieceNumber) ]
     in
         Svg.svg
-            [ version "1.1"
-            , x pixelsX
-            , y pixelsY
-            ]
+            (Animation.render model.style
+                ++ [ version "1.1"
+--                   , x pixelsX
+--                   , y pixelsY
+                   ]
+            )
             [ polys
             , myText
             ]
