@@ -6,18 +6,13 @@ module Position
         , init
         , initWithInfo
         , isPerimeter
-        , subscriptions
         , update
         , view
         , PositionType(..)
         , renderEmptySquare
         )
 
-import Html exposing (Html, div, span)
-
-
---import Html.Attributes exposing (style)
-
+import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes
     exposing
@@ -70,7 +65,6 @@ visitedColor =
 borderColor : String
 borderColor =
     "saddlebrown"
-
 
 
 -- MODEL
@@ -130,7 +124,6 @@ initWithInfo positionType maxPosLength sideSize location =
         )
 
 
-
 -- UPDATE
 
 
@@ -169,16 +162,6 @@ isPerimeter model =
 blink : Bool -> Model -> Model
 blink newBlinkState model =
     { model | blinkState = newBlinkState }
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Time.every second Tick
-
 
 
 -- VIEW

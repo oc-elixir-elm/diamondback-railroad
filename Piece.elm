@@ -28,7 +28,7 @@ import Svg.Attributes
         )
 import Color
 import Time exposing (second)
-import Animation exposing (px)
+import Animation
 import Matrix exposing (Location)
 import Debug exposing (log)
 
@@ -96,29 +96,12 @@ initWithInfo pieceNumber_ sideSize_ location_ =
         )
 
 
-
---animatePiece : Model -> Animation.Msg -> Animation.State
---animatePiece piece time =
---    let
---        msg =
---            Animate time
---
---        ( newPiece, _ ) =
---            update msg piece
---    in
---        newPiece.style
 -- UPDATE
 
 
 type Msg
     = Move Location
     | Animate Animation.Msg
-
-
-
---onStyle : Model -> (Animation.State -> Animation.State) -> Model
---onStyle model styleFn =
---    { model | style = styleFn <| model.style }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -201,16 +184,6 @@ darkBrown =
     "saddlebrown"
 
 
-toStringFloat1 : Float -> String
-toStringFloat1 dim =
-    toString dim
-
-
-toStringInt2 : Int -> Pixels -> String
-toStringInt2 dim sideSize =
-    toString (sideSize * (toFloat dim))
-
-
 renderPiece : Model -> Html Msg
 renderPiece model =
     let
@@ -220,34 +193,29 @@ renderPiece model =
         ( locX, locY ) =
             model.location
 
-        --        pixelsX =
-        --            toStringInt2 locX sideSize
-        --
-        --        pixelsY =
-        --            toStringInt2 locY sideSize
         edgeRatio =
             sideSize * 0.01
 
         plusIndent =
-            toStringFloat1 edgeRatio
+            toString edgeRatio
 
         minusIndent =
-            toStringFloat1 (sideSize - edgeRatio)
+            toString (sideSize - edgeRatio)
 
         whole =
-            toStringFloat1 sideSize
+            toString sideSize
 
         half =
-            toStringFloat1 (sideSize / 2.0)
+            toString (sideSize / 2.0)
 
         narrow =
-            toStringFloat1 (sideSize / 10.0)
+            toString (sideSize / 10.0)
 
         fontSize_ =
-            toStringFloat1 (sideSize * 0.5)
+            toString (round (sideSize * 0.5))
 
         textDownMore =
-            toStringFloat1 (sideSize / 1.8)
+            toString (sideSize / 1.8)
 
         polyPoints =
             half
@@ -289,8 +257,6 @@ renderPiece model =
         Svg.svg
             (Animation.render model.style
                 ++ [ version "1.1"
---                   , x pixelsX
---                   , y pixelsY
                    ]
             )
             [ polys

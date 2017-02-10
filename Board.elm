@@ -9,13 +9,9 @@ module Board
 
 import Html exposing (Html, div)
 
-
--- import Html.Attributes exposing (..)
-
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Animation
-
 
 -- import Html.Events exposing (onClick)
 
@@ -209,7 +205,6 @@ initFromPosCount posCount =
         ( newModel, msg )
 
 
-
 -- UPDATE
 
 
@@ -374,7 +369,6 @@ blinkPosition newBlinkState position =
         position
 
 
-
 -- SUBSCRIPTIONS
 
 
@@ -382,21 +376,16 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
-          --        , Time.every (700 * Time.millisecond) Blink
+        , Time.every (700 * Time.millisecond) Blink
         , Animation.subscription
             Animate
             (listAnimationState model)
         ]
 
 
-
--- Figuring out what Animate argument needs to be
-
-
 listAnimationState : Model -> List Animation.State
 listAnimationState model =
     List.map .style model.chain
-
 
 
 -- VIEW
