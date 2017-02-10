@@ -269,29 +269,3 @@ changeLocForPiece delta piece =
             Piece.update msg piece
     in
         changedPiece
-
-
-
-{-
-   renderPiece : Piece.Model -> Html Msg
-   renderPiece piece =
-       Html.App.map (ModifyPiece piece.location)
-
-
-   view : Model -> Html Msg
-   view model =
-       svg
-           [ width "600"
-           , height "600"
-           ]
-           [ rect
-               [ stroke "blue"
-               , fill "white"
-               , width "600"
-               , height "600"
-               ]
-               []
-           , svg []
-               (List.map renderPiece model)
-           ]
--}
