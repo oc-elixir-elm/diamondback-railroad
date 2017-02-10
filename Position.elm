@@ -6,18 +6,13 @@ module Position
         , init
         , initWithInfo
         , isPerimeter
-        , subscriptions
         , update
         , view
         , PositionType(..)
         , renderEmptySquare
         )
 
-import Html exposing (Html, div, span)
-
-
---import Html.Attributes exposing (style)
-
+import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes
     exposing
@@ -70,7 +65,6 @@ visitedColor =
 borderColor : String
 borderColor =
     "saddlebrown"
-
 
 
 -- MODEL
@@ -130,7 +124,6 @@ initWithInfo positionType maxPosLength sideSize location =
         )
 
 
-
 -- UPDATE
 
 
@@ -171,16 +164,6 @@ blink newBlinkState model =
     { model | blinkState = newBlinkState }
 
 
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Time.every second Tick
-
-
-
 -- VIEW
 
 
@@ -197,19 +180,19 @@ renderEmptySquare model =
             calcFillColor model
 
         myStrokeWidth =
-            (toString (model.sideSize * 10.0)) ++ "%"
+            (toString (sideSize / 20.0))
 
         ( locX, locY ) =
             model.location
 
         pixelsX =
-            (toString (100.0 * sideSize * (toFloat locX))) ++ "%"
+            toString (sideSize * (toFloat locX))
 
         pixelsY =
-            (toString (100.0 * sideSize * (toFloat locY))) ++ "%"
+            toString (sideSize * (toFloat locY))
 
         whole =
-            (toString (100.0 * model.sideSize)) ++ "%"
+            toString sideSize
 
         rectangle =
             rect

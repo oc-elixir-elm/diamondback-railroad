@@ -9,13 +9,9 @@ module Board
 
 import Html exposing (Html, div)
 
-
--- import Html.Attributes exposing (..)
-
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Animation
-
 
 -- import Html.Events exposing (onClick)
 
@@ -159,14 +155,13 @@ yForPos position =
 initPiece : ( Int, Int, Int, Float ) -> Piece.Model
 initPiece tuple =
     let
-        ( pieceNumber, x, y, sideSize) =
+        ( pieceNumber, x, y, sideSize ) =
             tuple
 
         ( piece, _ ) =
             Piece.initWithInfo pieceNumber
                 sideSize
                 ( x, y )
-
     in
         piece
 
@@ -178,7 +173,7 @@ init =
             11
 
         sideSize =
-            boardSide
+            (toFloat boardSide)
                 / (toFloat maxPosLength)
     in
         ( { moveCount = 0
@@ -191,7 +186,7 @@ init =
                     sideSize
           , chain = create81Pieces sideSize
           }
---        , Task.perform BoardResize Window.size
+          --        , Task.perform BoardResize Window.size
         , Cmd.none
         )
 
@@ -208,7 +203,6 @@ initFromPosCount posCount =
             }
     in
         ( newModel, msg )
-
 
 
 -- UPDATE
@@ -237,9 +231,16 @@ update msg model =
         Blink time ->
             blinkUnvisitedPerimeterPositions model
 
-        Animate chain ->
-            --            Chain.update Animate chain
-            ( model, Cmd.none )
+        Animate animMsg ->
+            let
+                ( chain, msg ) =
+                    Chain.update (Chain.Animate animMsg) model.chain
+            in
+                ( { model
+                    | chain = chain
+                  }
+                , Cmd.none
+                )
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -382,8 +383,6 @@ subscriptions model =
         ]
 
 
-
--- Figuring out what Animate argument needs to be
 listAnimationState : Model -> List Animation.State
 listAnimationState model =
     List.map .style model.chain
@@ -392,9 +391,9 @@ listAnimationState model =
 -- VIEW
 
 
-boardSide : Float
+boardSide : Int
 boardSide =
-    1.0
+    1000
 
 
 borderColor : Color
@@ -409,7 +408,7 @@ fillColor =
 
 borderThickness : Int
 borderThickness =
-    10
+    1
 
 
 renderPosition : Position.Model -> Html Msg
@@ -442,7 +441,7 @@ view model =
             [ version "1.1"
             , width "100%"
             , height "100%"
-            , viewBox "0 0 1 1"
+            , viewBox ("0 0 " ++ (toString boardSide) ++ " " ++ (toString boardSide))
             , preserveAspectRatio "xMidYMid meet"
             ]
             [ svg []

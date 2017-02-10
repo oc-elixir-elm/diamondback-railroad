@@ -3,9 +3,8 @@ module Chain
         ( Model
         , init
         , update
-        , subscriptions
         , sameLocation
-        , Msg(KeyDown)
+        , Msg(KeyDown, Animate)
         )
 
 import Html exposing (Html)
@@ -15,6 +14,7 @@ import Key exposing (..)
 import Matrix exposing (Location)
 import Debug exposing (log)
 import Time exposing (Time)
+import Animation
 
 
 type alias Model =
@@ -26,15 +26,9 @@ init =
     ( [], Cmd.none )
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Keyboard.downs KeyDown
-        ]
-
-
 type Msg
     = KeyDown KeyCode
+    | Animate Animation.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -44,6 +38,19 @@ update msg model =
             case msg of
                 KeyDown keyCode ->
                     keyDown keyCode model
+
+                Animate animMsg ->
+                    let
+                        ( models, _ ) =
+                            List.unzip
+                                (List.map
+                                    (Piece.update
+                                        (Piece.Animate animMsg)
+                                    )
+                                    model
+                                )
+                    in
+                        models
     in
         ( updatedModel, Cmd.none )
 
