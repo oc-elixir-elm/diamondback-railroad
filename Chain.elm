@@ -3,7 +3,6 @@ module Chain
         ( Model
         , init
         , update
---        , subscriptions
         , sameLocation
         , Msg(KeyDown, Animate)
         )
@@ -26,13 +25,6 @@ init : ( Model, Cmd Msg )
 init =
     ( [], Cmd.none )
 
---
---subscriptions : Model -> Sub Msg
---subscriptions model =
---    Sub.batch
---        [ Keyboard.downs KeyDown
---        ]
-
 
 type Msg
     = KeyDown KeyCode
@@ -49,10 +41,16 @@ update msg model =
 
                 Animate animMsg ->
                     let
-                        (models, _) = List.unzip (List.map (Piece.update (Piece.Animate animMsg)) model)
+                        ( models, _ ) =
+                            List.unzip
+                                (List.map
+                                    (Piece.update
+                                        (Piece.Animate animMsg)
+                                    )
+                                    model
+                                )
                     in
                         models
-
     in
         ( updatedModel, Cmd.none )
 
