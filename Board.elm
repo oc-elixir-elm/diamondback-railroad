@@ -177,7 +177,7 @@ init =
             11
 
         sideSize =
-            boardSide
+            (toFloat boardSide)
                 / (toFloat maxPosLength)
     in
         ( { moveCount = 0
@@ -382,7 +382,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
---        , Time.every (700 * Time.millisecond) Blink
+          --        , Time.every (700 * Time.millisecond) Blink
         , Animation.subscription
             Animate
             (listAnimationState model)
@@ -402,9 +402,9 @@ listAnimationState model =
 -- VIEW
 
 
-boardSide : Float
+boardSide : Int
 boardSide =
-    1.0
+    1000
 
 
 borderColor : Color
@@ -419,7 +419,7 @@ fillColor =
 
 borderThickness : Int
 borderThickness =
-    10
+    1
 
 
 renderPosition : Position.Model -> Html Msg
@@ -452,7 +452,7 @@ view model =
             [ version "1.1"
             , width "100%"
             , height "100%"
-            , viewBox "0 0 1 1"
+            , viewBox ("0 0 " ++ (toString boardSide) ++ " " ++ (toString boardSide))
             , preserveAspectRatio "xMidYMid meet"
             ]
             [ svg []

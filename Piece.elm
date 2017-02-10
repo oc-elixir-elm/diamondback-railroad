@@ -71,14 +71,20 @@ initWithInfo pieceNumber_ sideSize_ location_ =
         ( pixelsX, pixelsY ) =
             locToPixels location_ sideSize_
 
+-- A fluid 'cornering action' animation:
         initialStyle =
-            Animation.styleWith (Animation.easing
-                { duration = 0.1 * Time.second
-                , ease = (\x -> sqrt x)
-                })
+            Animation.style
                 [ Animation.x pixelsX
                 , Animation.y pixelsY
                 ]
+-- Offers a harsher 'moving-within-the-squares' animation:
+--            Animation.styleWith (Animation.easing
+--                { duration = 0.2 * Time.second
+--                , ease = (\x -> sqrt x)
+--                })
+--                [ Animation.x pixelsX
+--                , Animation.y pixelsY
+--                ]
     in
         ( { role = Unassigned
           , location = location_
@@ -187,7 +193,7 @@ locToPixels location sideSize =
 
 edgeThickness : Float
 edgeThickness =
-    0.0454545455
+    5.4545455
 
 
 darkBrown : String
@@ -220,7 +226,7 @@ renderPiece model =
         --        pixelsY =
         --            toStringInt2 locY sideSize
         edgeRatio =
-            edgeThickness * sideSize
+            sideSize * 0.01
 
         plusIndent =
             toStringFloat1 edgeRatio
@@ -265,7 +271,7 @@ renderPiece model =
                 [ fill "white"
                 , points polyPoints
                 , stroke "indianred"
-                , strokeWidth (toString edgeRatio)
+                , strokeWidth (toString edgeThickness)
                 ]
                 []
 

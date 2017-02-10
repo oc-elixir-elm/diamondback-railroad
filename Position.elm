@@ -197,19 +197,19 @@ renderEmptySquare model =
             calcFillColor model
 
         myStrokeWidth =
-            (toString (model.sideSize * 10.0)) ++ "%"
+            (toString (sideSize / 20.0))
 
         ( locX, locY ) =
             model.location
 
         pixelsX =
-            (toString (100.0 * sideSize * (toFloat locX))) ++ "%"
+            toString (sideSize * (toFloat locX))
 
         pixelsY =
-            (toString (100.0 * sideSize * (toFloat locY))) ++ "%"
+            toString (sideSize * (toFloat locY))
 
         whole =
-            (toString (100.0 * model.sideSize)) ++ "%"
+            toString sideSize
 
         rectangle =
             rect
