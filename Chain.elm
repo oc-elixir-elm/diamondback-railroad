@@ -40,17 +40,10 @@ update msg model =
                     keyDown keyCode model
 
                 Animate animMsg ->
-                    let
-                        ( models, _ ) =
-                            List.unzip
-                                (List.map
-                                    (Piece.update
-                                        (Piece.Animate animMsg)
-                                    )
-                                    model
-                                )
-                    in
-                        models
+                    model
+                        |> List.map (Piece.update (Piece.Animate animMsg) )
+                        |> List.unzip
+                        |> Tuple.first
     in
         ( updatedModel, Cmd.none )
 
