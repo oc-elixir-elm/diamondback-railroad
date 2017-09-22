@@ -3,21 +3,18 @@ module Chain
         ( Model
         , init
         , update
-        , subscriptions
         , sameLocation
-        , Msg(KeyDown)
+        , Msg(KeyDown, Animate)
         )
 
 import Html exposing (Html)
-import Html.App
 import Piece exposing (Msg(..))
-import AnimationFrame
-import Time exposing (Time)
-import Style
 import Keyboard exposing (KeyCode)
 import Key exposing (..)
 import Matrix exposing (Location)
 import Debug exposing (log)
+import Time exposing (Time)
+import Animation
 
 
 type alias Model =
@@ -29,17 +26,9 @@ init =
     ( [], Cmd.none )
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ AnimationFrame.times Animate
-        , Keyboard.downs KeyDown
-        ]
-
-
 type Msg
-    = Animate Time
-    | KeyDown KeyCode
+    = KeyDown KeyCode
+    | Animate Animation.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -50,8 +39,11 @@ update msg model =
                 KeyDown keyCode ->
                     keyDown keyCode model
 
-                Animate time ->
+                Animate animMsg ->
                     model
+                        |> List.map (Piece.update (Piece.Animate animMsg) )
+                        |> List.unzip
+                        |> Tuple.first
     in
         ( updatedModel, Cmd.none )
 
@@ -270,29 +262,3 @@ changeLocForPiece delta piece =
             Piece.update msg piece
     in
         changedPiece
-
-
-
-{-
-   renderPiece : Piece.Model -> Html Msg
-   renderPiece piece =
-       Html.App.map (ModifyPiece piece.location)
-
-
-   view : Model -> Html Msg
-   view model =
-       svg
-           [ width "600"
-           , height "600"
-           ]
-           [ rect
-               [ stroke "blue"
-               , fill "white"
-               , width "600"
-               , height "600"
-               ]
-               []
-           , svg []
-               (List.map renderPiece model)
-           ]
--}

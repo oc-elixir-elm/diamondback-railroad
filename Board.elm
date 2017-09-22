@@ -1,35 +1,30 @@
 module Board
     exposing
-        ( init
+        ( Model
+        , init
         , view
         , update
         , subscriptions
         )
 
--- import Effects exposing (Effects)
-
 import Html exposing (Html, div)
-import Html.App
-
-
--- import Html.Attributes exposing (..)
 
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-
+import Animation
 
 -- import Html.Events exposing (onClick)
 
-import AnimationFrame
 import Matrix exposing (Matrix, Location)
 import Position
 import Piece
-import Chain
+import Chain exposing (Msg(..))
 import Maybe exposing (..)
 import Color exposing (Color, lightBrown, darkBrown)
 import Time exposing (Time, second)
 import Window
 import Keyboard exposing (KeyCode)
+import Task
 import Debug exposing (log)
 
 
@@ -40,27 +35,12 @@ type alias PosCount =
     Int
 
 
-maxPosLength : PosCount
-maxPosLength =
-    11
+type alias SideSize =
+    Float
 
 
-type alias BoardSideInPixels =
-    Int
-
-
-boardSideInPixels : BoardSideInPixels
-boardSideInPixels =
-    400
-
-
-sideSize =
-    (toFloat boardSideInPixels)
-        / (toFloat maxPosLength)
-
-
-squareType : Location -> Position.PositionType
-squareType location =
+squareType : Location -> PosCount -> Position.PositionType
+squareType location maxPosLength =
     let
         ( x, y ) =
             location
@@ -79,11 +59,11 @@ squareType location =
             Position.Grid
 
 
-positionFromInit : Location -> Position.Model
-positionFromInit location =
+positionFromInit : Location -> PosCount -> SideSize -> Position.Model
+positionFromInit location maxPosLength sideSize =
     let
         ( position, msg ) =
-            Position.initWithInfo (squareType location)
+            Position.initWithInfo (squareType location maxPosLength)
                 maxPosLength
                 sideSize
                 location
@@ -91,18 +71,23 @@ positionFromInit location =
         position
 
 
-createMatrix : PosCount -> Matrix Position.Model
-createMatrix posCount =
-    Matrix.square posCount
-        (\location -> positionFromInit location)
+createMatrix : PosCount -> SideSize -> Matrix Position.Model
+createMatrix maxPosLength sideSize =
+    Matrix.square maxPosLength
+        (\location ->
+            positionFromInit location
+                maxPosLength
+                sideSize
+        )
 
 
 type alias Model =
     { board : Matrix Position.Model
-    , pieces : List Piece.Model
     , chain : Chain.Model
     , moveCount : Int
     , blinkState : Bool
+    , maxPosLength : PosCount
+    , sideSize : SideSize
     }
 
 
@@ -116,13 +101,13 @@ type alias PositionLocator =
    For debugging animation, keep only one piece
    instead of 81.
 -}
-create81Pieces : List Piece.Model
-create81Pieces =
-    List.map (\pos -> createPieceForPos pos) [0..80]
+create81Pieces : Float -> List Piece.Model
+create81Pieces sideSize =
+    List.map (\pos -> createPieceForPos pos sideSize) (List.range 0 80)
 
 
-createPieceForPos : Int -> Piece.Model
-createPieceForPos position =
+createPieceForPos : Int -> Float -> Piece.Model
+createPieceForPos position sideSize =
     let
         x =
             xForPos position
@@ -131,7 +116,7 @@ createPieceForPos position =
             yForPos position
 
         tuple =
-            ( position + 1, x, y )
+            ( position + 1, x, y, sideSize )
     in
         initPiece tuple
 
@@ -167,10 +152,10 @@ yForPos position =
     1 + (position // 9)
 
 
-initPiece : ( Int, Int, Int ) -> Piece.Model
+initPiece : ( Int, Int, Int, Float ) -> Piece.Model
 initPiece tuple =
     let
-        ( pieceNumber, x, y ) =
+        ( pieceNumber, x, y, sideSize ) =
             tuple
 
         ( piece, _ ) =
@@ -184,31 +169,40 @@ initPiece tuple =
 init : ( Model, Cmd Msg )
 init =
     let
-        board =
-            createMatrix maxPosLength
+        maxPosLength =
+            11
 
-        pieces =
-            create81Pieces
-
-        -- one chain includes all the pieces
-        chain =
-            pieces
-
-        moveCount =
-            0
-
-        blinkState =
-            False
+        sideSize =
+            (toFloat boardSide)
+                / (toFloat maxPosLength)
     in
-        ( { board = board
-          , pieces = pieces
-          , chain = chain
-          , moveCount = moveCount
-          , blinkState = blinkState
+        ( { moveCount = 0
+          , blinkState = False
+          , maxPosLength = maxPosLength
+          , sideSize = sideSize
+          , board =
+                createMatrix
+                    maxPosLength
+                    sideSize
+          , chain = create81Pieces sideSize
           }
+          --        , Task.perform BoardResize Window.size
         , Cmd.none
         )
 
+
+initFromPosCount : PosCount -> ( Model, Cmd Msg )
+initFromPosCount posCount =
+    let
+        ( model, msg ) =
+            init
+
+        newModel =
+            { model
+                | maxPosLength = posCount
+            }
+    in
+        ( newModel, msg )
 
 
 -- UPDATE
@@ -218,8 +212,8 @@ type Msg
     = ModifyPosition Location Position.Msg
     | ModifyPiece Location Piece.Msg
     | KeyDown KeyCode
-    | Animate Time
     | Blink Time
+    | Animate Animation.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -237,27 +231,16 @@ update msg model =
         Blink time ->
             blinkUnvisitedPerimeterPositions model
 
-        Animate time ->
-            ( { model
-                | chain =
-                    (List.map (\piece -> animatePiece piece time)
-                        model.chain
-                    )
-              }
-            , Cmd.none
-            )
-
-
-animatePiece : Piece.Model -> Time -> Piece.Model
-animatePiece piece time =
-    let
-        msg =
-            Piece.Animate time
-
-        ( newPiece, _ ) =
-            Piece.update msg piece
-    in
-        newPiece
+        Animate animMsg ->
+            let
+                ( chain, msg ) =
+                    Chain.update (Chain.Animate animMsg) model.chain
+            in
+                ( { model
+                    | chain = chain
+                  }
+                , Cmd.none
+                )
 
 
 manageKeyDown : Model -> KeyCode -> ( Model, Cmd Msg )
@@ -386,7 +369,6 @@ blinkPosition newBlinkState position =
         position
 
 
-
 -- SUBSCRIPTIONS
 
 
@@ -394,22 +376,24 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
-        , AnimationFrame.times Animate
         , Time.every (700 * Time.millisecond) Blink
+        , Animation.subscription
+            Animate
+            (listAnimationState model)
         ]
 
 
+listAnimationState : Model -> List Animation.State
+listAnimationState model =
+    List.map .style model.chain
+
 
 -- VIEW
--- Number of positions on the side of the boafd
 
 
-type alias Width =
-    Int
-
-
-type alias Height =
-    Int
+boardSide : Int
+boardSide =
+    1000
 
 
 borderColor : Color
@@ -424,18 +408,18 @@ fillColor =
 
 borderThickness : Int
 borderThickness =
-    10
+    1
 
 
 renderPosition : Position.Model -> Html Msg
 renderPosition position =
-    Html.App.map (ModifyPosition position.location)
+    Html.map (ModifyPosition position.location)
         (Position.view position)
 
 
 renderPiece : Piece.Model -> Html Msg
 renderPiece piece =
-    Html.App.map (ModifyPiece piece.location)
+    Html.map (ModifyPiece piece.location)
         (Piece.view piece)
 
 
@@ -450,34 +434,18 @@ view model =
         positions =
             Matrix.flatten model.board
 
-        pieces =
-            model.pieces
-
         chain =
             model.chain
     in
-      div []
-        [svg
+        svg
             [ version "1.1"
-            , x "0"
-            , y "0"
-            , viewBox "0 0 750 410"
+            , width "100%"
+            , height "100%"
+            , viewBox ("0 0 " ++ (toString boardSide) ++ " " ++ (toString boardSide))
+            , preserveAspectRatio "xMidYMid meet"
             ]
-            [ rect
-                [ stroke "blue"
-                , fill "white"
-                , width "400"
-                , height "400"
-                ]
-                []
-            , svg []
+            [ svg []
                 (List.map renderPosition positions)
-              -- , svg []
-              --     (List.map renderPiece pieces)
             , svg []
                 (List.map renderPiece chain)
             ]
-        , div []
-              [ text (renderMoveCount model.moveCount)
-              ]
-        ]

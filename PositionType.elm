@@ -2,15 +2,15 @@ module PositionType exposing (..)
 
 
 type PositionType
-  = Perimeter
-  | Grid
+    = Perimeter
+    | Grid
 
 
 assignPerimeter : PositionType
 assignPerimeter =
-  Perimeter
+    Perimeter
 
 
 assignGrid : PositionType
 assignGrid =
-  Grid
+    Grid

@@ -8,9 +8,6 @@ module Piece
         , view
         )
 
--- import Easing exposing (ease, easeOutQuint, float)
--- import Effects exposing (Effects)
-
 import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes
@@ -30,11 +27,9 @@ import Svg.Attributes
         , y
         )
 import Color
-import AnimationFrame
+import Time exposing (second)
+import Animation
 import Matrix exposing (Location)
-import Time exposing (Time, second, millisecond)
-import Style
-import Style.Properties exposing (..)
 import Debug exposing (log)
 
 
@@ -61,134 +56,127 @@ type alias Model =
     , location : Location
     , pieceNumber : PieceNumber
     , sideSize : Pixels
-    , svgStyle : Style.Animation
+    , style : Animation.State
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { role = Unassigned
-      , location = ( 1, 1 )
-      , pieceNumber = 1
-      , sideSize = 44
-      , svgStyle =
-            Style.init []
-      }
-    , Cmd.none
-    )
+    initWithInfo 1 0.0 ( 1, 1 )
 
 
 initWithInfo : PieceNumber -> Pixels -> Location -> ( Model, Cmd Msg )
-initWithInfo pieceNumber sideSize location =
+initWithInfo pieceNumber_ sideSize_ location_ =
     let
-        m =
-            { role = Unassigned
-            , location = location
-            , pieceNumber = pieceNumber
-            , sideSize = sideSize
-            , svgStyle = Style.init []
-            }
+        ( pixelsX, pixelsY ) =
+            locToPixels location_ sideSize_
 
-        model =
-            { m | svgStyle = (setSvgStyle m) }
+-- A fluid 'cornering action' animation:
+        initialStyle =
+            Animation.style
+                [ Animation.x pixelsX
+                , Animation.y pixelsY
+                ]
+-- Offers a harsher 'moving-within-the-squares' animation:
+--            Animation.styleWith (Animation.easing
+--                { duration = 0.2 * Time.second
+--                , ease = (\x -> sqrt x)
+--                })
+--                [ Animation.x pixelsX
+--                , Animation.y pixelsY
+--                ]
     in
-        ( model
+        ( { role = Unassigned
+          , location = location_
+          , pieceNumber = pieceNumber_
+          , sideSize = sideSize_
+          , style = initialStyle
+          }
         , Cmd.none
         )
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    let
-        dummy =
-            log "subscriptions" model.location
-    in
-        AnimationFrame.times Animate
-
 
 
 -- UPDATE
 
 
 type Msg
-    = Show
-    | Animate Time
-    | Move Location
+    = Move Location
+    | Animate Animation.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Show ->
-            ( model, Cmd.none )
-
         Animate time ->
             ( { model
-                | svgStyle = Style.tick time model.svgStyle
+                | style = log "style" (Animation.update time model.style)
               }
             , Cmd.none
             )
 
         Move location ->
             let
-                newModel =
-                    moveLoc location model
+                newLocation =
+                    newLoc location model
 
-                newModel2 =
-                    { newModel
-                        | svgStyle =
-                            Style.animate
-                                |> Style.to (getSvgValues newModel)
-                                |> Style.on (setSvgStyle model)
-                    }
+                ( newPixelsX, newPixelsY ) =
+                    locToPixels
+                        newLocation
+                        model.sideSize
             in
-                ( newModel2, Cmd.none )
+                ( { model
+                    | location =
+                        newLocation
+                    , style =
+                        (Animation.interrupt
+                            [ Animation.to
+                                [ Animation.x
+                                    newPixelsX
+                                , Animation.y
+                                    newPixelsY
+                                ]
+                            ]
+                            model.style
+                        )
+                  }
+                , Cmd.none
+                )
 
 
-moveLoc : Location -> Model -> Model
-moveLoc delta model =
+newLoc : Location -> Model -> Location
+newLoc delta model =
     let
         ( dx, dy ) =
             delta
 
         ( x, y ) =
             model.location
-
-        newLocation =
-            ( x + dx, y + dy )
     in
-        { model | location = newLocation }
+        ( x + dx, y + dy )
 
 
-getSvgValues : Model -> List (Property Float a)
-getSvgValues model =
+locToPixels : Location -> Float -> ( Pixels, Pixels )
+locToPixels location sideSize =
     let
         ( xloc, yloc ) =
-            model.location
+            location
 
         pixelsX =
-            model.sideSize * (toFloat xloc)
+            sideSize * (toFloat xloc)
 
         pixelsY =
-            model.sideSize * (toFloat yloc)
+            sideSize * (toFloat yloc)
     in
-        [ X pixelsX
-        , Y pixelsY
-        ]
-
-
-setSvgStyle : Model -> Style.Animation
-setSvgStyle model =
-    Style.init (getSvgValues model)
+        ( pixelsX, pixelsY )
 
 
 
 -- VIEW
 
 
-edgeThickness : number
+edgeThickness : Float
 edgeThickness =
-    3
+    5.4545455
 
 
 darkBrown : String
@@ -206,7 +194,7 @@ renderPiece model =
             model.location
 
         edgeRatio =
-            (edgeThickness * sideSize) / 100
+            sideSize * 0.01
 
         plusIndent =
             toString edgeRatio
@@ -223,24 +211,27 @@ renderPiece model =
         narrow =
             toString (sideSize / 10.0)
 
+        fontSize_ =
+            toString (round (sideSize * 0.5))
+
         textDownMore =
             toString (sideSize / 1.8)
 
         polyPoints =
             half
-                ++ " "
-                ++ plusIndent
-                ++ ", "
-                ++ minusIndent
-                ++ " "
-                ++ half
-                ++ ", "
-                ++ half
-                ++ " "
-                ++ minusIndent
-                ++ ", "
+                ++ ","
                 ++ plusIndent
                 ++ " "
+                ++ minusIndent
+                ++ ","
+                ++ half
+                ++ " "
+                ++ half
+                ++ ","
+                ++ minusIndent
+                ++ " "
+                ++ plusIndent
+                ++ ","
                 ++ half
 
         polys =
@@ -248,26 +239,29 @@ renderPiece model =
                 [ fill "white"
                 , points polyPoints
                 , stroke "indianred"
-                , strokeWidth (toString edgeRatio)
+                , strokeWidth (toString edgeThickness)
                 ]
                 []
 
         myText =
-            text'
+            text_
                 [ x half
                 , y textDownMore
                 , fill "black"
-                , fontSize "20"
+                , fontSize fontSize_
                 , alignmentBaseline "middle"
                 , textAnchor "middle"
                 ]
                 [ text (toString model.pieceNumber) ]
     in
-        Svg.svg (Style.renderAttr model.svgStyle)
-                [ polys
-                , myText
-                ]
-
+        Svg.svg
+            (Animation.render model.style
+                ++ [ version "1.1"
+                   ]
+            )
+            [ polys
+            , myText
+            ]
 
 
 view : Model -> Html Msg

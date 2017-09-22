@@ -1,12 +1,13 @@
 module MainBoard exposing (..)
 
-import Html.App as Html
 import Board exposing (..)
+import Html exposing (Html)
+
 
 main =
-  Html.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
+    Html.program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }

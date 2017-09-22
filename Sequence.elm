@@ -1,12 +1,12 @@
-module Sequence exposing (Model, Action, init)
+module Sequence exposing (Model, init)
 
-import Piece exposing (Piece)
+import Piece
 
 
 type alias Model =
-  List Piece
+    List Piece.Model
 
 
-init : List Piece
+init : Model
 init =
-  []
+    []

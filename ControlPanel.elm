@@ -5,4 +5,4 @@ module ControlPanel exposing (..)
 
 borderThickness : Int
 borderThickness =
-  10
+    10
