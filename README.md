@@ -1,5 +1,7 @@
 # Diamondback Railroad
 
+> ***NOTE: This repo has been archived.***
+
 Demonstrates a game engine for a visually-pleasing 2-D game.
 
 ## Purpose
